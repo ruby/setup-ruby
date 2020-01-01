@@ -1,25 +1,17 @@
-name: "units-test"
-on:
-  pull_request:
-  push:
-    branches:
-      - master
-      - 'releases/*'
-
+name: Test this action
+on: [push]
 jobs:
-  # unit tests
-  units:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - run: npm ci
-    - run: npm test
-
-  # test action works running from the graph  
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'ubuntu-16.04', 'ubuntu-18.04', 'macos-latest' ]
+        ruby: [ 'ruby-2.6.5', 'ruby-2.7.0', 'truffleruby-19.3.0', 'jruby-9.2.9.0' ]
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - uses: ./
       with:
-        milliseconds: 1000
+        ruby-version: ${{ matrix.ruby }}
+    - run: ruby -v
+    - run: ruby -ropen-uri -e 'puts open("https://rubygems.org/") { |f| f.read(2014) }'

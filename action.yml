@@ -1,13 +1,12 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'use-ruby'
+description: 'Download a prebuilt ruby and add it to $PATH'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  ruby-version:
+    description: 'Version of ruby to use in the format "X.Y.Z"'
     required: true
-    default: '1000'
 outputs:
-  time: # output will be available to future steps 
-    description: 'The message to output'
+  ruby-prefix:
+    description: 'The prefix of the installed ruby'
 runs:
   using: 'node12'
   main: 'dist/index.js'
