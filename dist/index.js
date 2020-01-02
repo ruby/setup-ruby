@@ -1794,19 +1794,7 @@ const axios = __webpack_require__(53)
 
 async function run() {
   try {
-    const rubyVersion = core.getInput('ruby-version')
-
-    let ruby = rubyVersion
-    if (ruby.match(/^\d+/)) { // X.Y.Z => ruby-X.Y.Z
-      ruby = 'ruby-' + ruby
-    }
-    if (!ruby.includes('-')) { // myruby -> myruby-stableVersion
-      const versionsUrl = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata/versions.json'
-      const response = await axios.get(versionsUrl)
-      const stableVersions = response.data[ruby]
-      const latestStableVersion = stableVersions[stableVersions.length-1]
-      ruby = ruby + '-' + latestStableVersion
-    }
+    const ruby = await getRubyEngineAndVersion(core.getInput('ruby-version'))
 
     const rubiesDir = `${process.env.HOME}/.rubies`
     await io.mkdirP(rubiesDir)
@@ -1823,6 +1811,21 @@ async function run() {
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
+  }
+}
+
+async function getRubyEngineAndVersion(rubyVersion) {
+  if (rubyVersion.match(/^\d+/)) { // X.Y.Z => ruby-X.Y.Z
+    return 'ruby-' + rubyVersion
+  } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
+    const engine = rubyVersion
+    const versionsUrl = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata/versions.json'
+    const response = await axios.get(versionsUrl)
+    const stableVersions = response.data[engine]
+    const latestStableVersion = stableVersions[stableVersions.length-1]
+    return engine + '-' + latestStableVersion
+  } else {
+    return rubyVersion
   }
 }
 
