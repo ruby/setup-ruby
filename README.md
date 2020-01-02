@@ -4,7 +4,7 @@ This action downloads a prebuilt ruby and adds it to `$PATH`.
 
 It currently supports the latest stable versions of MRI, JRuby and TruffleRuby.
 
-See https://github.com/eregon/ruby-install-builder/releases/tag/builds for the
+See https://github.com/eregon/ruby-install-builder/releases/latest for the
 available Ruby versions.
 
 The action works for the `ubuntu-16.04`, `ubuntu-18.04` and `macos-latest` GitHub-hosted runners.  
