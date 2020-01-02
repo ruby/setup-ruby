@@ -1,8 +1,12 @@
-name: 'use-ruby'
-description: 'Download a prebuilt ruby and add it to $PATH'
+name: 'Setup Ruby, JRuby and TruffleRuby'
+description: 'Download a prebuilt Ruby and add it to $PATH in 5 seconds'
+author: 'Benoit Daloze'
+branding:
+  color: red
+  icon: download
 inputs:
   ruby-version:
-    description: 'Version of ruby to use in the format "X.Y.Z"'
+    description: 'Engine and version to use in the format "myruby-X.Y.Z"'
     required: true
 outputs:
   ruby-prefix:
