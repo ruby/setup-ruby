@@ -1792,6 +1792,9 @@ const io = __webpack_require__(1)
 const tc = __webpack_require__(533)
 const axios = __webpack_require__(53)
 
+const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
+const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
+
 async function run() {
   try {
     const ruby = await getRubyEngineAndVersion(core.getInput('ruby-version'))
@@ -1800,7 +1803,8 @@ async function run() {
     await io.mkdirP(rubiesDir)
 
     const platform = getVirtualEnvironmentName()
-    const url = `https://github.com/eregon/ruby-install-builder/releases/download/builds/${ruby}-${platform}.tar.gz`
+    const tag = await getLatestReleaseTag()
+    const url = `${releasesURL}/download/${tag}/${ruby}-${platform}.tar.gz`
     console.log(url)
 
     const downloadPath = await tc.downloadTool(url)
@@ -1814,13 +1818,17 @@ async function run() {
   }
 }
 
+async function getLatestReleaseTag() {
+  const response = await axios.get(`${metadataURL}/latest_release.tag`)
+  return response.data.trim()
+}
+
 async function getRubyEngineAndVersion(rubyVersion) {
   if (rubyVersion.match(/^\d+/)) { // X.Y.Z => ruby-X.Y.Z
     return 'ruby-' + rubyVersion
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
     const engine = rubyVersion
-    const versionsUrl = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata/versions.json'
-    const response = await axios.get(versionsUrl)
+    const response = await axios.get(`${metadataURL}/versions.json`)
     const stableVersions = response.data[engine]
     const latestStableVersion = stableVersions[stableVersions.length-1]
     return engine + '-' + latestStableVersion
