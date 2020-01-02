@@ -7,6 +7,9 @@ It currently supports the latest stable versions of MRI, JRuby and TruffleRuby.
 See https://github.com/eregon/ruby-install-builder/releases/tag/builds for the
 available Ruby versions.
 
+The action works for the `ubuntu-16.04`, `ubuntu-18.04` and `macos-latest` GitHub-hosted runners.  
+`windows-latest` is not yet supported.
+
 ## Usage
 
 Single job:
