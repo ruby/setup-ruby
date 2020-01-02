@@ -46,6 +46,10 @@ jobs:
     - run: ruby -v
 ```
 
+If a specific version is not given, it uses the latest stable release of that implementation.
+
+For instance `truffleruby` is currently the same as `truffleruby-19.3.0`.
+
 ## Efficiency
 
 It takes about 5 seconds to setup the given Ruby.
