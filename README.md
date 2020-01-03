@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'ubuntu-latest', 'macos-latest' ]
+        os: [ ubuntu-latest, macos-latest ]
         ruby: [ 'ruby-2.6', 'ruby-2.7', 'truffleruby-19.3.0', 'jruby-9.2.9.0' ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -70,7 +70,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'ubuntu-latest', 'macos-latest' ]
+        os: [ ubuntu-latest, macos-latest ]
         ruby: [ '2.4', '2.5', '2.6', '2.7', 'truffleruby', 'jruby' ]
     runs-on: ${{ matrix.os }}
     steps:
