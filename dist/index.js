@@ -1416,17 +1416,35 @@ async function getLatestReleaseTag() {
 }
 
 async function getRubyEngineAndVersion(rubyVersion) {
+  let engine, version
   if (rubyVersion.match(/^\d+/)) { // X.Y.Z => ruby-X.Y.Z
-    return 'ruby-' + rubyVersion
+    engine = 'ruby'
+    version = rubyVersion
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
-    const engine = rubyVersion
-    const response = await axios.get(`${metadataURL}/versions.json`)
-    const stableVersions = response.data[engine]
-    const latestStableVersion = stableVersions[stableVersions.length-1]
-    return engine + '-' + latestStableVersion
-  } else {
-    return rubyVersion
+    engine = rubyVersion
+    version = '' // Let the logic below find the version
+  } else { // engine-X.Y.Z
+    [engine, version] = rubyVersion.split('-', 2)
   }
+
+  const response = await axios.get(`${metadataURL}/versions.json`)
+  const stableVersions = response.data
+  const engineVersions = stableVersions[engine]
+  if (!engineVersions) {
+    throw new Error(`Unknown engine ${engine} (${rubyVersion})`)
+  }
+
+  if (!engineVersions.includes(version)) {
+    engineVersions.reverse() // inplace!
+    let found = engineVersions.find(v => v.startsWith(version))
+    if (found) {
+      version = found
+    } else {
+      throw new Error(`Unknown version ${version} (${rubyVersion})`)
+    }
+  }
+
+  return engine + '-' + version
 }
 
 function getVirtualEnvironmentName() {

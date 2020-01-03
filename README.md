@@ -26,7 +26,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: eregon/use-ruby-action@master
       with:
-        ruby-version: ruby-2.6.5
+        ruby-version: ruby-2.6
     - run: ruby -v
 ```
 
@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest', 'macos-latest' ]
-        ruby: [ 'ruby-2.6.5', 'ruby-2.7.0', 'truffleruby-19.3.0', 'jruby-9.2.9.0' ]
+        ruby: [ 'ruby-2.6', 'ruby-2.7', 'truffleruby-19.3.0', 'jruby-9.2.9.0' ]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -51,10 +51,12 @@ jobs:
     - run: ruby -v
 ```
 
-If a specific version is not given, it uses the latest stable release of that implementation.
-For instance `truffleruby` is currently the same as `truffleruby-19.3.0`.
+### Supported Version Syntax
 
-If it's just a version number (e.g., `2.6.5`), then MRI is assumed (same as `ruby-2.6.5`).
+* `engine-version` like `ruby-2.6.5` and `truffleruby-19.3.0`
+* short version like `2.6`, automatically using the latest release matching that version (`2.6.5`)
+* version only like `2.6.5`, assumes MRI for the engine
+* engine only like `truffleruby`, uses the latest stable release of that implementation
 
 ### All Stable Versions
 
@@ -69,7 +71,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest', 'macos-latest' ]
-        ruby: [ '2.4.9', '2.5.7', '2.6.5', '2.7.0', 'truffleruby', 'jruby' ]
+        ruby: [ '2.4', '2.5', '2.6', '2.7', 'truffleruby', 'jruby' ]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
