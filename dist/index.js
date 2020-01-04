@@ -1431,16 +1431,19 @@ async function getRubyEngineAndVersion(rubyVersion) {
   const stableVersions = response.data
   const engineVersions = stableVersions[engine]
   if (!engineVersions) {
-    throw new Error(`Unknown engine ${engine} (${rubyVersion})`)
+    throw new Error(`Unknown engine ${engine} (input: ${rubyVersion})`)
   }
 
   if (!engineVersions.includes(version)) {
-    engineVersions.reverse() // inplace!
-    let found = engineVersions.find(v => v.startsWith(version))
+    const latestToFirstVersion = engineVersions.slice().reverse()
+    const found = latestToFirstVersion.find(v => v.startsWith(version))
     if (found) {
       version = found
     } else {
-      throw new Error(`Unknown version ${version} (${rubyVersion})`)
+      throw new Error(`Unknown version ${version} for ${engine}
+        input: ${rubyVersion}
+        available versions for ${engine}: ${engineVersions.join(', ')}
+        File an issue at https://github.com/eregon/ruby-install-builder/issues if would like support for a new version`)
     }
   }
 
