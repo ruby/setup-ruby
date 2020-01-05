@@ -6463,6 +6463,7 @@ __webpack_require__.r(__webpack_exports__);
 // Most of this logic is from
 // https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
 
+const fs = __webpack_require__(747)
 const core = __webpack_require__(470)
 const exec = __webpack_require__(986)
 const tc = __webpack_require__(533)
@@ -6487,6 +6488,10 @@ async function downloadExtractAndSetPATH(ruby) {
   const msys2 = await linkMSYS2()
   const newPath = setupPath(msys2, rubyPrefix)
   core.exportVariable('PATH', newPath)
+
+  if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
+    await exec.exec(`${rubyPrefix}\\bin\\gem install bundler --no-document`)
+  }
 
   return rubyPrefix
 }

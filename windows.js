@@ -1,6 +1,7 @@
 // Most of this logic is from
 // https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
 
+const fs = require('fs')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
 const tc = require('@actions/tool-cache')
@@ -25,6 +26,10 @@ export async function downloadExtractAndSetPATH(ruby) {
   const msys2 = await linkMSYS2()
   const newPath = setupPath(msys2, rubyPrefix)
   core.exportVariable('PATH', newPath)
+
+  if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
+    await exec.exec(`${rubyPrefix}\\bin\\gem install bundler --no-document`)
+  }
 
   return rubyPrefix
 }
