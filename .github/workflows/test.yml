@@ -21,8 +21,12 @@ jobs:
     - uses: ./
       with:
         ruby-version: ${{ matrix.ruby }}
-    - run: ruby -v
+    - run: ruby --version
     - run: ridk version
       if: matrix.os == 'windows-latest'
-    - run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(2014) }'
-    - run: gem install json --no-document
+    - name: OpenSSL test
+      run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(2014) }'
+    - name: Check Bundler is installed
+      run: bundle --version
+    - name: C extension test
+      run: gem install json --no-document
