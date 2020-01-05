@@ -48,35 +48,7 @@ jobs:
 
 ### Matrix
 
-```yaml
-name: My workflow
-on: [push]
-jobs:
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        ruby: [ 2.6, 2.7, jruby, truffleruby ]
-    runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/checkout@v2
-    - uses: eregon/use-ruby-action@master
-      with:
-        ruby-version: ${{ matrix.ruby }}
-    - run: ruby -v
-```
-
-### Supported Version Syntax
-
-* engine-version like `ruby-2.6.5` and `truffleruby-19.3.0`
-* short version like `2.6`, automatically using the latest release matching that version (`2.6.5`)
-* version only like `2.6.5`, assumes MRI for the engine
-* engine only like `truffleruby`, uses the latest stable release of that implementation
-
-### All Stable Versions
-
-With that, we can test on all stable releases of MRI, JRuby and TruffleRuby with:
+This matrix tests all stable releases of MRI, JRuby and TruffleRuby on Ubuntu and macOS.
 
 ```yaml
 name: My workflow
@@ -96,6 +68,13 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
     - run: ruby -v
 ```
+
+### Supported Version Syntax
+
+* engine-version like `ruby-2.6.5` and `truffleruby-19.3.0`
+* short version like `2.6`, automatically using the latest release matching that version (`2.6.5`)
+* version only like `2.6.5`, assumes MRI for the engine
+* engine only like `truffleruby`, uses the latest stable release of that implementation
 
 ## Limitations
 
