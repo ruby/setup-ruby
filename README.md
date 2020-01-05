@@ -2,10 +2,23 @@
 
 This action downloads a prebuilt ruby and adds it to `$PATH`.
 
-It currently supports the latest stable versions of MRI, JRuby and TruffleRuby.
+## Supported Versions
+
+This action currently supports these versions of MRI, JRuby and TruffleRuby:
+
+| Interpreter | Versions |
+| ----------- | -------- |
+| Ruby | 2.3.8, 2.4.9, 2.5.7, 2.6.5, 2.7.0 |
+| JRuby | 9.2.9.0 |
+| TruffleRuby  | 19.3.0 |
 
 See https://github.com/eregon/ruby-install-builder/blob/metadata/versions.json
-for the available Ruby versions.
+for the always up-to-date list of available Ruby versions.
+
+Note that Ruby 2.3 and the OpenSSL version it needs (1.0.2) are both end-of-life,
+which means Ruby 2.3 is unmaintained and considered insecure.
+
+## Platforms
 
 The action works for the `ubuntu-16.04`, `ubuntu-18.04` and `macos-latest` GitHub-hosted runners.  
 `windows-latest` is not yet supported.

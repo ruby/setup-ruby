@@ -6,7 +6,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-16.04, ubuntu-18.04, macos-latest ]
-        ruby: [ ruby-2.4, 2.5, ruby-2.6.5, 2.7.0, truffleruby, jruby ]
+        # Use various version syntaxes here for testing
+        ruby: [ 2.3, ruby-2.4, 2.5, ruby-2.6.5, 2.7.0, truffleruby, jruby ]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
