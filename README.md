@@ -42,7 +42,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: eregon/use-ruby-action@master
       with:
-        ruby-version: ruby-2.6
+        ruby-version: 2.6
     - run: ruby -v
 ```
 
@@ -57,7 +57,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        ruby: [ ruby-2.6, ruby-2.7, jruby-9.2.9.0, truffleruby-19.3.0 ]
+        ruby: [ 2.6, 2.7, jruby, truffleruby ]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
