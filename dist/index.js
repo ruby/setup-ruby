@@ -36,6 +36,8 @@ module.exports =
 /******/ 		// Load entry module and return exports
 /******/ 		return __webpack_require__(104);
 /******/ 	};
+/******/ 	// initialize runtime
+/******/ 	runtime(__webpack_require__);
 /******/
 /******/ 	// run startup
 /******/ 	return startup();
@@ -1383,31 +1385,41 @@ const core = __webpack_require__(470)
 const io = __webpack_require__(1)
 const tc = __webpack_require__(533)
 const axios = __webpack_require__(53)
+const windows = __webpack_require__(664)
 
 const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
 const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
 
 async function run() {
   try {
+    const platform = getVirtualEnvironmentName()
     const ruby = await getRubyEngineAndVersion(core.getInput('ruby-version'))
 
-    const rubiesDir = `${process.env.HOME}/.rubies`
-    await io.mkdirP(rubiesDir)
-
-    const platform = getVirtualEnvironmentName()
-    const tag = await getLatestReleaseTag()
-    const url = `${releasesURL}/download/${tag}/${ruby}-${platform}.tar.gz`
-    console.log(url)
-
-    const downloadPath = await tc.downloadTool(url)
-    await tc.extractTar(downloadPath, rubiesDir)
-
-    const rubyPrefix = `${rubiesDir}/${ruby}`
-    core.addPath(`${rubyPrefix}/bin`)
+    let rubyPrefix
+    if (platform === 'windows-latest') {
+      rubyPrefix = await windows.downloadExtractAndSetPATH(ruby)
+    } else {
+      rubyPrefix = await downloadAndExtract(platform, ruby)
+      core.addPath(`${rubyPrefix}/bin`)
+    }
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
   }
+}
+
+async function downloadAndExtract(platform, ruby) {
+  const rubiesDir = `${process.env.HOME}/.rubies`
+  await io.mkdirP(rubiesDir)
+
+  const tag = await getLatestReleaseTag()
+  const url = `${releasesURL}/download/${tag}/${ruby}-${platform}.tar.gz`
+  console.log(url)
+
+  const downloadPath = await tc.downloadTool(url)
+  await tc.extractTar(downloadPath, rubiesDir)
+
+  return `${rubiesDir}/${ruby}`
 }
 
 async function getLatestReleaseTag() {
@@ -6442,6 +6454,76 @@ function plural(ms, n, name) {
 
 /***/ }),
 
+/***/ 664:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "downloadExtractAndSetPATH", function() { return downloadExtractAndSetPATH; });
+// Most of this logic is from
+// https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
+
+const core = __webpack_require__(470)
+const exec = __webpack_require__(986)
+const tc = __webpack_require__(533)
+
+const releasesURL = 'https://github.com/oneclick/rubyinstaller2/releases'
+
+async function downloadExtractAndSetPATH(ruby) {
+  const version = ruby.split('-', 2)[1]
+  if (!ruby.startsWith('ruby-') || version.startsWith('2.3')) {
+    throw new Error(`Only ruby >= 2.4 is supported on Windows currently (input: ${ruby})`)
+  }
+  const tag = `RubyInstaller-${version}-1`
+  const base = `${tag.toLowerCase()}-x64`
+
+  const url = `${releasesURL}/download/${tag}/${base}.7z`
+  console.log(url)
+
+  const downloadPath = await tc.downloadTool(url)
+  await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -oC:\\`)
+  const rubyPrefix = `C:\\${base}`
+
+  const msys2 = await linkMSYS2()
+  const newPath = setupPath(msys2, rubyPrefix)
+  core.exportVariable('PATH', newPath)
+
+  return rubyPrefix
+}
+
+async function linkMSYS2() {
+  const toolCacheVersions = tc.findAllVersions('Ruby')
+  toolCacheVersions.sort()
+  const latestVersion = toolCacheVersions.slice(-1)[0]
+  const latestHostedRuby = tc.find('Ruby', latestVersion)
+
+  const hostedMSYS2 = `${latestHostedRuby}\\msys64`
+  const msys2 = 'C:\\msys64'
+  await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
+  return msys2
+}
+
+function setupPath(msys2, rubyPrefix) {
+  let path = process.env['PATH'].split(';')
+
+  // Remove conflicting dev tools from PATH
+  path = path.filter(e => !e.match(/\b(Chocolatey|CMake|mingw64|OpenSSL|Strawberry)\b/))
+
+  // Remove default Ruby in PATH
+  path = path.filter(e => !e.match(/\bRuby\b/))
+
+  // Add MSYS2 in PATH
+  path.unshift(`${msys2}\\mingw64`, `${msys2}\\usr`)
+
+  // Add the downloaded Ruby in PATH
+  path.unshift(`${rubyPrefix}\\bin`)
+
+  return path.join(';')
+}
+
+
+/***/ }),
+
 /***/ 669:
 /***/ (function(module) {
 
@@ -8762,4 +8844,31 @@ exports.exec = exec;
 
 /***/ })
 
-/******/ });
+/******/ },
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ 	"use strict";
+/******/ 
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getter */
+/******/ 	!function() {
+/******/ 		// define getter function for harmony exports
+/******/ 		var hasOwnProperty = Object.prototype.hasOwnProperty;
+/******/ 		__webpack_require__.d = function(exports, name, getter) {
+/******/ 			if(!hasOwnProperty.call(exports, name)) {
+/******/ 				Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ }
+);

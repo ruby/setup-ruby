@@ -4,7 +4,7 @@
   "description": "Download a prebuilt ruby and add it to $PATH",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint index.js",
+    "lint": "eslint *.js",
     "package": "ncc build index.js -o dist"
   },
   "repository": {

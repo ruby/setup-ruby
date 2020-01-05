@@ -4,31 +4,41 @@ const core = require('@actions/core')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
 const axios = require('axios')
+const windows = require('./windows')
 
 const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
 const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
 
 async function run() {
   try {
+    const platform = getVirtualEnvironmentName()
     const ruby = await getRubyEngineAndVersion(core.getInput('ruby-version'))
 
-    const rubiesDir = `${process.env.HOME}/.rubies`
-    await io.mkdirP(rubiesDir)
-
-    const platform = getVirtualEnvironmentName()
-    const tag = await getLatestReleaseTag()
-    const url = `${releasesURL}/download/${tag}/${ruby}-${platform}.tar.gz`
-    console.log(url)
-
-    const downloadPath = await tc.downloadTool(url)
-    await tc.extractTar(downloadPath, rubiesDir)
-
-    const rubyPrefix = `${rubiesDir}/${ruby}`
-    core.addPath(`${rubyPrefix}/bin`)
+    let rubyPrefix
+    if (platform === 'windows-latest') {
+      rubyPrefix = await windows.downloadExtractAndSetPATH(ruby)
+    } else {
+      rubyPrefix = await downloadAndExtract(platform, ruby)
+      core.addPath(`${rubyPrefix}/bin`)
+    }
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
   }
+}
+
+async function downloadAndExtract(platform, ruby) {
+  const rubiesDir = `${process.env.HOME}/.rubies`
+  await io.mkdirP(rubiesDir)
+
+  const tag = await getLatestReleaseTag()
+  const url = `${releasesURL}/download/${tag}/${ruby}-${platform}.tar.gz`
+  console.log(url)
+
+  const downloadPath = await tc.downloadTool(url)
+  await tc.extractTar(downloadPath, rubiesDir)
+
+  return `${rubiesDir}/${ruby}`
 }
 
 async function getLatestReleaseTag() {

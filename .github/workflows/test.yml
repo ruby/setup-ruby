@@ -5,9 +5,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-16.04, ubuntu-18.04, macos-latest ]
+        os: [ ubuntu-16.04, ubuntu-18.04, macos-latest, windows-latest ]
         # Use various version syntaxes here for testing
         ruby: [ 2.3, ruby-2.4, 2.5, ruby-2.6.5, 2.7.0, jruby, truffleruby ]
+        exclude:
+        - os: windows-latest
+          ruby: 2.3
+        - os: windows-latest
+          ruby: jruby
+        - os: windows-latest
+          ruby: truffleruby
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -15,4 +22,7 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
     - run: ruby -v
-    - run: ruby -ropen-uri -e 'puts open("https://rubygems.org/") { |f| f.read(2014) }'
+    - run: ridk version
+      if: matrix.os == 'windows-latest'
+    - run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(2014) }'
+    - run: gem install json --no-document
