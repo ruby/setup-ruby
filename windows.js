@@ -32,6 +32,9 @@ export async function downloadExtractAndSetPATH(ruby) {
 async function linkMSYS2() {
   const toolCacheVersions = tc.findAllVersions('Ruby')
   toolCacheVersions.sort()
+  if (toolCacheVersions.length == 0) {
+    throw new Error('Could not find MSYS2 in the toolcache')
+  }
   const latestVersion = toolCacheVersions.slice(-1)[0]
   const latestHostedRuby = tc.find('Ruby', latestVersion)
 
