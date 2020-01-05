@@ -26,7 +26,9 @@ jobs:
       if: matrix.os == 'windows-latest'
     - name: OpenSSL test
       run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(2014) }'
-    - name: Check Bundler is installed
-      run: bundle --version
     - name: C extension test
       run: gem install json --no-document
+    - name: Check that Bundler is installed
+      run: bundle --version
+    - name: Check that Bundler works
+      run: bundle install
