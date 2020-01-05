@@ -83,6 +83,12 @@ jobs:
 * version only like `2.6.5`, assumes MRI for the engine
 * engine only like `truffleruby`, uses the latest stable release of that implementation
 
+### Bundler
+
+Currently, Bundler is guaranteed to be installed for all versions.
+If the Ruby ships with Bundler (Ruby >= 2.6), that version is used.
+Otherwise (Ruby < 2.6), the latest version of Bundler is installed when that Ruby was built.
+
 ## Limitations
 
 * This action currently only works with GitHub-hosted runners, not private runners.
