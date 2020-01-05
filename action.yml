@@ -6,7 +6,7 @@ branding:
   icon: download
 inputs:
   ruby-version:
-    description: 'Engine and version to use in the format "myruby-X.Y.Z"'
+    description: 'Engine and version to use, see the syntax in the README'
     required: true
 outputs:
   ruby-prefix:
