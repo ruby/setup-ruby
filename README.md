@@ -2,7 +2,10 @@
 
 This action downloads a prebuilt ruby and adds it to `$PATH`.
 
-## Supported Versions
+It is very efficient and takes about 5 seconds to download, extract and add the given Ruby to `$PATH`.
+No extra packages need to be installed.
+
+### Supported Versions
 
 This action currently supports these versions of MRI, JRuby and TruffleRuby:
 
@@ -18,7 +21,7 @@ for the always up-to-date list of available Ruby versions.
 Note that Ruby 2.3 and the OpenSSL version it needs (1.0.2) are both end-of-life,
 which means Ruby 2.3 is unmaintained and considered insecure.
 
-## Platforms
+### Supported Platforms
 
 The action works for the `ubuntu-16.04`, `ubuntu-18.04` and `macos-latest` GitHub-hosted runners.  
 `windows-latest` is not yet supported.
@@ -93,10 +96,6 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
     - run: ruby -v
 ```
-
-## Efficiency
-
-It takes about 5 seconds to setup the given Ruby.
 
 ## Limitations
 
