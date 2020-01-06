@@ -47,6 +47,11 @@ async function getLatestReleaseTag() {
 }
 
 async function getRubyEngineAndVersion(rubyVersion) {
+  if (rubyVersion === '.ruby-version') { // Read from .ruby-version
+    rubyVersion = fs.readFileSync('.ruby-version', 'utf8').trim()
+    console.log(`Using ${rubyVersion} as input from file .ruby-version`)
+  }
+
   let engine, version
   if (rubyVersion.match(/^\d+/)) { // X.Y.Z => ruby-X.Y.Z
     engine = 'ruby'

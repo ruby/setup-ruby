@@ -53,6 +53,8 @@ jobs:
     - run: ruby -v
 ```
 
+You can leave `ruby-version` unset to use the project's `.ruby-version` file.
+
 ### Matrix
 
 This matrix tests all stable releases of MRI, JRuby and TruffleRuby on Ubuntu and macOS.
@@ -82,6 +84,7 @@ jobs:
 * short version like `2.6`, automatically using the latest release matching that version (`2.6.5`)
 * version only like `2.6.5`, assumes MRI for the engine
 * engine only like `truffleruby`, uses the latest stable release of that implementation
+* `.ruby-version` reads from the project's `.ruby-version` file
 
 ### Bundler
 
