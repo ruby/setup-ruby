@@ -90,6 +90,10 @@ Currently, Bundler is guaranteed to be installed for all versions.
 If the Ruby ships with Bundler (Ruby >= 2.6), that version is used.
 Otherwise (Ruby < 2.6), the latest version of Bundler is installed when that Ruby was built.
 
+### Caching `bundle install`
+
+See this [example](https://github.com/actions/cache/blob/master/examples.md#ruby---gem) using [actions/cache](https://github.com/actions/cache).
+
 ## Limitations
 
 * This action currently only works with GitHub-hosted runners, not private runners.
