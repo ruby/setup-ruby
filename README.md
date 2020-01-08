@@ -88,7 +88,7 @@ jobs:
 
 Currently, Bundler is guaranteed to be installed for all versions.
 If the Ruby ships with Bundler (Ruby >= 2.6), that version is used.
-Otherwise (Ruby < 2.6), the latest version of Bundler is installed when that Ruby was built.
+Otherwise (Ruby < 2.6), Bundler 1 is installed when that Ruby was built.
 
 ### Caching `bundle install`
 
