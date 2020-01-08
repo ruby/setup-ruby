@@ -28,7 +28,7 @@ export async function downloadExtractAndSetPATH(ruby) {
   core.exportVariable('PATH', newPath)
 
   if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
-    await exec.exec(`${rubyPrefix}\\bin\\gem install bundler --no-document`)
+    await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
   }
 
   return rubyPrefix
