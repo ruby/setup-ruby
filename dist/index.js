@@ -6521,7 +6521,7 @@ function setupPath(msys2, rubyPrefix) {
   path = path.filter(e => !e.match(/\bRuby\b/))
 
   // Add MSYS2 in PATH
-  path.unshift(`${msys2}\\mingw64`, `${msys2}\\usr`)
+  path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
 
   // Add the downloaded Ruby in PATH
   path.unshift(`${rubyPrefix}\\bin`)
