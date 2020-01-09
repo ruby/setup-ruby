@@ -18,6 +18,9 @@ async function run() {
     if (platform === 'windows-latest') {
       rubyPrefix = await windows.downloadExtractAndSetPATH(ruby)
     } else {
+      if (ruby.startsWith('jruby')) {
+        core.exportVariable('CLASSPATH', '')
+      }
       rubyPrefix = await downloadAndExtract(platform, ruby)
       core.addPath(`${rubyPrefix}/bin`)
     }
