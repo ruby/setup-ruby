@@ -107,7 +107,8 @@ You can cache the installed gems with these two steps:
         bundle install --jobs 4 --retry 3
 ```
 
-When using a single job, replace `${{ matrix.ruby }}` with the ruby version used or `${{ hashFiles('.ruby-version') }}`.
+When using a single job with a Ruby version, replace `${{ matrix.ruby }}` with the Ruby version.  
+When using `.ruby-version`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.ruby-version') }}`.
 
 This uses the [cache action](https://github.com/actions/cache).
 The code above is more complete version of the [Gem example](https://github.com/actions/cache/blob/master/examples.md#ruby---gem).
