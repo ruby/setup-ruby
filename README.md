@@ -111,7 +111,7 @@ When using a single job with a Ruby version, replace `${{ matrix.ruby }}` with t
 When using `.ruby-version`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.ruby-version') }}`.
 
 This uses the [cache action](https://github.com/actions/cache).
-The code above is more complete version of the [Gem example](https://github.com/actions/cache/blob/master/examples.md#ruby---gem).
+The code above is a more complete version of the [Ruby - Gem example](https://github.com/actions/cache/blob/master/examples.md#ruby---gem).
 Make sure to include `use-ruby` in the `key` to avoid conflicting with previous caches.
 
 ## Limitations
