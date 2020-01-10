@@ -92,7 +92,26 @@ Otherwise (Ruby < 2.6), Bundler 1 is installed when that Ruby was built.
 
 ### Caching `bundle install`
 
-See this [example](https://github.com/actions/cache/blob/master/examples.md#ruby---gem) using [actions/cache](https://github.com/actions/cache).
+You can cache the installed gems with these two steps:
+
+```yaml
+    - uses: actions/cache@v1
+      with:
+        path: vendor/bundle
+        key: bundle-use-ruby-${{ matrix.os }}-${{ matrix.ruby }}-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          bundle-use-ruby-${{ matrix.os }}-${{ matrix.ruby }}-
+    - name: Bundle install
+      run: |
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
+```
+
+When using a single job, replace `${{ matrix.ruby }}` with the ruby version used or `${{ hashFiles('.ruby-version') }}`.
+
+This uses the [cache action](https://github.com/actions/cache).
+The code above is more complete version of the [Gem example](https://github.com/actions/cache/blob/master/examples.md#ruby---gem).
+Make sure to include `use-ruby` in the `key` to avoid conflicting with previous caches.
 
 ## Limitations
 

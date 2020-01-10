@@ -1400,6 +1400,7 @@ async function run() {
       rubyPrefix = await windows.downloadExtractAndSetPATH(ruby)
     } else {
       if (ruby.startsWith('jruby')) {
+        // Workaround for https://github.com/actions/virtual-environments/issues/242
         core.exportVariable('CLASSPATH', '')
       }
       rubyPrefix = await downloadAndExtract(platform, ruby)
