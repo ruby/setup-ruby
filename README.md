@@ -24,6 +24,7 @@ for the always up-to-date list of available Ruby versions.
 
 Note that Ruby 2.3 and the OpenSSL version it needs (1.0.2) are both end-of-life,
 which means Ruby 2.3 is unmaintained and considered insecure.
+On Windows, Ruby 2.4 uses OpenSSL 1.0.2, which is no longer maintained.
 
 ### Supported Platforms
 
