@@ -1,5 +1,8 @@
 name: Test this action
-on: [push]
+on:
+  push:
+    paths-ignore:
+    - README.md
 jobs:
   test:
     strategy:
