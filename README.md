@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: eregon/use-ruby-action@master
+    - uses: eregon/use-ruby-action@v1
       with:
         ruby-version: 2.6
     - run: ruby -v
@@ -71,7 +71,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
-    - uses: eregon/use-ruby-action@master
+    - uses: eregon/use-ruby-action@v1
       with:
         ruby-version: ${{ matrix.ruby }}
     - run: ruby -v
