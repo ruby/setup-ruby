@@ -119,6 +119,11 @@ Make sure to include `use-ruby` in the `key` to avoid conflicting with previous 
 
 * This action currently only works with GitHub-hosted runners, not private runners.
 
+## Versioning
+
+This action follows semantic versioning with a moving `v1` branch.
+This follows the [recommendations](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) of GitHub Actions.
+
 ## Credits
 
 Most of the Windows logic is from https://github.com/MSP-Greg/actions-ruby by MSP-Greg.
