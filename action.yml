@@ -1,5 +1,5 @@
 name: 'Setup Ruby, JRuby and TruffleRuby'
-description: 'Download a prebuilt Ruby and add it to $PATH in 5 seconds'
+description: 'Download a prebuilt Ruby and add it to the PATH in 5 seconds'
 author: 'Benoit Daloze'
 branding:
   color: red

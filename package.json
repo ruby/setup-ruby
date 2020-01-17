@@ -1,7 +1,7 @@
 {
   "name": "use-ruby-action",
   "version": "0.1.0",
-  "description": "Download a prebuilt ruby and add it to $PATH",
+  "description": "Download a prebuilt Ruby and add it to the PATH in 5 seconds",
   "main": "index.js",
   "scripts": {
     "lint": "eslint *.js",

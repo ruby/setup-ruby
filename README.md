@@ -1,8 +1,8 @@
 # use-ruby
 
-This action downloads a prebuilt ruby and adds it to `$PATH`.
+This action downloads a prebuilt ruby and adds it to the `PATH`.
 
-It is very efficient and takes about 5 seconds to download, extract and add the given Ruby to `$PATH`.
+It is very efficient and takes about 5 seconds to download, extract and add the given Ruby to the `PATH`.
 No extra packages need to be installed.
 
 ### Supported Versions
