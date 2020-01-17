@@ -24,8 +24,13 @@ On Windows, Ruby 2.4 uses OpenSSL 1.0.2, which is no longer maintained.
 
 ### Supported Platforms
 
-The action works for all GitHub-hosted runners:
-`ubuntu-16.04`, `ubuntu-18.04`, `macos-latest` and `windows-latest`.
+The action works for all [GitHub-hosted runners](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners).
+
+| Operating System | Versions |
+| ----------- | -------- |
+| Ubuntu  | `ubuntu-latest` (= `ubuntu-18.04`), `ubuntu-16.04` |
+| macOS   | `macos-latest` |
+| Windows | `windows-latest` |
 
 Ruby 2.3, JRuby and TruffleRuby are not yet supported on `windows-latest`.
 
