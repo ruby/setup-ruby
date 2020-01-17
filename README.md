@@ -15,10 +15,6 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | JRuby | 9.2.9.0 |
 | TruffleRuby  | 19.3.0, 19.3.1 |
 
-The recommended way to refer to these versions is:
-`2.3`, `2.4`, `2.5`, `2.6`, `2.7`, `jruby`, `truffleruby`.  
-That way, the latest compatible release is used, which contains the most bug fixes.
-
 See https://github.com/eregon/ruby-install-builder/blob/metadata/versions.json
 for the always up-to-date list of available Ruby versions.
 
