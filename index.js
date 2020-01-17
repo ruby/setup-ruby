@@ -83,7 +83,7 @@ async function getRubyEngineAndVersion(rubyVersion) {
       throw new Error(`Unknown version ${version} for ${engine}
         input: ${rubyVersion}
         available versions for ${engine}: ${engineVersions.join(', ')}
-        File an issue at https://github.com/eregon/ruby-install-builder/issues if would like support for a new version`)
+        File an issue at https://github.com/eregon/use-ruby-action/issues if would like support for a new version`)
     }
   }
 
