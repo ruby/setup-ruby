@@ -27,6 +27,7 @@ jobs:
     - run: ruby --version
     - run: ridk version
       if: matrix.os == 'windows-latest'
+    - run: ruby -ropenssl -e 'puts OpenSSL::OPENSSL_LIBRARY_VERSION'
     - name: OpenSSL test
       run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
     - name: C extension test
