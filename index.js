@@ -6,6 +6,7 @@ const tc = require('@actions/tool-cache')
 const axios = require('axios')
 const windows = require('./windows')
 
+const builderReleaseTag = 'builds-bundler1'
 const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
 const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
 
@@ -35,19 +36,13 @@ async function downloadAndExtract(platform, ruby) {
   const rubiesDir = `${process.env.HOME}/.rubies`
   await io.mkdirP(rubiesDir)
 
-  const tag = await getLatestReleaseTag()
-  const url = `${releasesURL}/download/${tag}/${ruby}-${platform}.tar.gz`
+  const url = `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
   console.log(url)
 
   const downloadPath = await tc.downloadTool(url)
   await tc.extractTar(downloadPath, rubiesDir)
 
   return `${rubiesDir}/${ruby}`
-}
-
-async function getLatestReleaseTag() {
-  const response = await axios.get(`${metadataURL}/latest_release.tag`)
-  return response.data.trim()
 }
 
 async function getRubyEngineAndVersion(rubyVersion) {
