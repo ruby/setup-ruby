@@ -28,7 +28,7 @@ jobs:
     - run: ridk version
       if: matrix.os == 'windows-latest'
     - name: OpenSSL test
-      run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(2014) }'
+      run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
     - name: C extension test
       run: gem install json --no-document
     - name: Check that Bundler is installed
