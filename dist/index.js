@@ -1387,7 +1387,7 @@ const tc = __webpack_require__(533)
 const axios = __webpack_require__(53)
 const windows = __webpack_require__(664)
 
-const builderReleaseTag = 'builds-bundler1'
+const builderReleaseTag = 'builds-newer-openssl'
 const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
 const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
 

@@ -6,7 +6,7 @@ const tc = require('@actions/tool-cache')
 const axios = require('axios')
 const windows = require('./windows')
 
-const builderReleaseTag = 'builds-bundler1'
+const builderReleaseTag = 'builds-newer-openssl'
 const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
 const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
 
