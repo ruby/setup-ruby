@@ -1382,47 +1382,30 @@ module.exports = require("os");
 const os = __webpack_require__(87)
 const fs = __webpack_require__(747)
 const core = __webpack_require__(470)
-const io = __webpack_require__(1)
-const tc = __webpack_require__(533)
-const axios = __webpack_require__(53)
-const windows = __webpack_require__(664)
-
-const builderReleaseTag = 'builds-newer-openssl'
-const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
-const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
 
 async function run() {
   try {
     const platform = getVirtualEnvironmentName()
-    const ruby = await getRubyEngineAndVersion(core.getInput('ruby-version'))
-
-    let rubyPrefix
+    let installer
     if (platform === 'windows-latest') {
-      rubyPrefix = await windows.downloadExtractAndSetPATH(ruby)
+      installer = __webpack_require__(826)
     } else {
-      rubyPrefix = await downloadAndExtract(platform, ruby)
-      core.addPath(`${rubyPrefix}/bin`)
+      installer = __webpack_require__(442)
     }
+
+    const input = core.getInput('ruby-version')
+    const [engine, version] = parseRubyEngineAndVersion(input)
+    const engineVersions = await installer.getAvailableVersions(engine)
+    const ruby = validateRubyEngineAndVersion(engineVersions, input, engine, version)
+
+    const rubyPrefix = await installer.install(platform, ruby)
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
   }
 }
 
-async function downloadAndExtract(platform, ruby) {
-  const rubiesDir = `${process.env.HOME}/.rubies`
-  await io.mkdirP(rubiesDir)
-
-  const url = `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
-  console.log(url)
-
-  const downloadPath = await tc.downloadTool(url)
-  await tc.extractTar(downloadPath, rubiesDir)
-
-  return `${rubiesDir}/${ruby}`
-}
-
-async function getRubyEngineAndVersion(rubyVersion) {
+function parseRubyEngineAndVersion(rubyVersion) {
   if (rubyVersion === '.ruby-version') { // Read from .ruby-version
     rubyVersion = fs.readFileSync('.ruby-version', 'utf8').trim()
     console.log(`Using ${rubyVersion} as input from file .ruby-version`)
@@ -1439,11 +1422,12 @@ async function getRubyEngineAndVersion(rubyVersion) {
     [engine, version] = rubyVersion.split('-', 2)
   }
 
-  const response = await axios.get(`${metadataURL}/versions.json`)
-  const stableVersions = response.data
-  const engineVersions = stableVersions[engine]
+  return [engine, version]
+}
+
+function validateRubyEngineAndVersion(engineVersions, input, engine, version) {
   if (!engineVersions) {
-    throw new Error(`Unknown engine ${engine} (input: ${rubyVersion})`)
+    throw new Error(`Unknown engine ${engine} (input: ${input})`)
   }
 
   if (!engineVersions.includes(version)) {
@@ -1453,7 +1437,7 @@ async function getRubyEngineAndVersion(rubyVersion) {
       version = found
     } else {
       throw new Error(`Unknown version ${version} for ${engine}
-        input: ${rubyVersion}
+        input: ${input}
         available versions for ${engine}: ${engineVersions.join(', ')}
         File an issue at https://github.com/eregon/use-ruby-action/issues if would like support for a new version`)
     }
@@ -1464,11 +1448,11 @@ async function getRubyEngineAndVersion(rubyVersion) {
 
 function getVirtualEnvironmentName() {
   const platform = os.platform()
-  if (platform == 'linux') {
+  if (platform === 'linux') {
     return `ubuntu-${findUbuntuVersion()}`
-  } else if (platform == 'darwin') {
+  } else if (platform === 'darwin') {
     return 'macos-latest'
-  } else if (platform == 'win32') {
+  } else if (platform === 'win32') {
     return 'windows-latest'
   } else {
     throw new Error(`Unknown platform ${platform}`)
@@ -4858,6 +4842,50 @@ function escape(s) {
 
 /***/ }),
 
+/***/ 442:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableVersions", function() { return getAvailableVersions; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
+const core = __webpack_require__(470)
+const io = __webpack_require__(1)
+const tc = __webpack_require__(533)
+const axios = __webpack_require__(53)
+
+const builderReleaseTag = 'builds-newer-openssl'
+const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
+const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
+
+async function getAvailableVersions(engine) {
+  const response = await axios.get(`${metadataURL}/versions.json`)
+  const versions = response.data
+  return versions[engine]
+}
+
+async function install(platform, ruby) {
+  const rubyPrefix = await downloadAndExtract(platform, ruby)
+  core.addPath(`${rubyPrefix}/bin`)
+  return rubyPrefix
+}
+
+async function downloadAndExtract(platform, ruby) {
+  const rubiesDir = `${process.env.HOME}/.rubies`
+  await io.mkdirP(rubiesDir)
+
+  const url = `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
+  console.log(url)
+
+  const downloadPath = await tc.downloadTool(url)
+  await tc.extractTar(downloadPath, rubiesDir)
+
+  return `${rubiesDir}/${ruby}`
+}
+
+
+/***/ }),
+
 /***/ 470:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -5060,6 +5088,42 @@ exports.getState = getState;
 
 /***/ }),
 
+/***/ 494:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+var rng = __webpack_require__(139);
+var bytesToUuid = __webpack_require__(722);
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+
 /***/ 529:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -5188,7 +5252,7 @@ const os = __webpack_require__(87);
 const path = __webpack_require__(622);
 const httpm = __webpack_require__(874);
 const semver = __webpack_require__(280);
-const uuidV4 = __webpack_require__(826);
+const uuidV4 = __webpack_require__(494);
 const exec_1 = __webpack_require__(986);
 const assert_1 = __webpack_require__(357);
 class HTTPError extends Error {
@@ -5608,6 +5672,39 @@ function _evaluateVersions(versions, versionSpec) {
     return version;
 }
 //# sourceMappingURL=tool-cache.js.map
+
+/***/ }),
+
+/***/ 538:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "versions", function() { return versions; });
+const versions = {
+  "2.4.1": "https://github.com/oneclick/rubyinstaller2/releases/download/2.4.1-2/rubyinstaller-2.4.1-2-x64.7z",
+  "2.4.2": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.2-2/rubyinstaller-2.4.2-2-x64.7z",
+  "2.4.3": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.3-2/rubyinstaller-2.4.3-2-x64.7z",
+  "2.4.4": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.4-2/rubyinstaller-2.4.4-2-x64.7z",
+  "2.4.5": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.5-1/rubyinstaller-2.4.5-1-x64.7z",
+  "2.4.6": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.6-1/rubyinstaller-2.4.6-1-x64.7z",
+  "2.4.7": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.7-1/rubyinstaller-2.4.7-1-x64.7z",
+  "2.4.9": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.9-1/rubyinstaller-2.4.9-1-x64.7z",
+  "2.5.0": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.0-2/rubyinstaller-2.5.0-2-x64.7z",
+  "2.5.1": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.1-2/rubyinstaller-2.5.1-2-x64.7z",
+  "2.5.3": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.3-1/rubyinstaller-2.5.3-1-x64.7z",
+  "2.5.5": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.5-1/rubyinstaller-2.5.5-1-x64.7z",
+  "2.5.6": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.6-1/rubyinstaller-2.5.6-1-x64.7z",
+  "2.5.7": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.7-1/rubyinstaller-2.5.7-1-x64.7z",
+  "2.6.0": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.0-1/rubyinstaller-2.6.0-1-x64.7z",
+  "2.6.1": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.1-1/rubyinstaller-2.6.1-1-x64.7z",
+  "2.6.2": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.2-1/rubyinstaller-2.6.2-1-x64.7z",
+  "2.6.3": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.3-1/rubyinstaller-2.6.3-1-x64.7z",
+  "2.6.4": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.4-1/rubyinstaller-2.6.4-1-x64.7z",
+  "2.6.5": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.5-1/rubyinstaller-2.6.5-1-x64.7z",
+  "2.7.0": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.0-1/rubyinstaller-2.7.0-1-x64.7z"
+}
+
 
 /***/ }),
 
@@ -6449,84 +6546,6 @@ function plural(ms, n, name) {
     return Math.floor(ms / n) + ' ' + name;
   }
   return Math.ceil(ms / n) + ' ' + name + 's';
-}
-
-
-/***/ }),
-
-/***/ 664:
-/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "downloadExtractAndSetPATH", function() { return downloadExtractAndSetPATH; });
-// Most of this logic is from
-// https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
-
-const fs = __webpack_require__(747)
-const core = __webpack_require__(470)
-const exec = __webpack_require__(986)
-const tc = __webpack_require__(533)
-
-const releasesURL = 'https://github.com/oneclick/rubyinstaller2/releases'
-
-async function downloadExtractAndSetPATH(ruby) {
-  const version = ruby.split('-', 2)[1]
-  if (!ruby.startsWith('ruby-') || version.startsWith('2.3')) {
-    throw new Error(`Only ruby >= 2.4 is supported on Windows currently (input: ${ruby})`)
-  }
-  const tag = `RubyInstaller-${version}-1`
-  const base = `${tag.toLowerCase()}-x64`
-
-  const url = `${releasesURL}/download/${tag}/${base}.7z`
-  console.log(url)
-
-  const downloadPath = await tc.downloadTool(url)
-  await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -oC:\\`)
-  const rubyPrefix = `C:\\${base}`
-
-  const msys2 = await linkMSYS2()
-  const newPath = setupPath(msys2, rubyPrefix)
-  core.exportVariable('PATH', newPath)
-
-  if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
-    await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
-  }
-
-  return rubyPrefix
-}
-
-async function linkMSYS2() {
-  const toolCacheVersions = tc.findAllVersions('Ruby')
-  toolCacheVersions.sort()
-  if (toolCacheVersions.length == 0) {
-    throw new Error('Could not find MSYS2 in the toolcache')
-  }
-  const latestVersion = toolCacheVersions.slice(-1)[0]
-  const latestHostedRuby = tc.find('Ruby', latestVersion)
-
-  const hostedMSYS2 = `${latestHostedRuby}\\msys64`
-  const msys2 = 'C:\\msys64'
-  await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
-  return msys2
-}
-
-function setupPath(msys2, rubyPrefix) {
-  let path = process.env['PATH'].split(';')
-
-  // Remove conflicting dev tools from PATH
-  path = path.filter(e => !e.match(/\b(Chocolatey|CMake|mingw64|OpenSSL|Strawberry)\b/))
-
-  // Remove default Ruby in PATH
-  path = path.filter(e => !e.match(/\bRuby\b/))
-
-  // Add MSYS2 in PATH
-  path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
-
-  // Add the downloaded Ruby in PATH
-  path.unshift(`${rubyPrefix}\\bin`)
-
-  return path.join(';')
 }
 
 
@@ -7738,37 +7757,86 @@ module.exports = function mergeConfig(config1, config2) {
 /***/ }),
 
 /***/ 826:
-/***/ (function(module, __unusedexports, __webpack_require__) {
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
-var rng = __webpack_require__(139);
-var bytesToUuid = __webpack_require__(722);
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableVersions", function() { return getAvailableVersions; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
+// Most of this logic is from
+// https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
 
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
+const fs = __webpack_require__(747)
+const core = __webpack_require__(470)
+const exec = __webpack_require__(986)
+const tc = __webpack_require__(533)
+const rubyInstallerVersions = __webpack_require__(538).versions
 
-  if (typeof(options) == 'string') {
-    buf = options === 'binary' ? new Array(16) : null;
-    options = null;
+async function getAvailableVersions(engine) {
+  if (engine === 'ruby') {
+    return Object.keys(rubyInstallerVersions)
+  } else {
+    return undefined
   }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid(rnds);
 }
 
-module.exports = v4;
+async function install(platform, ruby) {
+  const version = ruby.split('-', 2)[1]
+  const url = rubyInstallerVersions[version]
+  console.log(url)
+
+  if (!url.endsWith('.7z')) {
+    throw new Error('URL should end in .7z')
+  }
+  const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
+
+  const downloadPath = await tc.downloadTool(url)
+  await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -oC:\\`)
+  const rubyPrefix = `C:\\${base}`
+
+  const msys2 = await linkMSYS2()
+  const newPath = setupPath(msys2, rubyPrefix)
+  core.exportVariable('PATH', newPath)
+
+  if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
+    await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
+  }
+
+  return rubyPrefix
+}
+
+async function linkMSYS2() {
+  const toolCacheVersions = tc.findAllVersions('Ruby')
+  toolCacheVersions.sort()
+  if (toolCacheVersions.length === 0) {
+    throw new Error('Could not find MSYS2 in the toolcache')
+  }
+  const latestVersion = toolCacheVersions.slice(-1)[0]
+  const latestHostedRuby = tc.find('Ruby', latestVersion)
+
+  const hostedMSYS2 = `${latestHostedRuby}\\msys64`
+  const msys2 = 'C:\\msys64'
+  await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
+  return msys2
+}
+
+function setupPath(msys2, rubyPrefix) {
+  let path = process.env['PATH'].split(';')
+
+  // Remove conflicting dev tools from PATH
+  path = path.filter(e => !e.match(/\b(Chocolatey|CMake|mingw64|OpenSSL|Strawberry)\b/))
+
+  // Remove default Ruby in PATH
+  path = path.filter(e => !e.match(/\bRuby\b/))
+
+  // Add MSYS2 in PATH
+  path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
+
+  // Add the downloaded Ruby in PATH
+  path.unshift(`${rubyPrefix}\\bin`)
+
+  return path.join(';')
+}
 
 
 /***/ }),

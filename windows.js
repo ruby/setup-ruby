@@ -5,19 +5,25 @@ const fs = require('fs')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
 const tc = require('@actions/tool-cache')
+const rubyInstallerVersions = require('./ruby-installer-versions').versions
 
-const releasesURL = 'https://github.com/oneclick/rubyinstaller2/releases'
-
-export async function downloadExtractAndSetPATH(ruby) {
-  const version = ruby.split('-', 2)[1]
-  if (!ruby.startsWith('ruby-') || version.startsWith('2.3')) {
-    throw new Error(`Only ruby >= 2.4 is supported on Windows currently (input: ${ruby})`)
+export async function getAvailableVersions(engine) {
+  if (engine === 'ruby') {
+    return Object.keys(rubyInstallerVersions)
+  } else {
+    return undefined
   }
-  const tag = `RubyInstaller-${version}-1`
-  const base = `${tag.toLowerCase()}-x64`
+}
 
-  const url = `${releasesURL}/download/${tag}/${base}.7z`
+export async function install(platform, ruby) {
+  const version = ruby.split('-', 2)[1]
+  const url = rubyInstallerVersions[version]
   console.log(url)
+
+  if (!url.endsWith('.7z')) {
+    throw new Error('URL should end in .7z')
+  }
+  const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
   const downloadPath = await tc.downloadTool(url)
   await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -oC:\\`)
@@ -37,7 +43,7 @@ export async function downloadExtractAndSetPATH(ruby) {
 async function linkMSYS2() {
   const toolCacheVersions = tc.findAllVersions('Ruby')
   toolCacheVersions.sort()
-  if (toolCacheVersions.length == 0) {
+  if (toolCacheVersions.length === 0) {
     throw new Error('Could not find MSYS2 in the toolcache')
   }
   const latestVersion = toolCacheVersions.slice(-1)[0]

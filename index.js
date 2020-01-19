@@ -1,47 +1,30 @@
 const os = require('os')
 const fs = require('fs')
 const core = require('@actions/core')
-const io = require('@actions/io')
-const tc = require('@actions/tool-cache')
-const axios = require('axios')
-const windows = require('./windows')
-
-const builderReleaseTag = 'builds-newer-openssl'
-const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
-const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
 
 async function run() {
   try {
     const platform = getVirtualEnvironmentName()
-    const ruby = await getRubyEngineAndVersion(core.getInput('ruby-version'))
-
-    let rubyPrefix
+    let installer
     if (platform === 'windows-latest') {
-      rubyPrefix = await windows.downloadExtractAndSetPATH(ruby)
+      installer = require('./windows')
     } else {
-      rubyPrefix = await downloadAndExtract(platform, ruby)
-      core.addPath(`${rubyPrefix}/bin`)
+      installer = require('./ruby-install-builder')
     }
+
+    const input = core.getInput('ruby-version')
+    const [engine, version] = parseRubyEngineAndVersion(input)
+    const engineVersions = await installer.getAvailableVersions(engine)
+    const ruby = validateRubyEngineAndVersion(engineVersions, input, engine, version)
+
+    const rubyPrefix = await installer.install(platform, ruby)
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
   }
 }
 
-async function downloadAndExtract(platform, ruby) {
-  const rubiesDir = `${process.env.HOME}/.rubies`
-  await io.mkdirP(rubiesDir)
-
-  const url = `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
-  console.log(url)
-
-  const downloadPath = await tc.downloadTool(url)
-  await tc.extractTar(downloadPath, rubiesDir)
-
-  return `${rubiesDir}/${ruby}`
-}
-
-async function getRubyEngineAndVersion(rubyVersion) {
+function parseRubyEngineAndVersion(rubyVersion) {
   if (rubyVersion === '.ruby-version') { // Read from .ruby-version
     rubyVersion = fs.readFileSync('.ruby-version', 'utf8').trim()
     console.log(`Using ${rubyVersion} as input from file .ruby-version`)
@@ -58,11 +41,12 @@ async function getRubyEngineAndVersion(rubyVersion) {
     [engine, version] = rubyVersion.split('-', 2)
   }
 
-  const response = await axios.get(`${metadataURL}/versions.json`)
-  const stableVersions = response.data
-  const engineVersions = stableVersions[engine]
+  return [engine, version]
+}
+
+function validateRubyEngineAndVersion(engineVersions, input, engine, version) {
   if (!engineVersions) {
-    throw new Error(`Unknown engine ${engine} (input: ${rubyVersion})`)
+    throw new Error(`Unknown engine ${engine} (input: ${input})`)
   }
 
   if (!engineVersions.includes(version)) {
@@ -72,7 +56,7 @@ async function getRubyEngineAndVersion(rubyVersion) {
       version = found
     } else {
       throw new Error(`Unknown version ${version} for ${engine}
-        input: ${rubyVersion}
+        input: ${input}
         available versions for ${engine}: ${engineVersions.join(', ')}
         File an issue at https://github.com/eregon/use-ruby-action/issues if would like support for a new version`)
     }
@@ -83,11 +67,11 @@ async function getRubyEngineAndVersion(rubyVersion) {
 
 function getVirtualEnvironmentName() {
   const platform = os.platform()
-  if (platform == 'linux') {
+  if (platform === 'linux') {
     return `ubuntu-${findUbuntuVersion()}`
-  } else if (platform == 'darwin') {
+  } else if (platform === 'darwin') {
     return 'macos-latest'
-  } else if (platform == 'win32') {
+  } else if (platform === 'win32') {
     return 'windows-latest'
   } else {
     throw new Error(`Unknown platform ${platform}`)
