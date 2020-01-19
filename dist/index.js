@@ -1393,10 +1393,9 @@ async function run() {
       installer = __webpack_require__(442)
     }
 
-    const input = core.getInput('ruby-version')
-    const [engine, version] = parseRubyEngineAndVersion(input)
+    const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
     const engineVersions = await installer.getAvailableVersions(engine)
-    const ruby = validateRubyEngineAndVersion(engineVersions, input, engine, version)
+    const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
     const rubyPrefix = await installer.install(platform, ruby)
     core.setOutput('ruby-prefix', rubyPrefix)
@@ -1425,9 +1424,9 @@ function parseRubyEngineAndVersion(rubyVersion) {
   return [engine, version]
 }
 
-function validateRubyEngineAndVersion(engineVersions, input, engine, version) {
+function validateRubyEngineAndVersion(platform, engineVersions, engine, version) {
   if (!engineVersions) {
-    throw new Error(`Unknown engine ${engine} (input: ${input})`)
+    throw new Error(`Unknown engine ${engine} on ${platform}`)
   }
 
   if (!engineVersions.includes(version)) {
@@ -1436,9 +1435,8 @@ function validateRubyEngineAndVersion(engineVersions, input, engine, version) {
     if (found) {
       version = found
     } else {
-      throw new Error(`Unknown version ${version} for ${engine}
-        input: ${input}
-        available versions for ${engine}: ${engineVersions.join(', ')}
+      throw new Error(`Unknown version ${version} for ${engine} on ${platform}
+        available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
         File an issue at https://github.com/eregon/use-ruby-action/issues if would like support for a new version`)
     }
   }
