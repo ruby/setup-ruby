@@ -18,7 +18,7 @@ versions = entries.select { |entry|
 }.sort_by { |version, entry|
   version
 }.select { |version, entry|
-  version >= "2.4"
+  version >= "2.3"
 }.map { |version, entry|
   [version, entry[:href]]
 }.to_h

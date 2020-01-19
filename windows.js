@@ -29,9 +29,13 @@ export async function install(platform, ruby) {
   await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -oC:\\`)
   const rubyPrefix = `C:\\${base}`
 
-  const msys2 = await linkMSYS2()
+  const [hostedRuby, msys2] = await linkMSYS2()
   const newPath = setupPath(msys2, rubyPrefix)
   core.exportVariable('PATH', newPath)
+
+  if (version.startsWith('2.3')) {
+    core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
+  }
 
   if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
     await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
@@ -52,7 +56,7 @@ async function linkMSYS2() {
   const hostedMSYS2 = `${latestHostedRuby}\\msys64`
   const msys2 = 'C:\\msys64'
   await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
-  return msys2
+  return [latestHostedRuby, msys2]
 }
 
 function setupPath(msys2, rubyPrefix) {

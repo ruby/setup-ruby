@@ -5682,6 +5682,9 @@ function _evaluateVersions(versions, versionSpec) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "versions", function() { return versions; });
 const versions = {
+  "2.3.0": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.3.0-x64-mingw32.7z",
+  "2.3.1": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.3.1-x64-mingw32.7z",
+  "2.3.3": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.3.3-x64-mingw32.7z",
   "2.4.1": "https://github.com/oneclick/rubyinstaller2/releases/download/2.4.1-2/rubyinstaller-2.4.1-2-x64.7z",
   "2.4.2": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.2-2/rubyinstaller-2.4.2-2-x64.7z",
   "2.4.3": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.3-2/rubyinstaller-2.4.3-2-x64.7z",
@@ -7794,9 +7797,13 @@ async function install(platform, ruby) {
   await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -oC:\\`)
   const rubyPrefix = `C:\\${base}`
 
-  const msys2 = await linkMSYS2()
+  const [hostedRuby, msys2] = await linkMSYS2()
   const newPath = setupPath(msys2, rubyPrefix)
   core.exportVariable('PATH', newPath)
+
+  if (version.startsWith('2.3')) {
+    core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
+  }
 
   if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
     await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
@@ -7817,7 +7824,7 @@ async function linkMSYS2() {
   const hostedMSYS2 = `${latestHostedRuby}\\msys64`
   const msys2 = 'C:\\msys64'
   await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
-  return msys2
+  return [latestHostedRuby, msys2]
 }
 
 function setupPath(msys2, rubyPrefix) {
