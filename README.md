@@ -125,3 +125,4 @@ This follows the [recommendations](https://github.com/actions/toolkit/blob/maste
 ## Credits
 
 Most of the Windows logic is from https://github.com/MSP-Greg/actions-ruby by MSP-Greg.
+Many thanks to MSP-Greg and Lars Kanis for the help with Ruby Installer.
