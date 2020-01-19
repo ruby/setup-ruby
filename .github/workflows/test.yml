@@ -1,6 +1,10 @@
 name: Test this action
 on:
   push:
+    branches-ignore:
+    - v1
+    tags-ignore:
+    - '*'
     paths-ignore:
     - README.md
 jobs:
