@@ -1,3 +1,5 @@
+const os = require('os')
+const path = require('path')
 const core = require('@actions/core')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
@@ -15,12 +17,12 @@ export async function getAvailableVersions(engine) {
 
 export async function install(platform, ruby) {
   const rubyPrefix = await downloadAndExtract(platform, ruby)
-  core.addPath(`${rubyPrefix}/bin`)
+  core.addPath(path.join(rubyPrefix, 'bin'))
   return rubyPrefix
 }
 
 async function downloadAndExtract(platform, ruby) {
-  const rubiesDir = `${process.env.HOME}/.rubies`
+  const rubiesDir = path.join(os.homedir(), '.rubies')
   await io.mkdirP(rubiesDir)
 
   const url = `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
@@ -29,5 +31,5 @@ async function downloadAndExtract(platform, ruby) {
   const downloadPath = await tc.downloadTool(url)
   await tc.extractTar(downloadPath, rubiesDir)
 
-  return `${rubiesDir}/${ruby}`
+  return path.join(rubiesDir, ruby)
 }

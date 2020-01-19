@@ -17,8 +17,6 @@ jobs:
         ruby: [ .ruby-version, 2.3, ruby-2.4, 2.5, ruby-2.6.5, 2.7.0, jruby, truffleruby ]
         exclude:
         - os: windows-latest
-          ruby: jruby
-        - os: windows-latest
           ruby: truffleruby
     runs-on: ${{ matrix.os }}
     steps:

@@ -5,14 +5,15 @@ const core = require('@actions/core')
 async function run() {
   try {
     const platform = getVirtualEnvironmentName()
+    const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
+
     let installer
-    if (platform === 'windows-latest') {
+    if (platform === 'windows-latest' && engine !== 'jruby') {
       installer = require('./windows')
     } else {
       installer = require('./ruby-install-builder')
     }
 
-    const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
     const engineVersions = await installer.getAvailableVersions(engine)
     const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 

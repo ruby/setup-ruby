@@ -1386,14 +1386,15 @@ const core = __webpack_require__(470)
 async function run() {
   try {
     const platform = getVirtualEnvironmentName()
+    const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
+
     let installer
-    if (platform === 'windows-latest') {
+    if (platform === 'windows-latest' && engine !== 'jruby') {
       installer = __webpack_require__(826)
     } else {
       installer = __webpack_require__(442)
     }
 
-    const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
     const engineVersions = await installer.getAvailableVersions(engine)
     const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
@@ -4847,6 +4848,8 @@ function escape(s) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableVersions", function() { return getAvailableVersions; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
+const os = __webpack_require__(87)
+const path = __webpack_require__(622)
 const core = __webpack_require__(470)
 const io = __webpack_require__(1)
 const tc = __webpack_require__(533)
@@ -4864,12 +4867,12 @@ async function getAvailableVersions(engine) {
 
 async function install(platform, ruby) {
   const rubyPrefix = await downloadAndExtract(platform, ruby)
-  core.addPath(`${rubyPrefix}/bin`)
+  core.addPath(path.join(rubyPrefix, 'bin'))
   return rubyPrefix
 }
 
 async function downloadAndExtract(platform, ruby) {
-  const rubiesDir = `${process.env.HOME}/.rubies`
+  const rubiesDir = path.join(os.homedir(), '.rubies')
   await io.mkdirP(rubiesDir)
 
   const url = `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
@@ -4878,7 +4881,7 @@ async function downloadAndExtract(platform, ruby) {
   const downloadPath = await tc.downloadTool(url)
   await tc.extractTar(downloadPath, rubiesDir)
 
-  return `${rubiesDir}/${ruby}`
+  return path.join(rubiesDir, ruby)
 }
 
 
