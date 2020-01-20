@@ -29,7 +29,6 @@ jobs:
       if: matrix.os == 'windows-latest' && !startsWith(matrix.ruby, '2.3')
     - name: OpenSSL version
       run: ruby -ropenssl -e 'puts OpenSSL::OPENSSL_LIBRARY_VERSION'
-      if: matrix.os == 'windows-latest'
     - name: OpenSSL test
       run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
     - name: C extension test
