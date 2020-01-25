@@ -5,7 +5,7 @@ const fs = require('fs')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
 const tc = require('@actions/tool-cache')
-const rubyInstallerVersions = require('./ruby-installer-versions').versions
+const rubyInstallerVersions = require('./windows-versions').versions
 
 export async function getAvailableVersions(engine) {
   if (engine === 'ruby') {

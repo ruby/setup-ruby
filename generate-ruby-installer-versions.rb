@@ -24,4 +24,4 @@ versions = entries.select { |entry|
 }.to_h
 
 js = "export const versions = #{JSON.pretty_generate(versions)}\n"
-File.write 'ruby-installer-versions.js', js
+File.write 'windows-versions.js', js
