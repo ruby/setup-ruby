@@ -4867,7 +4867,12 @@ async function getAvailableVersions(engine) {
 
 async function install(platform, ruby) {
   const rubyPrefix = await downloadAndExtract(platform, ruby)
+
   core.addPath(path.join(rubyPrefix, 'bin'))
+  if (ruby.startsWith('rubinius')) {
+    core.addPath(path.join(rubyPrefix, 'gems', 'bin'))
+  }
+
   return rubyPrefix
 }
 

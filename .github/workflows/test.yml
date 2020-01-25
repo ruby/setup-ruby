@@ -14,10 +14,16 @@ jobs:
       matrix:
         os: [ ubuntu-16.04, ubuntu-18.04, macos-latest, windows-latest ]
         # Use various version syntaxes here for testing
-        ruby: [ .ruby-version, 2.3, ruby-2.4, 2.5, ruby-2.6.5, 2.7.0, jruby, truffleruby ]
+        ruby: [ .ruby-version, 2.3, ruby-2.4, 2.5, ruby-2.6.5, 2.7.0, jruby, truffleruby, rubinius ]
         exclude:
         - os: windows-latest
           ruby: truffleruby
+        - os: ubuntu-16.04
+          ruby: rubinius
+        - os: macos-latest
+          ruby: rubinius
+        - os: windows-latest
+          ruby: rubinius
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
