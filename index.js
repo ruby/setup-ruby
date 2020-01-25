@@ -14,7 +14,7 @@ async function run() {
       installer = require('./ruby-install-builder')
     }
 
-    const engineVersions = await installer.getAvailableVersions(engine)
+    const engineVersions = installer.getAvailableVersions(platform, engine)
     const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
     const rubyPrefix = await installer.install(platform, ruby)

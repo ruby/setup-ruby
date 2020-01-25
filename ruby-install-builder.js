@@ -3,16 +3,13 @@ const path = require('path')
 const core = require('@actions/core')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
-const axios = require('axios')
+const rubyBuilderVersions = require('./ruby-install-builder-versions')
 
 const builderReleaseTag = 'builds-newer-openssl'
 const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
-const metadataURL = 'https://raw.githubusercontent.com/eregon/ruby-install-builder/metadata'
 
-export async function getAvailableVersions(engine) {
-  const response = await axios.get(`${metadataURL}/versions.json`)
-  const versions = response.data
-  return versions[engine]
+export function getAvailableVersions(platform, engine) {
+  return rubyBuilderVersions.getVersions(platform)[engine]
 }
 
 export async function install(platform, ruby) {
