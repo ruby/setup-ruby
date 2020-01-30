@@ -25,11 +25,12 @@ export async function install(platform, ruby) {
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
-  const drv = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
+  // Extract to SSD, see https://github.com/eregon/use-ruby-action/pull/14
+  const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
 
   const downloadPath = await tc.downloadTool(url)
-  await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -o${drv}:\\`)
-  const rubyPrefix = `${drv}:\\${base}`
+  await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -o${drive}:\\`)
+  const rubyPrefix = `${drive}:\\${base}`
 
   const [hostedRuby, msys2] = await linkMSYS2()
   const newPath = setupPath(msys2, rubyPrefix)
