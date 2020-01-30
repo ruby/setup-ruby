@@ -39,10 +39,9 @@ jobs:
       run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
     - name: C extension test
       run: gem install json:2.2.0 --no-document
-    - name: Bundler version
-      run: bundle --version
-    - name: Bundler test
-      run: bundle install
+    - run: bundle --version
+    - run: bundle install
+    - run: bundle exec rake --version
 
   lint:
     runs-on: ubuntu-latest
