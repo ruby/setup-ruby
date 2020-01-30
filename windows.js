@@ -25,9 +25,11 @@ export async function install(platform, ruby) {
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
+  const drv = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
+
   const downloadPath = await tc.downloadTool(url)
-  await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -oC:\\`)
-  const rubyPrefix = `C:\\${base}`
+  await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -o${drv}:\\`)
+  const rubyPrefix = `${drv}:\\${base}`
 
   const [hostedRuby, msys2] = await linkMSYS2()
   const newPath = setupPath(msys2, rubyPrefix)
