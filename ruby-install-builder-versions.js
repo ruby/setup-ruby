@@ -11,7 +11,7 @@ export function getVersions(platform) {
       "9.2.9.0"
     ],
     "truffleruby": [
-      "19.3.0", "19.3.1"
+      "head", "19.3.0", "19.3.1"
     ]
   }
 

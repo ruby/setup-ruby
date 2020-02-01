@@ -13,7 +13,7 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | ----------- | -------- |
 | Ruby | 2.3.0 - 2.3.8, 2.4.0 - 2.4.9, 2.5.0 - 2.5.7, 2.6.0 - 2.6.5, 2.7.0 |
 | JRuby | 9.2.9.0 |
-| TruffleRuby | 19.3.0, 19.3.1 |
+| TruffleRuby | 19.3.0, 19.3.1, head |
 | Rubinius | 4.13 |
 
 Note that Ruby 2.3 and the OpenSSL version it needs (1.0.2) are both end-of-life,
