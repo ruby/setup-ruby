@@ -7,6 +7,7 @@ branding:
 inputs:
   ruby-version:
     description: 'Engine and version to use, see the syntax in the README. Reads from .ruby-version if unset.'
+    required: false
     default: '.ruby-version'
 outputs:
   ruby-prefix:
