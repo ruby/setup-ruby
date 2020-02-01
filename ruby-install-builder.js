@@ -9,9 +9,6 @@ const axios = require('axios')
 const builderReleaseTag = 'builds-newer-openssl'
 const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
 
-const truffleRubyHeadReleaseURL = 'https://github.com/eregon/truffleruby-dev-builder/releases/download'
-const truffleRubyHeadMetadataURL = 'https://raw.githubusercontent.com/eregon/truffleruby-dev-builder/metadata/latest_build.tag'
-
 export function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions.getVersions(platform)[engine]
 }
@@ -41,11 +38,20 @@ async function downloadAndExtract(platform, ruby) {
 }
 
 async function getDownloadURL(platform, ruby) {
-  if (ruby === 'truffleruby-head') {
-    const response = await axios.get(truffleRubyHeadMetadataURL)
-    const tag = response.data.trim()
-    return `${truffleRubyHeadReleaseURL}/${tag}/${ruby}-${platform}.tar.gz`
+  if (ruby.endsWith('-head')) {
+    return getLatestHeadBuildURL(platform, ruby)
   } else {
     return `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
   }
+}
+
+async function getLatestHeadBuildURL(platform, ruby) {
+  const engine = ruby.split('-')[0]
+  const repository = `eregon/${engine}-dev-builder`
+  const metadataURL = `https://raw.githubusercontent.com/${repository}/metadata/latest_build.tag`
+  const releasesURL = `https://github.com/${repository}/releases/download`
+
+  const response = await axios.get(metadataURL)
+  const tag = response.data.trim()
+  return `${releasesURL}/${tag}/${ruby}-${platform}.tar.gz`
 }

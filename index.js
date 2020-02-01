@@ -51,7 +51,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
   if (!engineVersions.includes(version)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
-    const found = latestToFirstVersion.find(v => v.startsWith(version))
+    const found = latestToFirstVersion.find(v => v !== 'head' && v.startsWith(version))
     if (found) {
       version = found
     } else {

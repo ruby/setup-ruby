@@ -23,5 +23,7 @@ versions = entries.select { |entry|
   [version, entry[:href]]
 }.to_h
 
+versions['head'] = 'https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-x64.7z'
+
 js = "export const versions = #{JSON.pretty_generate(versions)}\n"
 File.write 'windows-versions.js', js

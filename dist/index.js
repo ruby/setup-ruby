@@ -1442,7 +1442,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
   if (!engineVersions.includes(version)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
-    const found = latestToFirstVersion.find(v => v.startsWith(version))
+    const found = latestToFirstVersion.find(v => v !== 'head' && v.startsWith(version))
     if (found) {
       version = found
     } else {
@@ -4875,9 +4875,6 @@ const axios = __webpack_require__(53)
 const builderReleaseTag = 'builds-newer-openssl'
 const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
 
-const truffleRubyHeadReleaseURL = 'https://github.com/eregon/truffleruby-dev-builder/releases/download'
-const truffleRubyHeadMetadataURL = 'https://raw.githubusercontent.com/eregon/truffleruby-dev-builder/metadata/latest_build.tag'
-
 function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions.getVersions(platform)[engine]
 }
@@ -4907,13 +4904,22 @@ async function downloadAndExtract(platform, ruby) {
 }
 
 async function getDownloadURL(platform, ruby) {
-  if (ruby === 'truffleruby-head') {
-    const response = await axios.get(truffleRubyHeadMetadataURL)
-    const tag = response.data.trim()
-    return `${truffleRubyHeadReleaseURL}/${tag}/${ruby}-${platform}.tar.gz`
+  if (ruby.endsWith('-head')) {
+    return getLatestHeadBuildURL(platform, ruby)
   } else {
     return `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
   }
+}
+
+async function getLatestHeadBuildURL(platform, ruby) {
+  const engine = ruby.split('-')[0]
+  const repository = `eregon/${engine}-dev-builder`
+  const metadataURL = `https://raw.githubusercontent.com/${repository}/metadata/latest_build.tag`
+  const releasesURL = `https://github.com/${repository}/releases/download`
+
+  const response = await axios.get(metadataURL)
+  const tag = response.data.trim()
+  return `${releasesURL}/${tag}/${ruby}-${platform}.tar.gz`
 }
 
 
@@ -4932,13 +4938,15 @@ function getVersions(platform) {
       "2.4.0", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6", "2.4.7", "2.4.9",
       "2.5.0", "2.5.1", "2.5.2", "2.5.3", "2.5.4", "2.5.5", "2.5.6", "2.5.7",
       "2.6.0", "2.6.1", "2.6.2", "2.6.3", "2.6.4", "2.6.5",
-      "2.7.0"
+      "2.7.0",
+      "head"
     ],
     "jruby": [
       "9.2.9.0"
     ],
     "truffleruby": [
-      "head", "19.3.0", "19.3.1"
+      "19.3.0", "19.3.1",
+      "head"
     ]
   }
 
@@ -5186,7 +5194,8 @@ const versions = {
   "2.6.3": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.3-1/rubyinstaller-2.6.3-1-x64.7z",
   "2.6.4": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.4-1/rubyinstaller-2.6.4-1-x64.7z",
   "2.6.5": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.5-1/rubyinstaller-2.6.5-1-x64.7z",
-  "2.7.0": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.0-1/rubyinstaller-2.7.0-1-x64.7z"
+  "2.7.0": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.0-1/rubyinstaller-2.7.0-1-x64.7z",
+  "head": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-x64.7z"
 }
 
 
