@@ -2163,7 +2163,7 @@ function getVersions(platform) {
 
   if (platform === 'ubuntu-18.04') {
     versions['rubinius'] = [
-      "4.13"
+      "4.14"
     ]
   }
 
@@ -5148,7 +5148,7 @@ const tc = __webpack_require__(533)
 const rubyBuilderVersions = __webpack_require__(156)
 const axios = __webpack_require__(53)
 
-const builderReleaseTag = 'builds-newer-openssl'
+const builderReleaseTag = 'builds-no-warn'
 const releasesURL = 'https://github.com/eregon/ruby-builder/releases'
 
 function getAvailableVersions(platform, engine) {

@@ -6,7 +6,7 @@ const tc = require('@actions/tool-cache')
 const rubyBuilderVersions = require('./ruby-builder-versions')
 const axios = require('axios')
 
-const builderReleaseTag = 'builds-newer-openssl'
+const builderReleaseTag = 'builds-no-warn'
 const releasesURL = 'https://github.com/eregon/ruby-builder/releases'
 
 export function getAvailableVersions(platform, engine) {
