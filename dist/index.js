@@ -1402,7 +1402,7 @@ async function run() {
     if (platform === 'windows-latest' && engine !== 'jruby') {
       installer = __webpack_require__(826)
     } else {
-      installer = __webpack_require__(442)
+      installer = __webpack_require__(489)
     }
 
     const engineVersions = installer.getAvailableVersions(platform, engine)
@@ -2132,6 +2132,43 @@ if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
   debug = function() {};
 }
 exports.debug = debug; // for test
+
+
+/***/ }),
+
+/***/ 156:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVersions", function() { return getVersions; });
+function getVersions(platform) {
+  const versions = {
+    "ruby": [
+      "2.3.0", "2.3.1", "2.3.2", "2.3.3", "2.3.4", "2.3.5", "2.3.6", "2.3.7", "2.3.8",
+      "2.4.0", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6", "2.4.7", "2.4.9",
+      "2.5.0", "2.5.1", "2.5.2", "2.5.3", "2.5.4", "2.5.5", "2.5.6", "2.5.7",
+      "2.6.0", "2.6.1", "2.6.2", "2.6.3", "2.6.4", "2.6.5",
+      "2.7.0",
+      "head"
+    ],
+    "jruby": [
+      "9.2.9.0"
+    ],
+    "truffleruby": [
+      "19.3.0", "19.3.1",
+      "head"
+    ]
+  }
+
+  if (platform === 'ubuntu-18.04') {
+    versions['rubinius'] = [
+      "4.13"
+    ]
+  }
+
+  return versions
+}
 
 
 /***/ }),
@@ -4857,111 +4894,6 @@ function escape(s) {
 
 /***/ }),
 
-/***/ 442:
-/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableVersions", function() { return getAvailableVersions; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
-const os = __webpack_require__(87)
-const path = __webpack_require__(622)
-const core = __webpack_require__(470)
-const io = __webpack_require__(1)
-const tc = __webpack_require__(533)
-const rubyBuilderVersions = __webpack_require__(451)
-const axios = __webpack_require__(53)
-
-const builderReleaseTag = 'builds-newer-openssl'
-const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
-
-function getAvailableVersions(platform, engine) {
-  return rubyBuilderVersions.getVersions(platform)[engine]
-}
-
-async function install(platform, ruby) {
-  const rubyPrefix = await downloadAndExtract(platform, ruby)
-
-  core.addPath(path.join(rubyPrefix, 'bin'))
-  if (ruby.startsWith('rubinius')) {
-    core.addPath(path.join(rubyPrefix, 'gems', 'bin'))
-  }
-
-  return rubyPrefix
-}
-
-async function downloadAndExtract(platform, ruby) {
-  const rubiesDir = path.join(os.homedir(), '.rubies')
-  await io.mkdirP(rubiesDir)
-
-  const url = await getDownloadURL(platform, ruby)
-  console.log(url)
-
-  const downloadPath = await tc.downloadTool(url)
-  await tc.extractTar(downloadPath, rubiesDir)
-
-  return path.join(rubiesDir, ruby)
-}
-
-async function getDownloadURL(platform, ruby) {
-  if (ruby.endsWith('-head')) {
-    return getLatestHeadBuildURL(platform, ruby)
-  } else {
-    return `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
-  }
-}
-
-async function getLatestHeadBuildURL(platform, ruby) {
-  const engine = ruby.split('-')[0]
-  const repository = `eregon/${engine}-dev-builder`
-  const metadataURL = `https://raw.githubusercontent.com/${repository}/metadata/latest_build.tag`
-  const releasesURL = `https://github.com/${repository}/releases/download`
-
-  const response = await axios.get(metadataURL)
-  const tag = response.data.trim()
-  return `${releasesURL}/${tag}/${ruby}-${platform}.tar.gz`
-}
-
-
-/***/ }),
-
-/***/ 451:
-/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVersions", function() { return getVersions; });
-function getVersions(platform) {
-  const versions = {
-    "ruby": [
-      "2.3.0", "2.3.1", "2.3.2", "2.3.3", "2.3.4", "2.3.5", "2.3.6", "2.3.7", "2.3.8",
-      "2.4.0", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6", "2.4.7", "2.4.9",
-      "2.5.0", "2.5.1", "2.5.2", "2.5.3", "2.5.4", "2.5.5", "2.5.6", "2.5.7",
-      "2.6.0", "2.6.1", "2.6.2", "2.6.3", "2.6.4", "2.6.5",
-      "2.7.0",
-      "head"
-    ],
-    "jruby": [
-      "9.2.9.0"
-    ],
-    "truffleruby": [
-      "19.3.0", "19.3.1",
-      "head"
-    ]
-  }
-
-  if (platform === 'ubuntu-18.04') {
-    versions['rubinius'] = [
-      "4.13"
-    ]
-  }
-
-  return versions
-}
-
-
-/***/ }),
-
 /***/ 470:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -5196,6 +5128,74 @@ const versions = {
   "2.6.5": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.5-1/rubyinstaller-2.6.5-1-x64.7z",
   "2.7.0": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.0-1/rubyinstaller-2.7.0-1-x64.7z",
   "head": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-x64.7z"
+}
+
+
+/***/ }),
+
+/***/ 489:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableVersions", function() { return getAvailableVersions; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
+const os = __webpack_require__(87)
+const path = __webpack_require__(622)
+const core = __webpack_require__(470)
+const io = __webpack_require__(1)
+const tc = __webpack_require__(533)
+const rubyBuilderVersions = __webpack_require__(156)
+const axios = __webpack_require__(53)
+
+const builderReleaseTag = 'builds-newer-openssl'
+const releasesURL = 'https://github.com/eregon/ruby-builder/releases'
+
+function getAvailableVersions(platform, engine) {
+  return rubyBuilderVersions.getVersions(platform)[engine]
+}
+
+async function install(platform, ruby) {
+  const rubyPrefix = await downloadAndExtract(platform, ruby)
+
+  core.addPath(path.join(rubyPrefix, 'bin'))
+  if (ruby.startsWith('rubinius')) {
+    core.addPath(path.join(rubyPrefix, 'gems', 'bin'))
+  }
+
+  return rubyPrefix
+}
+
+async function downloadAndExtract(platform, ruby) {
+  const rubiesDir = path.join(os.homedir(), '.rubies')
+  await io.mkdirP(rubiesDir)
+
+  const url = await getDownloadURL(platform, ruby)
+  console.log(url)
+
+  const downloadPath = await tc.downloadTool(url)
+  await tc.extractTar(downloadPath, rubiesDir)
+
+  return path.join(rubiesDir, ruby)
+}
+
+async function getDownloadURL(platform, ruby) {
+  if (ruby.endsWith('-head')) {
+    return getLatestHeadBuildURL(platform, ruby)
+  } else {
+    return `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
+  }
+}
+
+async function getLatestHeadBuildURL(platform, ruby) {
+  const engine = ruby.split('-')[0]
+  const repository = `eregon/${engine}-dev-builder`
+  const metadataURL = `https://raw.githubusercontent.com/${repository}/metadata/latest_build.tag`
+  const releasesURL = `https://github.com/${repository}/releases/download`
+
+  const response = await axios.get(metadataURL)
+  const tag = response.data.trim()
+  return `${releasesURL}/${tag}/${ruby}-${platform}.tar.gz`
 }
 
 

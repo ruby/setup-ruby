@@ -3,11 +3,11 @@ const path = require('path')
 const core = require('@actions/core')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
-const rubyBuilderVersions = require('./ruby-install-builder-versions')
+const rubyBuilderVersions = require('./ruby-builder-versions')
 const axios = require('axios')
 
 const builderReleaseTag = 'builds-newer-openssl'
-const releasesURL = 'https://github.com/eregon/ruby-install-builder/releases'
+const releasesURL = 'https://github.com/eregon/ruby-builder/releases'
 
 export function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions.getVersions(platform)[engine]

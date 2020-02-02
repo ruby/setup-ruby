@@ -11,7 +11,7 @@ async function run() {
     if (platform === 'windows-latest' && engine !== 'jruby') {
       installer = require('./windows')
     } else {
-      installer = require('./ruby-install-builder')
+      installer = require('./ruby-builder')
     }
 
     const engineVersions = installer.getAvailableVersions(platform, engine)
