@@ -5149,7 +5149,7 @@ const rubyBuilderVersions = __webpack_require__(156)
 const axios = __webpack_require__(53)
 
 const builderReleaseTag = 'builds-no-warn'
-const releasesURL = 'https://github.com/eregon/ruby-builder/releases'
+const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 
 function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions.getVersions(platform)[engine]
