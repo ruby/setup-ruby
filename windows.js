@@ -36,7 +36,7 @@ export async function install(platform, ruby) {
   const newPath = setupPath(msys2, rubyPrefix)
   core.exportVariable('PATH', newPath)
 
-  if (version.startsWith('2.3')) {
+  if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
   }
 

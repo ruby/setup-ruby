@@ -14,7 +14,7 @@ jobs:
       matrix:
         os: [ ubuntu-16.04, ubuntu-18.04, macos-latest, windows-latest ]
         # Use various version syntaxes here for testing
-        ruby: [ .ruby-version, 2.3, 2.7.0, ruby-head, jruby, truffleruby, truffleruby-head, rubinius ]
+        ruby: [ .ruby-version, 2.2, 2.3, 2.7.0, ruby-head, jruby, truffleruby, truffleruby-head, rubinius ]
         exclude:
         - os: windows-latest
           ruby: truffleruby
@@ -34,7 +34,7 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
     - run: ruby --version
     - run: ridk version
-      if: matrix.os == 'windows-latest' && !startsWith(matrix.ruby, '2.3')
+      if: matrix.os == 'windows-latest' && !startsWith(matrix.ruby, '2.3') && !startsWith(matrix.ruby, '2.2')
     - name: Subprocess test
       run: ruby test_subprocess.rb
     - name: OpenSSL version

@@ -2,6 +2,7 @@ require 'net/http'
 require 'yaml'
 require 'json'
 
+min_version = '2.2.6'
 url = 'https://raw.githubusercontent.com/oneclick/rubyinstaller.org-website/master/_data/downloads.yaml'
 entries = YAML.load(Net::HTTP.get(URI(url)), symbolize_names: true)
 
@@ -18,7 +19,7 @@ versions = entries.select { |entry|
 }.sort_by { |version, entry|
   version
 }.select { |version, entry|
-  version >= "2.3"
+  Gem::Version.new(version) >= Gem::Version.new(min_version)
 }.map { |version, entry|
   [version, entry[:href]]
 }.to_h
