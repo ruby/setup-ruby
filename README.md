@@ -1,5 +1,7 @@
 # setup-ruby
 
+Note: this action used to be at `eregon/use-ruby-action` and was moved to the `ruby` organization.
+
 This action downloads a prebuilt ruby and adds it to the `PATH`.
 
 It is very efficient and takes about 5 seconds to download, extract and add the given Ruby to the `PATH`.
