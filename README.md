@@ -1,4 +1,4 @@
-# use-ruby-action
+# setup-ruby
 
 This action downloads a prebuilt ruby and adds it to the `PATH`.
 
