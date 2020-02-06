@@ -57,7 +57,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, version)
     } else {
       throw new Error(`Unknown version ${version} for ${engine} on ${platform}
         available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
-        File an issue at https://github.com/eregon/use-ruby-action/issues if would like support for a new version`)
+        File an issue at https://github.com/ruby/setup-ruby/issues if would like support for a new version`)
     }
   }
 

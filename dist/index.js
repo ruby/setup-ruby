@@ -1448,7 +1448,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, version)
     } else {
       throw new Error(`Unknown version ${version} for ${engine} on ${platform}
         available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
-        File an issue at https://github.com/eregon/use-ruby-action/issues if would like support for a new version`)
+        File an issue at https://github.com/ruby/setup-ruby/issues if would like support for a new version`)
     }
   }
 
@@ -7885,7 +7885,7 @@ async function install(platform, ruby) {
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
-  // Extract to SSD, see https://github.com/eregon/use-ruby-action/pull/14
+  // Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
   const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
 
   const downloadPath = await tc.downloadTool(url)

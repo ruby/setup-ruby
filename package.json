@@ -1,5 +1,5 @@
 {
-  "name": "use-ruby-action",
+  "name": "setup-ruby",
   "version": "0.1.0",
   "description": "Download a prebuilt Ruby and add it to the PATH in 5 seconds",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eregon/use-ruby-action.git"
+    "url": "git+https://github.com/ruby/setup-ruby.git"
   },
   "keywords": [
     "GitHub",
@@ -19,9 +19,9 @@
   "author": "Benoit Daloze",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/eregon/use-ruby-action/issues"
+    "url": "https://github.com/ruby/setup-ruby/issues"
   },
-  "homepage": "https://github.com/eregon/use-ruby-action",
+  "homepage": "https://github.com/ruby/setup-ruby",
   "dependencies": {
     "@actions/core": "^1.1.1",
     "@actions/exec": "^1.0.1",
