@@ -5189,7 +5189,7 @@ async function getDownloadURL(platform, ruby) {
 
 async function getLatestHeadBuildURL(platform, ruby) {
   const engine = ruby.split('-')[0]
-  const repository = `eregon/${engine}-dev-builder`
+  const repository = `ruby/${engine}-dev-builder`
   const metadataURL = `https://raw.githubusercontent.com/${repository}/metadata/latest_build.tag`
   const releasesURL = `https://github.com/${repository}/releases/download`
 

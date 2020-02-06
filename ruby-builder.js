@@ -7,7 +7,7 @@ const rubyBuilderVersions = require('./ruby-builder-versions')
 const axios = require('axios')
 
 const builderReleaseTag = 'builds-no-warn'
-const releasesURL = 'https://github.com/eregon/ruby-builder/releases'
+const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 
 export function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions.getVersions(platform)[engine]
@@ -47,7 +47,7 @@ async function getDownloadURL(platform, ruby) {
 
 async function getLatestHeadBuildURL(platform, ruby) {
   const engine = ruby.split('-')[0]
-  const repository = `eregon/${engine}-dev-builder`
+  const repository = `ruby/${engine}-dev-builder`
   const metadataURL = `https://raw.githubusercontent.com/${repository}/metadata/latest_build.tag`
   const releasesURL = `https://github.com/${repository}/releases/download`
 
