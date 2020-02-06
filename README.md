@@ -7,6 +7,9 @@ This action downloads a prebuilt ruby and adds it to the `PATH`.
 It is very efficient and takes about 5 seconds to download, extract and add the given Ruby to the `PATH`.
 No extra packages need to be installed.
 
+Compared to [actions/setup-ruby](https://github.com/actions/setup-ruby),
+this actions supports many more versions and features.
+
 ### Supported Versions
 
 This action currently supports these versions of MRI, JRuby and TruffleRuby:
