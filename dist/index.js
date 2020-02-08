@@ -5160,9 +5160,13 @@ function getAvailableVersions(platform, engine) {
 async function install(platform, ruby) {
   const rubyPrefix = await downloadAndExtract(platform, ruby)
 
-  core.addPath(path.join(rubyPrefix, 'bin'))
-  if (ruby.startsWith('rubinius')) {
-    core.addPath(path.join(rubyPrefix, 'gems', 'bin'))
+  if (platform === 'windows-latest') {
+    __webpack_require__(826).setupPath(undefined, rubyPrefix)
+  } else {
+    core.addPath(path.join(rubyPrefix, 'bin'))
+    if (ruby.startsWith('rubinius')) {
+      core.addPath(path.join(rubyPrefix, 'gems', 'bin'))
+    }
   }
 
   return rubyPrefix
@@ -7860,6 +7864,7 @@ module.exports = function mergeConfig(config1, config2) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableVersions", function() { return getAvailableVersions; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupPath", function() { return setupPath; });
 // Most of this logic is from
 // https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
 
@@ -7895,8 +7900,7 @@ async function install(platform, ruby) {
   const rubyPrefix = `${drive}:\\${base}`
 
   const [hostedRuby, msys2] = await linkMSYS2()
-  const newPath = setupPath(msys2, rubyPrefix)
-  core.exportVariable('PATH', newPath)
+  setupPath(msys2, rubyPrefix)
 
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
@@ -7933,13 +7937,16 @@ function setupPath(msys2, rubyPrefix) {
   // Remove default Ruby in PATH
   path = path.filter(e => !e.match(/\bRuby\b/))
 
-  // Add MSYS2 in PATH
-  path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
+  if (msys2) {
+    // Add MSYS2 in PATH
+    path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
+  }
 
   // Add the downloaded Ruby in PATH
   path.unshift(`${rubyPrefix}\\bin`)
 
-  return path.join(';')
+  const newPath = path.join(';')
+  core.exportVariable('PATH', newPath)
 }
 
 

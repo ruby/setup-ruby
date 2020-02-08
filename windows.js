@@ -33,8 +33,7 @@ export async function install(platform, ruby) {
   const rubyPrefix = `${drive}:\\${base}`
 
   const [hostedRuby, msys2] = await linkMSYS2()
-  const newPath = setupPath(msys2, rubyPrefix)
-  core.exportVariable('PATH', newPath)
+  setupPath(msys2, rubyPrefix)
 
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
@@ -62,7 +61,7 @@ async function linkMSYS2() {
   return [latestHostedRuby, msys2]
 }
 
-function setupPath(msys2, rubyPrefix) {
+export function setupPath(msys2, rubyPrefix) {
   let path = process.env['PATH'].split(';')
 
   // Remove conflicting dev tools from PATH
@@ -71,11 +70,14 @@ function setupPath(msys2, rubyPrefix) {
   // Remove default Ruby in PATH
   path = path.filter(e => !e.match(/\bRuby\b/))
 
-  // Add MSYS2 in PATH
-  path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
+  if (msys2) {
+    // Add MSYS2 in PATH
+    path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
+  }
 
   // Add the downloaded Ruby in PATH
   path.unshift(`${rubyPrefix}\\bin`)
 
-  return path.join(';')
+  const newPath = path.join(';')
+  core.exportVariable('PATH', newPath)
 }

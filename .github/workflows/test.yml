@@ -34,7 +34,7 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
     - run: ruby --version
     - run: ridk version
-      if: matrix.os == 'windows-latest' && !startsWith(matrix.ruby, '2.3') && !startsWith(matrix.ruby, '2.2')
+      if: matrix.os == 'windows-latest' && !startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, '2.3') && !startsWith(matrix.ruby, '2.2')
     - name: Subprocess test
       run: ruby test_subprocess.rb
     - name: OpenSSL version
