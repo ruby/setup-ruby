@@ -2,6 +2,7 @@ name: Test this action
 on:
   push:
     branches-ignore:
+    - master
     - v1
     tags-ignore:
     - '*'
