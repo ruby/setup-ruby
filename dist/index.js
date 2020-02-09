@@ -7929,7 +7929,8 @@ async function linkMSYS2() {
 }
 
 function setupPath(msys2, rubyPrefix) {
-  let path = process.env['PATH'].split(';')
+  const originalPath = process.env['PATH'].split(';')
+  let path = originalPath.slice()
 
   // Remove conflicting dev tools from PATH
   path = path.filter(e => !e.match(/\b(Chocolatey|CMake|mingw64|OpenSSL|Strawberry)\b/))
@@ -7944,6 +7945,13 @@ function setupPath(msys2, rubyPrefix) {
 
   // Add the downloaded Ruby in PATH
   path.unshift(`${rubyPrefix}\\bin`)
+
+  console.log("Entries removed from PATH to avoid conflicts with MSYS2 and Ruby:")
+  for (const entry of originalPath) {
+    if (!path.includes(entry)) {
+      console.log(entry)
+    }
+  }
 
   const newPath = path.join(';')
   core.exportVariable('PATH', newPath)
