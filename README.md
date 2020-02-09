@@ -123,6 +123,17 @@ This uses the [cache action](https://github.com/actions/cache).
 The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---bundler).
 Make sure to include `use-ruby` in the `key` to avoid conflicting with previous caches.
 
+## Windows
+
+Note that running CI on Windows can be quite challenging if you are not very familiar with Windows.
+It is recommended to first get your build working on Ubuntu and macOS before trying Windows.
+
+* The default shell on Windows is not Bash but [PowerShell](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#using-a-specific-shell).
+  This can lead issues such as multi-line scripts [not working as expected](https://github.com/ruby/setup-ruby/issues/13).
+* The `PATH` contains [multiple compiler toolchains](https://github.com/ruby/setup-ruby/issues/19). Use `where` to debug which tool is used.
+* MSYS2 is prepended to the `PATH`, similar to what RubyInstaller2 does.
+* JRuby on Windows has a known bug that `bundle exec rake` [fails](https://github.com/ruby/setup-ruby/issues/18).
+
 ## Limitations
 
 * This action currently only works with GitHub-hosted runners, not private runners.
