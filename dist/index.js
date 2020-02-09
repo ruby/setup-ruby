@@ -7896,7 +7896,7 @@ async function install(platform, ruby) {
   const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
 
   const downloadPath = await tc.downloadTool(url)
-  await exec.exec(`7z x ${downloadPath} -xr!${base}\\share\\doc -o${drive}:\\`)
+  await exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true })
   const rubyPrefix = `${drive}:\\${base}`
 
   const [hostedRuby, msys2] = await linkMSYS2()
