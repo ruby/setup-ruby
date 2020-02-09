@@ -7932,9 +7932,6 @@ function setupPath(msys2, rubyPrefix) {
   const originalPath = process.env['PATH'].split(';')
   let path = originalPath.slice()
 
-  // Remove conflicting dev tools from PATH
-  path = path.filter(e => !e.match(/\b(Chocolatey|CMake|mingw64|OpenSSL|Strawberry)\b/))
-
   // Remove default Ruby in PATH
   path = path.filter(e => !e.match(/\bRuby\b/))
 
@@ -7946,7 +7943,7 @@ function setupPath(msys2, rubyPrefix) {
   // Add the downloaded Ruby in PATH
   path.unshift(`${rubyPrefix}\\bin`)
 
-  console.log("Entries removed from PATH to avoid conflicts with MSYS2 and Ruby:")
+  console.log("Entries removed from PATH to avoid conflicts with Ruby:")
   for (const entry of originalPath) {
     if (!path.includes(entry)) {
       console.log(entry)
