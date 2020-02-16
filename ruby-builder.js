@@ -4,7 +4,6 @@ const core = require('@actions/core')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
 const rubyBuilderVersions = require('./ruby-builder-versions')
-const axios = require('axios')
 
 const builderReleaseTag = 'builds-no-warn'
 const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
@@ -41,7 +40,7 @@ async function downloadAndExtract(platform, ruby) {
   return path.join(rubiesDir, ruby)
 }
 
-async function getDownloadURL(platform, ruby) {
+function getDownloadURL(platform, ruby) {
   if (ruby.endsWith('-head')) {
     return getLatestHeadBuildURL(platform, ruby)
   } else {
@@ -49,13 +48,7 @@ async function getDownloadURL(platform, ruby) {
   }
 }
 
-async function getLatestHeadBuildURL(platform, ruby) {
+function getLatestHeadBuildURL(platform, ruby) {
   const engine = ruby.split('-')[0]
-  const repository = `ruby/${engine}-dev-builder`
-  const metadataURL = `https://raw.githubusercontent.com/${repository}/metadata/latest_build.tag`
-  const releasesURL = `https://github.com/${repository}/releases/download`
-
-  const response = await axios.get(metadataURL)
-  const tag = response.data.trim()
-  return `${releasesURL}/${tag}/${ruby}-${platform}.tar.gz`
+  return `https://github.com/ruby/${engine}-dev-builder/releases/latest/download/${engine}-head-${platform}.tar.gz`
 }
