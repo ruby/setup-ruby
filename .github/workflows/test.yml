@@ -27,6 +27,7 @@ jobs:
           ruby: rubinius
         - os: windows-latest
           ruby: rubinius
+    name: ${{ matrix.os }} ${{ matrix.ruby }}
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
