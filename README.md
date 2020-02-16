@@ -91,7 +91,11 @@ jobs:
 * short version like `2.6`, automatically using the latest release matching that version (`2.6.5`)
 * version only like `2.6.5`, assumes MRI for the engine
 * engine only like `truffleruby`, uses the latest stable release of that implementation
-* `.ruby-version` (also the default value) reads from the project's `.ruby-version` file
+
+
+* `.ruby-version` reads from the project's `.ruby-version` file
+* `.tool-versions` reads from the project's `.tool-versions` file
+* If the `ruby-version` input is not specified, `.ruby-version` is tried first, followed by `.tool-versions`
 
 ### Bundler
 
@@ -117,7 +121,8 @@ You can cache the installed gems with these two steps:
 ```
 
 When using a single job with a Ruby version, replace `${{ matrix.ruby }}` with the Ruby version.  
-When using `.ruby-version`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.ruby-version') }}`.
+When using `.ruby-version`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.ruby-version') }}`.  
+When using `.tool-versions`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.tool-versions') }}`.
 
 This uses the [cache action](https://github.com/actions/cache).
 The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---bundler).

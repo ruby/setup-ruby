@@ -25,9 +25,24 @@ async function run() {
 }
 
 function parseRubyEngineAndVersion(rubyVersion) {
+  if (rubyVersion === 'default') {
+    if (fs.existsSync('.ruby-version')) {
+      rubyVersion = '.ruby-version'
+    } else if (fs.existsSync('.tool-versions')) {
+      rubyVersion = '.tool-versions'
+    } else {
+      throw new Error('input ruby-version needs to be specified if no .ruby-version or .tool-versions file exists')
+    }
+  }
+
   if (rubyVersion === '.ruby-version') { // Read from .ruby-version
     rubyVersion = fs.readFileSync('.ruby-version', 'utf8').trim()
     console.log(`Using ${rubyVersion} as input from file .ruby-version`)
+  } else if (rubyVersion === '.tool-versions') { // Read from .tool-versions
+    const toolVersions = fs.readFileSync('.tool-versions', 'utf8').trim()
+    const rubyLine = toolVersions.split(/\r?\n/).filter(e => e.match(/^ruby\s/))[0]
+    rubyVersion = rubyLine.split(/\s+/, 2)[1]
+    console.log(`Using ${rubyVersion} as input from file .tool-versions`)
   }
 
   let engine, version

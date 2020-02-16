@@ -8,7 +8,7 @@ inputs:
   ruby-version:
     description: 'Engine and version to use, see the syntax in the README. Reads from .ruby-version if unset.'
     required: false
-    default: '.ruby-version'
+    default: 'default'
 outputs:
   ruby-prefix:
     description: 'The prefix of the installed ruby'
