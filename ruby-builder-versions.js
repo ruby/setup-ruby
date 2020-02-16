@@ -10,7 +10,8 @@ export function getVersions(platform) {
       "head"
     ],
     "jruby": [
-      "9.2.9.0"
+      "9.2.9.0",
+      "head"
     ],
     "truffleruby": [
       "19.3.0", "19.3.1",
