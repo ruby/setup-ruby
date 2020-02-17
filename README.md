@@ -120,6 +120,7 @@ You can cache the installed gems with these two steps:
         bundle install --jobs 4 --retry 3
 ```
 
+When using a single OS, replace `${{ matrix.os }}` with the OS.  
 When using a single job with a Ruby version, replace `${{ matrix.ruby }}` with the Ruby version.  
 When using `.ruby-version`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.ruby-version') }}`.  
 When using `.tool-versions`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.tool-versions') }}`.
