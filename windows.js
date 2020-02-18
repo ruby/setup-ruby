@@ -33,10 +33,12 @@ export async function install(platform, ruby) {
   const rubyPrefix = `${drive}:\\${base}`
 
   const [hostedRuby, msys2] = await linkMSYS2()
-  setupPath(msys2, rubyPrefix)
+  setupPath((ruby === 'ruby-mswin' ? null : msys2), rubyPrefix)
 
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
+  } else if (version === 'mswin') {
+    setupMSWin(hostedRuby)
   }
 
   if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
@@ -44,6 +46,29 @@ export async function install(platform, ruby) {
   }
 
   return rubyPrefix
+}
+
+// all standard msvc OpenSSL builds use C:\Program Files\Common Files\SSL
+// as per openssl/openssl
+function setupMSWin(hostedRuby) {
+  // create cert dir
+  const msCertDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
+  if (!fs.existsSync(msCertDir)) {
+    fs.mkdirSync(msCertDir, { recursive: true })
+  }
+
+  // Copy cert file
+  const msCert = 'C:\\Program Files\\Common Files\\SSL\\cert.pem'
+  if (!fs.existsSync(msCert)) {
+    const ri2Cert = `${hostedRuby}\\ssl\\cert.pem`
+    if (fs.existsSync(ri2Cert)) {
+      fs.copyFileSync(ri2Cert, msCert)
+    }
+  }
+
+  // add convenience VCVARS env variable for msvc use
+  // depends on single Visual Studio version being available in Actions image
+  core.exportVariable('VCVARS', '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"')
 }
 
 async function linkMSYS2() {
@@ -57,7 +82,9 @@ async function linkMSYS2() {
 
   const hostedMSYS2 = `${latestHostedRuby}\\msys64`
   const msys2 = 'C:\\msys64'
-  await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
+  if (!fs.existsSync(msys2)) {
+    await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
+  }
   return [latestHostedRuby, msys2]
 }
 
