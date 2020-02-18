@@ -46,7 +46,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
   }
 
   let engine, version
-  if (rubyVersion.match(/^\d+/)) { // X.Y.Z => ruby-X.Y.Z
+  if (rubyVersion.match(/^(\d+|head|mingw|mswin)/)) { // X.Y.Z => ruby-X.Y.Z
     engine = 'ruby'
     version = rubyVersion
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
@@ -55,7 +55,6 @@ function parseRubyEngineAndVersion(rubyVersion) {
   } else { // engine-X.Y.Z
     [engine, version] = rubyVersion.split('-', 2)
   }
-
   return [engine, version]
 }
 

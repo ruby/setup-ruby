@@ -9,24 +9,18 @@ on:
     paths-ignore:
     - README.md
 jobs:
-  test:
+  common:
     strategy:
       fail-fast: false
       matrix:
         os: [ ubuntu-16.04, ubuntu-18.04, macos-latest, windows-latest ]
         # Use various version syntaxes here for testing
-        ruby: [ .ruby-version, .tool-versions, 2.2, 2.3, ruby-head, jruby, jruby-head, truffleruby, truffleruby-head, rubinius ]
+        ruby: [ .ruby-version, .tool-versions, 2.2, 2.3, ruby-head, jruby, jruby-head, truffleruby, truffleruby-head ]
         exclude:
         - os: windows-latest
           ruby: truffleruby
         - os: windows-latest
           ruby: truffleruby-head
-        - os: ubuntu-16.04
-          ruby: rubinius
-        - os: macos-latest
-          ruby: rubinius
-        - os: windows-latest
-          ruby: rubinius
     name: ${{ matrix.os }} ${{ matrix.ruby }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -34,9 +28,20 @@ jobs:
     - uses: ./
       with:
         ruby-version: ${{ matrix.ruby }}
-    - run: ruby --version
-    - run: ridk version
-      if: matrix.os == 'windows-latest' && !startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, '2.3') && !startsWith(matrix.ruby, '2.2')
+    - name: ruby version and gcc
+      run: |
+        ruby --version
+        ruby -e "puts 'build gcc: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown')[/[^\n]+/]"      
+    - name: ridk version (mingw)
+      if: matrix.os == 'windows-latest'
+      run: |
+        # run 'ridk version'
+        $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
+        if (($abi -ge '2.4') -and $plat.Contains('mingw')) {
+          ridk version
+        } else {
+          echo 'ridk is unavailable'
+        }
     - name: Subprocess test
       run: ruby test_subprocess.rb
     - name: OpenSSL version
@@ -45,6 +50,62 @@ jobs:
       run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
     - name: C extension test
       run: gem install json:2.2.0 --no-document
+    - run: bundle --version
+    - run: bundle install
+    - run: bundle exec rake --version
+
+  specials:
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+          - { ruby: rubinius, os: ubuntu-18.04   }
+          - { ruby: mingw   , os: windows-latest }
+          - { ruby: mswin   , os: windows-latest }
+    name: ${{ matrix.cfg.os }} ${{ matrix.cfg.ruby }}
+    runs-on: ${{ matrix.cfg.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./
+      with:
+        ruby-version: ${{ matrix.cfg.ruby }}
+    - name: ruby version and gcc
+      run: |
+        ruby --version
+        ruby -e "puts 'build gcc: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown')[/[^\n]+/]"      
+    - name: ridk version (mingw)
+      if: matrix.cfg.os == 'windows-latest'
+      run: |
+        # run 'ridk version'
+        $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
+        if (($abi -ge '2.4') -and $plat.Contains('mingw')) {
+          ridk version
+        } else {
+          echo 'ridk is unavailable'
+        }
+    - name: Subprocess test
+      run: ruby test_subprocess.rb
+    - name: OpenSSL version
+      run: ruby -ropenssl -e 'puts OpenSSL::OPENSSL_LIBRARY_VERSION'
+    - name: OpenSSL test
+      run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
+    - name: C extension test
+      if: endsWith(matrix.cfg.ruby, 'mswin') == false
+      run: gem install json:2.2.0 --no-document
+    - name: C extension test (mswin cmd)
+      if: endsWith(matrix.cfg.ruby, 'mswin')
+      shell: cmd
+      run: |
+        call %VCVARS%
+        gem install json:2.2.0 --no-document
+    - name: C extension test (mswin ps1)
+      if: endsWith(matrix.cfg.ruby, 'mswin')
+      run: |
+        cmd.exe /c "$env:VCVARS && set" | Foreach-Object {
+          $p, $v = $_.split('=')
+          Set-Item -path env:$p -value $v
+        }
+        gem install json:2.2.0 --no-document
     - run: bundle --version
     - run: bundle install
     - run: bundle exec rake --version
