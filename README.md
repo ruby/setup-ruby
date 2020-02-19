@@ -1,6 +1,7 @@
 # setup-ruby
 
 Note: this action used to be at `eregon/use-ruby-action` and was moved to the `ruby` organization.
+Please [update](https://github.com/ruby/setup-ruby/releases/tag/v1.13.0) if you are using `eregon/use-ruby-action`.
 
 This action downloads a prebuilt ruby and adds it to the `PATH`.
 
