@@ -18,8 +18,8 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | Interpreter | Versions |
 | ----------- | -------- |
 | Ruby | 2.2, 2.3.0 - 2.3.8, 2.4.0 - 2.4.9, 2.5.0 - 2.5.7, 2.6.0 - 2.6.5, 2.7.0, head |
-| JRuby | 9.2.9.0, head |
-| TruffleRuby | 19.3.0, 19.3.1, 20.0.0, head |
+| JRuby | 9.2.9.0 - 9.2.10.0, head |
+| TruffleRuby | 19.3.0 - 20.0.0, head |
 | Rubinius | 4.14 |
 
 Note that Ruby ≤ 2.3 and the OpenSSL version it needs (1.0.2) are both end-of-life,
