@@ -60,9 +60,9 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          - { ruby: rubinius, os: ubuntu-18.04   }
-          - { ruby: mingw   , os: windows-latest }
-          - { ruby: mswin   , os: windows-latest }
+        - { ruby: rubinius, os: ubuntu-18.04   }
+        - { ruby: mingw   , os: windows-latest }
+        - { ruby: mswin   , os: windows-latest }
     name: ${{ matrix.cfg.os }} ${{ matrix.cfg.ruby }}
     runs-on: ${{ matrix.cfg.os }}
     steps:
