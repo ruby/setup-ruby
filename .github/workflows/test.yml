@@ -1,5 +1,6 @@
 name: Test this action
 on:
+  pull_request:
   push:
     branches-ignore:
     - master
