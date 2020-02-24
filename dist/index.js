@@ -1044,6 +1044,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
   } else { // engine-X.Y.Z
     [engine, version] = rubyVersion.split('-', 2)
   }
+
   return [engine, version]
 }
 
