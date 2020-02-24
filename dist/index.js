@@ -4890,26 +4890,22 @@ async function install(platform, ruby) {
   return rubyPrefix
 }
 
-// all standard msvc OpenSSL builds use C:\Program Files\Common Files\SSL
-// as per openssl/openssl
 function setupMSWin(hostedRuby) {
-  // create cert dir
-  const msCertDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
-  if (!fs.existsSync(msCertDir)) {
-    fs.mkdirSync(msCertDir, { recursive: true })
+  // All standard MSVC OpenSSL builds use C:\Program Files\Common Files\SSL
+  const certsDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
+  if (!fs.existsSync(certsDir)) {
+    fs.mkdirSync(certsDir)
   }
 
-  // Copy cert file
-  const msCert = 'C:\\Program Files\\Common Files\\SSL\\cert.pem'
-  if (!fs.existsSync(msCert)) {
-    const ri2Cert = `${hostedRuby}\\ssl\\cert.pem`
-    if (fs.existsSync(ri2Cert)) {
-      fs.copyFileSync(ri2Cert, msCert)
-    }
+  // Copy cert.pem from hosted Ruby
+  const cert = 'C:\\Program Files\\Common Files\\SSL\\cert.pem'
+  if (!fs.existsSync(cert)) {
+    const hostedCert = `${hostedRuby}\\ssl\\cert.pem`
+    fs.copyFileSync(hostedCert, cert)
   }
 
-  // add convenience VCVARS env variable for msvc use
-  // depends on single Visual Studio version being available in Actions image
+  // Add a convenience VCVARS environment variable to ease setting up MSVC
+  // This assumes a single Visual Studio version being available in the windows-latest image
   core.exportVariable('VCVARS', '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"')
 }
 
