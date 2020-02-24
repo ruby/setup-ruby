@@ -62,8 +62,8 @@ function setupMSWin(hostedRuby) {
     fs.copyFileSync(hostedCert, cert)
   }
 
-  // add convenience VCVARS env variable for msvc use
-  // depends on single Visual Studio version being available in Actions image
+  // Add a convenience VCVARS environment variable to ease setting up MSVC
+  // This assumes a single Visual Studio version being available in the windows-latest image
   core.exportVariable('VCVARS', '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"')
 }
 
