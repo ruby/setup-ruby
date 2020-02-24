@@ -29,14 +29,13 @@ jobs:
     - uses: ./
       with:
         ruby-version: ${{ matrix.ruby }}
-    - name: ruby version and gcc
+    - run: ruby -v
+    - name: build compiler
       run: |
-        ruby --version
-        ruby -e "puts 'build gcc: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown')[/[^\n]+/]"      
+        ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
     - name: ridk version (mingw)
       if: matrix.os == 'windows-latest'
       run: |
-        # run 'ridk version'
         $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
         if (($abi -ge '2.4') -and $plat.Contains('mingw')) {
           ridk version
@@ -70,14 +69,13 @@ jobs:
     - uses: ./
       with:
         ruby-version: ${{ matrix.cfg.ruby }}
-    - name: ruby version and gcc
+    - run: ruby -v
+    - name: build compiler
       run: |
-        ruby --version
-        ruby -e "puts 'build gcc: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown')[/[^\n]+/]"      
+        ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
     - name: ridk version (mingw)
       if: matrix.cfg.os == 'windows-latest'
       run: |
-        # run 'ridk version'
         $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
         if (($abi -ge '2.4') -and $plat.Contains('mingw')) {
           ridk version
