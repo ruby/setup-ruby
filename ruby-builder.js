@@ -1,6 +1,7 @@
 const os = require('os')
 const path = require('path')
 const core = require('@actions/core')
+const exec = require('@actions/exec')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
 const rubyBuilderVersions = require('./ruby-builder-versions')
@@ -35,7 +36,12 @@ async function downloadAndExtract(platform, ruby) {
   console.log(url)
 
   const downloadPath = await tc.downloadTool(url)
-  await tc.extractTar(downloadPath, rubiesDir)
+  if (platform.startsWith('windows')) {
+    let args = [ '-xz', '-C', rubiesDir, '-f',  downloadPath ]
+    await exec.exec('C:\\Windows\\system32\\tar.exe', args)
+  } else {
+    await tc.extractTar(downloadPath, rubiesDir)
+  }
 
   return path.join(rubiesDir, ruby)
 }
