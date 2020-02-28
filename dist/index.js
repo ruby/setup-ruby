@@ -3389,6 +3389,7 @@ __webpack_require__.r(__webpack_exports__);
 const os = __webpack_require__(87)
 const path = __webpack_require__(622)
 const core = __webpack_require__(470)
+const exec = __webpack_require__(986)
 const io = __webpack_require__(1)
 const tc = __webpack_require__(533)
 const rubyBuilderVersions = __webpack_require__(156)
@@ -3423,7 +3424,12 @@ async function downloadAndExtract(platform, ruby) {
   console.log(url)
 
   const downloadPath = await tc.downloadTool(url)
-  await tc.extractTar(downloadPath, rubiesDir)
+  if (platform.startsWith('windows')) {
+    let args = [ '-xz', '-C', rubiesDir, '-f',  downloadPath ]
+    await exec.exec('C:\\Windows\\system32\\tar.exe', args)
+  } else {
+    await tc.extractTar(downloadPath, rubiesDir)
+  }
 
   return path.join(rubiesDir, ruby)
 }
