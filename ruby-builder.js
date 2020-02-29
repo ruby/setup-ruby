@@ -36,12 +36,8 @@ async function downloadAndExtract(platform, ruby) {
   console.log(url)
 
   const downloadPath = await tc.downloadTool(url)
-  if (platform.startsWith('windows')) {
-    let args = [ '-xz', '-C', rubiesDir, '-f',  downloadPath ]
-    await exec.exec('C:\\Windows\\system32\\tar.exe', args)
-  } else {
-    await tc.extractTar(downloadPath, rubiesDir)
-  }
+  const tar = platform.startsWith('windows') ? 'C:\\Windows\\system32\\tar.exe' : 'tar'
+  await exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ])
 
   return path.join(rubiesDir, ruby)
 }
