@@ -84,22 +84,23 @@ async function linkMSYS2() {
   return [latestHostedRuby, msys2]
 }
 
+// Current windows uses 'Path' for ENV['Path'], use proper case
 export function setupPath(msys2, rubyPrefix) {
-  const originalPath = process.env['PATH'].split(';')
+  const originalPath = process.env['Path'].split(';')
   let path = originalPath.slice()
 
-  // Remove default Ruby in PATH
+  // Remove default Ruby in Path
   path = path.filter(e => !e.match(/\bRuby\b/))
 
   if (msys2) {
-    // Add MSYS2 in PATH
+    // Add MSYS2 in Path
     path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
   }
 
-  // Add the downloaded Ruby in PATH
+  // Add the downloaded Ruby in Path
   path.unshift(`${rubyPrefix}\\bin`)
 
-  console.log("Entries removed from PATH to avoid conflicts with Ruby:")
+  console.log("Entries removed from Path to avoid conflicts with Ruby:")
   for (const entry of originalPath) {
     if (!path.includes(entry)) {
       console.log(entry)
@@ -107,5 +108,5 @@ export function setupPath(msys2, rubyPrefix) {
   }
 
   const newPath = path.join(';')
-  core.exportVariable('PATH', newPath)
+  core.exportVariable('Path', newPath)
 }
