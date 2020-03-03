@@ -2,7 +2,7 @@ const os = require('os')
 const fs = require('fs')
 const core = require('@actions/core')
 
-async function run() {
+export async function run() {
   try {
     const platform = getVirtualEnvironmentName()
     const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
@@ -19,6 +19,7 @@ async function run() {
 
     const rubyPrefix = await installer.install(platform, ruby)
     core.setOutput('ruby-prefix', rubyPrefix)
+    return rubyPrefix
   } catch (error) {
     core.setFailed(error.message)
   }
@@ -102,4 +103,4 @@ function findUbuntuVersion() {
   }
 }
 
-run()
+if (__filename.endsWith('index.js')) { run() }
