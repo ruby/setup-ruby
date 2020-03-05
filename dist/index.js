@@ -1391,7 +1391,7 @@ function getVersions(platform) {
       "head"
     ],
     "jruby": [
-      "9.2.9.0", "9.2.10.0",
+      "9.2.9.0", "9.2.10.0", "9.2.11.0",
       "head"
     ],
     "truffleruby": [
