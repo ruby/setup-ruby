@@ -2,6 +2,7 @@
 // https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
 
 const fs = require('fs')
+const cp = require('child_process')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
 const tc = require('@actions/tool-cache')
@@ -32,23 +33,44 @@ export async function install(platform, ruby) {
   await exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true })
   const rubyPrefix = `${drive}:\\${base}`
 
-  const [hostedRuby, msys2] = await linkMSYS2()
-  setupPath((ruby === 'ruby-mswin' ? null : msys2), rubyPrefix)
+  // we use certs and embedded MSYS2 from hostedRuby
+  const hostedRuby = latestHostedRuby()
 
-  if (version.startsWith('2.2') || version.startsWith('2.3')) {
-    core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
-  } else if (version === 'mswin') {
-    setupMSWin(hostedRuby)
-  }
+  let toolsPath = (version === 'mswin') ?
+    await setupMSWin(hostedRuby) : await setupMingw(hostedRuby, version)
 
   if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
     await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
   }
 
-  return rubyPrefix
+  return [rubyPrefix, toolsPath]
 }
 
-function setupMSWin(hostedRuby) {
+function latestHostedRuby() {
+  const toolCacheVersions = tc.findAllVersions('Ruby')
+  toolCacheVersions.sort()
+  if (toolCacheVersions.length === 0) {
+    throw new Error('Could not find MSYS2 in the toolcache')
+  }
+  const latestVersion = toolCacheVersions.slice(-1)[0]
+  return tc.find('Ruby', latestVersion)
+}
+
+async function setupMingw(hostedRuby, version) {
+  if (version.startsWith('2.2') || version.startsWith('2.3')) {
+    core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
+  }
+
+  // Link to embedded MSYS2 in hostedRuby
+  const msys2 = 'C:\\msys64'
+  if (!fs.existsSync(msys2)) {
+    const hostedMSYS2 = `${hostedRuby}\\msys64`
+    await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
+  }
+  return `${msys2}\\mingw64\\bin;${msys2}\\usr\\bin`
+}
+
+async function setupMSWin(hostedRuby) {
   // All standard MSVC OpenSSL builds use C:\Program Files\Common Files\SSL
   const certsDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
   if (!fs.existsSync(certsDir)) {
@@ -61,51 +83,41 @@ function setupMSWin(hostedRuby) {
     const hostedCert = `${hostedRuby}\\ssl\\cert.pem`
     fs.copyFileSync(hostedCert, cert)
   }
-
-  // Add a convenience VCVARS environment variable to ease setting up MSVC
-  // This assumes a single Visual Studio version being available in the windows-latest image
-  core.exportVariable('VCVARS', '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"')
+  return addVCVARSEnv()
 }
 
-async function linkMSYS2() {
-  const toolCacheVersions = tc.findAllVersions('Ruby')
-  toolCacheVersions.sort()
-  if (toolCacheVersions.length === 0) {
-    throw new Error('Could not find MSYS2 in the toolcache')
-  }
-  const latestVersion = toolCacheVersions.slice(-1)[0]
-  const latestHostedRuby = tc.find('Ruby', latestVersion)
+/* Sets msvc environment for use in Actions
+ *   allows steps to run without running vcvars*.bat, also allows using PS scripts
+ *   adds a convenience VCVARS environment variable
+ *   this assumes a single Visual Studio version being available in the windows-latest image
+ */
+export function addVCVARSEnv() {
+  const vcVars = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
+  core.exportVariable('VCVARS', vcVars)
 
-  const hostedMSYS2 = `${latestHostedRuby}\\msys64`
-  const msys2 = 'C:\\msys64'
-  if (!fs.existsSync(msys2)) {
-    await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
-  }
-  return [latestHostedRuby, msys2]
-}
+  let newEnv = new Map()
 
-export function setupPath(msys2, rubyPrefix) {
-  const originalPath = process.env['PATH'].split(';')
-  let path = originalPath.slice()
+  let cmd = `cmd.exe /c "${vcVars} && set"`
 
-  // Remove default Ruby in PATH
-  path = path.filter(e => !e.match(/\bRuby\b/))
+  let newSet = cp.execSync(cmd).toString().trim().split(/\r?\n/)
 
-  if (msys2) {
-    // Add MSYS2 in PATH
-    path.unshift(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
-  }
+  newSet = newSet.filter(line => line.match(/\S=\S/))
 
-  // Add the downloaded Ruby in PATH
-  path.unshift(`${rubyPrefix}\\bin`)
+  newSet.forEach(s => {
+    let [k,v] = s.split('=', 2)
+    newEnv.set(k,v)
+  })
 
-  console.log("Entries removed from PATH to avoid conflicts with Ruby:")
-  for (const entry of originalPath) {
-    if (!path.includes(entry)) {
-      console.log(entry)
+  let pathAdd
+
+  newEnv.forEach( (v, k, ) => {
+    if (process.env[k] !== v) {
+      if (k === 'Path') {
+        pathAdd = v.replace(process.env['Path'], '')
+      } else {
+        core.exportVariable(k, v)
+      }
     }
-  }
-
-  const newPath = path.join(';')
-  core.exportVariable('PATH', newPath)
+  })
+  return pathAdd
 }

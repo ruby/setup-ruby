@@ -1,5 +1,6 @@
 const os = require('os')
 const fs = require('fs')
+const path = require('path')
 const core = require('@actions/core')
 
 async function run() {
@@ -17,8 +18,12 @@ async function run() {
     const engineVersions = installer.getAvailableVersions(platform, engine)
     const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
-    const rubyPrefix = await installer.install(platform, ruby)
-    core.setOutput('ruby-prefix', rubyPrefix)
+    // toolsPath is Windows build tools path additions
+    const [rubyPrefix, toolsPath] = await installer.install(platform, ruby)
+
+    await setupPath(rubyPrefix, ruby, toolsPath)
+
+    core.setOutput('ruby-prefix', rubyPrefix, toolsPath)
   } catch (error) {
     core.setFailed(error.message)
   }
@@ -100,6 +105,39 @@ function findUbuntuVersion() {
   } else {
     throw new Error('Could not find Ubuntu version')
   }
+}
+
+function setupPath(rubyPrefix, ruby, toolsPath) {
+  // not used, saved for future
+  // const rubyPath = path.join(rubyPrefix, 'bin', 'ruby')
+  // const gemUserDir = cp.execSync(`${rubyPath} -e "puts Gem.user_dir"`).toString().trim()
+
+  const originalPath = process.env['PATH'].split(path.delimiter)
+
+  let cleanPath = originalPath.filter(e => !/\bruby\b/i.test(e))
+
+  if (cleanPath.length !== originalPath.length) {
+    console.log("Entries removed from PATH to avoid conflicts with Ruby:")
+    for (const entry of originalPath) {
+      if (!cleanPath.includes(entry)) {
+        console.log(`  ${entry}`)
+      }
+    }
+  }
+
+  let newPath = [path.join(rubyPrefix, 'bin')]
+
+  if (ruby.startsWith('rubinius')) {
+    newPath.push(path.join(rubyPrefix, 'gems', 'bin'))
+  }
+
+  if (toolsPath) { newPath.push(toolsPath) }
+
+  if (ruby.startsWith('rubinius')) {
+    newPath.push(path.join(rubyPrefix, 'gems', 'bin'))
+  }
+
+  core.exportVariable('PATH', [...newPath, ...cleanPath].join(path.delimiter))
 }
 
 run()

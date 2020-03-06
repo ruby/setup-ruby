@@ -1,6 +1,5 @@
 const os = require('os')
 const path = require('path')
-const core = require('@actions/core')
 const exec = require('@actions/exec')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
@@ -15,17 +14,7 @@ export function getAvailableVersions(platform, engine) {
 
 export async function install(platform, ruby) {
   const rubyPrefix = await downloadAndExtract(platform, ruby)
-
-  if (platform === 'windows-latest') {
-    require('./windows').setupPath(undefined, rubyPrefix)
-  } else {
-    core.addPath(path.join(rubyPrefix, 'bin'))
-    if (ruby.startsWith('rubinius')) {
-      core.addPath(path.join(rubyPrefix, 'gems', 'bin'))
-    }
-  }
-
-  return rubyPrefix
+  return [rubyPrefix, null]
 }
 
 async function downloadAndExtract(platform, ruby) {
