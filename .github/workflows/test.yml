@@ -34,7 +34,7 @@ jobs:
       run: |
         ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
     - name: ridk version (mingw)
-      if: matrix.os == 'windows-latest'
+      if: startsWith(matrix.os, 'windows')
       run: |
         $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
         if (($abi -ge '2.4') -and $plat.Contains('mingw')) {
@@ -53,6 +53,23 @@ jobs:
     - run: bundle --version
     - run: bundle install
     - run: bundle exec rake --version
+    - name: which ruby, rake
+      if: startsWith(matrix.os, 'windows') == false
+      run: |
+        # which -a ruby, rake
+        which -a ruby rake
+    - name: where ruby, rake
+      if: startsWith(matrix.os, 'windows')
+      run: |
+        # where ruby, rake
+        $ErrorActionPreference = 'Continue'
+        $where = 'ruby', 'rake'
+        foreach ($e in $where) {
+          $rslt = where.exe $e 2>&1 | Out-String
+          if ($rslt.contains($e)) { echo $rslt.Trim() }
+          else { echo "Can't find $e" }
+          echo ''
+        }
 
   specials:
     strategy:
@@ -74,7 +91,7 @@ jobs:
       run: |
         ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
     - name: ridk version (mingw)
-      if: matrix.cfg.os == 'windows-latest'
+      if: startsWith(matrix.cfg.os, 'windows')
       run: |
         $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
         if (($abi -ge '2.4') -and $plat.Contains('mingw')) {
@@ -89,25 +106,22 @@ jobs:
     - name: OpenSSL test
       run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
     - name: C extension test
-      if: endsWith(matrix.cfg.ruby, 'mswin') == false
       run: gem install json:2.2.0 --no-document
-    - name: C extension test (mswin cmd)
-      if: endsWith(matrix.cfg.ruby, 'mswin')
-      shell: cmd
-      run: |
-        call %VCVARS%
-        gem install json:2.2.0 --no-document
-    - name: C extension test (mswin ps1)
-      if: endsWith(matrix.cfg.ruby, 'mswin')
-      run: |
-        cmd.exe /c "$env:VCVARS && set" | Foreach-Object {
-          $p, $v = $_.split('=')
-          Set-Item -path env:$p -value $v
-        }
-        gem install json:2.2.0 --no-document
     - run: bundle --version
     - run: bundle install
     - run: bundle exec rake --version
+    - name: where ruby, rake
+      if: startsWith(matrix.cfg.os, 'windows')
+      run: |
+        # where
+        $ErrorActionPreference = 'Continue'
+        $where = 'ruby', 'rake'
+        foreach ($e in $where) {
+          $rslt = where.exe $e 2>&1 | Out-String
+          if ($rslt.contains($e)) { echo $rslt.Trim() }
+          else { echo "Can't find $e" }
+          echo ''
+        }
 
   lint:
     runs-on: ubuntu-latest
