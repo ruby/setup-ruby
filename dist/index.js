@@ -1071,6 +1071,22 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, version)
   return engine + '-' + version
 }
 
+function setupPath(ruby, newPathEntries) {
+    const originalPath = process.env['PATH'].split(path.delimiter)
+    let cleanPath = originalPath.filter(e => !/\bruby\b/i.test(e))
+
+    if (cleanPath.length !== originalPath.length) {
+        console.log("Entries removed from PATH to avoid conflicts with Ruby:")
+        for (const entry of originalPath) {
+            if (!cleanPath.includes(entry)) {
+                console.log(`  ${entry}`)
+            }
+        }
+    }
+
+    core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
+}
+
 function getVirtualEnvironmentName() {
   const platform = os.platform()
   if (platform === 'linux') {
@@ -1092,22 +1108,6 @@ function findUbuntuVersion() {
   } else {
     throw new Error('Could not find Ubuntu version')
   }
-}
-
-function setupPath(ruby, newPathEntries) {
-  const originalPath = process.env['PATH'].split(path.delimiter)
-  let cleanPath = originalPath.filter(e => !/\bruby\b/i.test(e))
-
-  if (cleanPath.length !== originalPath.length) {
-    console.log("Entries removed from PATH to avoid conflicts with Ruby:")
-    for (const entry of originalPath) {
-      if (!cleanPath.includes(entry)) {
-        console.log(`  ${entry}`)
-      }
-    }
-  }
-
-  core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
 }
 
 run()
