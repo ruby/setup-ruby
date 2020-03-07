@@ -14,7 +14,13 @@ export function getAvailableVersions(platform, engine) {
 
 export async function install(platform, ruby) {
   const rubyPrefix = await downloadAndExtract(platform, ruby)
-  return [rubyPrefix, null]
+  let newPathEntries;
+  if (ruby.startsWith('rubinius')) {
+    newPathEntries = [path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')]
+  } else {
+    newPathEntries = [path.join(rubyPrefix, 'bin')]
+  }
+  return [rubyPrefix, newPathEntries]
 }
 
 async function downloadAndExtract(platform, ruby) {

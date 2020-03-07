@@ -18,12 +18,10 @@ async function run() {
     const engineVersions = installer.getAvailableVersions(platform, engine)
     const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
-    // toolsPath is Windows build tools path additions
-    const [rubyPrefix, toolsPath] = await installer.install(platform, ruby)
+    const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
 
-    await setupPath(rubyPrefix, ruby, toolsPath)
-
-    core.setOutput('ruby-prefix', rubyPrefix, toolsPath)
+    setupPath(ruby, newPathEntries)
+    core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
   }
@@ -107,9 +105,8 @@ function findUbuntuVersion() {
   }
 }
 
-function setupPath(rubyPrefix, ruby, toolsPath) {
+function setupPath(ruby, newPathEntries) {
   const originalPath = process.env['PATH'].split(path.delimiter)
-
   let cleanPath = originalPath.filter(e => !/\bruby\b/i.test(e))
 
   if (cleanPath.length !== originalPath.length) {
@@ -121,15 +118,7 @@ function setupPath(rubyPrefix, ruby, toolsPath) {
     }
   }
 
-  let newPath = [path.join(rubyPrefix, 'bin')]
-
-  if (ruby.startsWith('rubinius')) {
-    newPath.push(path.join(rubyPrefix, 'gems', 'bin'))
-  }
-
-  if (toolsPath) { newPath.push(toolsPath) }
-
-  core.exportVariable('PATH', [...newPath, ...cleanPath].join(path.delimiter))
+  core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
 }
 
 run()

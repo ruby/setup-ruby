@@ -1007,12 +1007,10 @@ async function run() {
     const engineVersions = installer.getAvailableVersions(platform, engine)
     const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
-    // toolsPath is Windows build tools path additions
-    const [rubyPrefix, toolsPath] = await installer.install(platform, ruby)
+    const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
 
-    await setupPath(rubyPrefix, ruby, toolsPath)
-
-    core.setOutput('ruby-prefix', rubyPrefix, toolsPath)
+    setupPath(ruby, newPathEntries)
+    core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
   }
@@ -1096,9 +1094,8 @@ function findUbuntuVersion() {
   }
 }
 
-function setupPath(rubyPrefix, ruby, toolsPath) {
+function setupPath(ruby, newPathEntries) {
   const originalPath = process.env['PATH'].split(path.delimiter)
-
   let cleanPath = originalPath.filter(e => !/\bruby\b/i.test(e))
 
   if (cleanPath.length !== originalPath.length) {
@@ -1110,15 +1107,7 @@ function setupPath(rubyPrefix, ruby, toolsPath) {
     }
   }
 
-  let newPath = [path.join(rubyPrefix, 'bin')]
-
-  if (ruby.startsWith('rubinius')) {
-    newPath.push(path.join(rubyPrefix, 'gems', 'bin'))
-  }
-
-  if (toolsPath) { newPath.push(toolsPath) }
-
-  core.exportVariable('PATH', [...newPath, ...cleanPath].join(path.delimiter))
+  core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
 }
 
 run()
@@ -3432,7 +3421,13 @@ function getAvailableVersions(platform, engine) {
 
 async function install(platform, ruby) {
   const rubyPrefix = await downloadAndExtract(platform, ruby)
-  return [rubyPrefix, null]
+  let newPathEntries;
+  if (ruby.startsWith('rubinius')) {
+    newPathEntries = [path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')]
+  } else {
+    newPathEntries = [path.join(rubyPrefix, 'bin')]
+  }
+  return [rubyPrefix, newPathEntries]
 }
 
 async function downloadAndExtract(platform, ruby) {
@@ -4900,14 +4895,16 @@ async function install(platform, ruby) {
   // we use certs and embedded MSYS2 from hostedRuby
   const hostedRuby = latestHostedRuby()
 
-  let toolsPath = (version === 'mswin') ?
+  let toolsPaths = (version === 'mswin') ?
     await setupMSWin(hostedRuby) : await setupMingw(hostedRuby, version)
+  const newPathEntries = [`${rubyPrefix}\\bin`, ...toolsPaths]
 
+  // Install Bundler if needed
   if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
     await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
   }
 
-  return [rubyPrefix, toolsPath]
+  return [rubyPrefix, newPathEntries]
 }
 
 function latestHostedRuby() {
@@ -4931,7 +4928,8 @@ async function setupMingw(hostedRuby, version) {
     const hostedMSYS2 = `${hostedRuby}\\msys64`
     await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
   }
-  return `${msys2}\\mingw64\\bin;${msys2}\\usr\\bin`
+
+  return [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
 }
 
 async function setupMSWin(hostedRuby) {
@@ -4947,43 +4945,38 @@ async function setupMSWin(hostedRuby) {
     const hostedCert = `${hostedRuby}\\ssl\\cert.pem`
     fs.copyFileSync(hostedCert, cert)
   }
+
   return addVCVARSEnv()
 }
 
 /* Sets msvc environment for use in Actions
  *   allows steps to run without running vcvars*.bat, also allows using PS scripts
  *   adds a convenience VCVARS environment variable
- *   this assumes a single Visual Studio version being available in the windows-latest image
- */
+ *   this assumes a single Visual Studio version being available in the windows-latest image */
 function addVCVARSEnv() {
   const vcVars = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
   core.exportVariable('VCVARS', vcVars)
 
   let newEnv = new Map()
-
   let cmd = `cmd.exe /c "${vcVars} && set"`
-
   let newSet = cp.execSync(cmd).toString().trim().split(/\r?\n/)
-
   newSet = newSet.filter(line => line.match(/\S=\S/))
-
   newSet.forEach(s => {
     let [k,v] = s.split('=', 2)
     newEnv.set(k,v)
   })
 
-  let pathAdd
-
-  newEnv.forEach( (v, k, ) => {
+  let newPathEntries = null
+  for (let [k, v] of newEnv) {
     if (process.env[k] !== v) {
       if (k === 'Path') {
-        pathAdd = v.replace(process.env['Path'], '')
+        newPathEntries = v.replace(process.env['Path'], '')
       } else {
         core.exportVariable(k, v)
       }
     }
-  })
-  return pathAdd
+  }
+  return [newPathEntries]
 }
 
 
