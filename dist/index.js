@@ -1097,10 +1097,6 @@ function findUbuntuVersion() {
 }
 
 function setupPath(rubyPrefix, ruby, toolsPath) {
-  // not used, saved for future
-  // const rubyPath = path.join(rubyPrefix, 'bin', 'ruby')
-  // const gemUserDir = cp.execSync(`${rubyPath} -e "puts Gem.user_dir"`).toString().trim()
-
   const originalPath = process.env['PATH'].split(path.delimiter)
 
   let cleanPath = originalPath.filter(e => !/\bruby\b/i.test(e))
