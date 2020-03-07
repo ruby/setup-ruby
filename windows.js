@@ -36,9 +36,9 @@ export async function install(platform, ruby) {
   // we use certs and embedded MSYS2 from hostedRuby
   const hostedRuby = latestHostedRuby()
 
-  let toolsPaths = (version === 'mswin') ?
+  let toolchainPaths = (version === 'mswin') ?
     await setupMSWin(hostedRuby) : await setupMingw(hostedRuby, version)
-  const newPathEntries = [`${rubyPrefix}\\bin`, ...toolsPaths]
+  const newPathEntries = [`${rubyPrefix}\\bin`, ...toolchainPaths]
 
   // Install Bundler if needed
   if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
@@ -90,8 +90,8 @@ async function setupMSWin(hostedRuby) {
   return addVCVARSEnv()
 }
 
-/* Sets msvc environment for use in Actions
- *   allows steps to run without running vcvars*.bat, also allows using PS scripts
+/* Sets MSVC environment for use in Actions
+ *   allows steps to run without running vcvars*.bat, also for PowerShell
  *   adds a convenience VCVARS environment variable
  *   this assumes a single Visual Studio version being available in the windows-latest image */
 export function addVCVARSEnv() {
@@ -107,15 +107,15 @@ export function addVCVARSEnv() {
     newEnv.set(k,v)
   })
 
-  let newPathEntries = null
+  let newPathEntries = undefined
   for (let [k, v] of newEnv) {
     if (process.env[k] !== v) {
       if (k === 'Path') {
-        newPathEntries = v.replace(process.env['Path'], '')
+        newPathEntries = v.replace(process.env['Path'], '').split(';')
       } else {
         core.exportVariable(k, v)
       }
     }
   }
-  return [newPathEntries]
+  return newPathEntries
 }

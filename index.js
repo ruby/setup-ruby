@@ -84,7 +84,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
 function setupPath(ruby, newPathEntries) {
     const originalPath = process.env['PATH'].split(path.delimiter)
-    let cleanPath = originalPath.filter(e => !/\bruby\b/i.test(e))
+    let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
     if (cleanPath.length !== originalPath.length) {
         console.log("Entries removed from PATH to avoid conflicts with Ruby:")
