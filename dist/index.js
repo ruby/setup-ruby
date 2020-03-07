@@ -1118,10 +1118,6 @@ function setupPath(rubyPrefix, ruby, toolsPath) {
 
   if (toolsPath) { newPath.push(toolsPath) }
 
-  if (ruby.startsWith('rubinius')) {
-    newPath.push(path.join(rubyPrefix, 'gems', 'bin'))
-  }
-
   core.exportVariable('PATH', [...newPath, ...cleanPath].join(path.delimiter))
 }
 
