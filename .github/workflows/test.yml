@@ -55,13 +55,10 @@ jobs:
     - run: bundle exec rake --version
     - name: which ruby, rake
       if: startsWith(matrix.os, 'windows') == false
-      run: |
-        # which -a ruby, rake
-        which -a ruby rake
+      run: which -a ruby rake
     - name: where ruby, rake
       if: startsWith(matrix.os, 'windows')
       run: |
-        # where ruby, rake
         $ErrorActionPreference = 'Continue'
         $where = 'ruby', 'rake'
         foreach ($e in $where) {
@@ -113,7 +110,6 @@ jobs:
     - name: where ruby, rake
       if: startsWith(matrix.cfg.os, 'windows')
       run: |
-        # where
         $ErrorActionPreference = 'Continue'
         $where = 'ruby', 'rake'
         foreach ($e in $where) {
