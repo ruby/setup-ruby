@@ -3,7 +3,7 @@
 ## Installing dependencies
 
 ```bash
-yarn install
+$ yarn install
 ```
 
 `npm` doesn't install the correct dependencies for `eslint` so we use `yarn`.
@@ -11,11 +11,11 @@ yarn install
 ## Regenerating dist/index.js
 
 ```bash
-yarn run package
+$ yarn run package
 ```
 
 It is recommended to add this as a `git` `pre-commit` hook:
 
 ```bash
-cp pre-commit .git/hooks/pre-commit
+$ cp pre-commit .git/hooks/pre-commit
 ```
