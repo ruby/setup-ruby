@@ -3,7 +3,7 @@
 ## Installing dependencies
 
 ```bash
-yarn
+yarn install
 ```
 
 `npm` doesn't install the correct dependencies for `eslint` so we use `yarn`.
