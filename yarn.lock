@@ -27,9 +27,9 @@
   integrity sha512-J8KuFqVPr3p6U8W93DOXlXW6zFvrQAJANdS+vw0YhusLIq+bszW8zmK2Fh1C2kDPX8FMvwIl1OUcFgvJoXLbAg==
 
 "@actions/tool-cache@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@actions/tool-cache/-/tool-cache-1.3.1.tgz#0db440cefaa7d797d28e2892065b04bfcc1b697f"
-  integrity sha512-sKoEJv0/c7WzjPEq2PO12Sc8QdEp58XIBHMm3c4lUn/iZWgLz9HBeCuFGpLQjDvXJNfLZ4g+WD+rMjgOmpH4Ag==
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@actions/tool-cache/-/tool-cache-1.3.3.tgz#34cf87a0436a2178207a644932114a236194b0fd"
+  integrity sha512-AFVyTLcIxusDVI1gMhbZW8m/On7YNJG+xYaxorV+qic+f7lO7h37aT2mfzxqAq7mwHxtP1YlVFNrXe9QDf/bPg==
   dependencies:
     "@actions/core" "^1.2.0"
     "@actions/exec" "^1.0.0"
