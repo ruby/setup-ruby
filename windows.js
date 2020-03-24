@@ -13,6 +13,7 @@ const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
 // standard MSYS2 location, found by 'devkit'
 const msys2 = 'C:\\msys64'
+const msys2PathEntries = [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
 
 export function getAvailableVersions(platform, engine) {
   if (engine === 'ruby') {
@@ -73,7 +74,7 @@ async function setupMingw(version) {
     await symLinkToEmbeddedMSYS2()
   }
 
-  return [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
+  return msys2PathEntries
 }
 
 async function setupMSWin() {
@@ -94,10 +95,7 @@ async function setupMSWin() {
     await symLinkToEmbeddedMSYS2()
   }
 
-  let pathAry = addVCVARSEnv()
-  // add MSYS2 paths for misc gnu utilities like bison and ragel
-  pathAry.push(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
-  return pathAry
+  return [...addVCVARSEnv(), ...msys2PathEntries]
 }
 
 /* Sets MSVC environment for use in Actions
