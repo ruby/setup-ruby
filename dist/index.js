@@ -4804,6 +4804,12 @@ const exec = __webpack_require__(986)
 const tc = __webpack_require__(533)
 const rubyInstallerVersions = __webpack_require__(471).versions
 
+// needed for 2.2, 2.3, and mswin, cert file used by Git for Windows
+const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
+
+// standard MSYS2 location, found by 'devkit'
+const msys2 = 'C:\\msys64'
+
 function getAvailableVersions(platform, engine) {
   if (engine === 'ruby') {
     return Object.keys(rubyInstallerVersions)
@@ -4829,11 +4835,8 @@ async function install(platform, ruby) {
   await exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true })
   const rubyPrefix = `${drive}:\\${base}`
 
-  // we use certs and embedded MSYS2 from hostedRuby
-  const hostedRuby = latestHostedRuby()
-
   let toolchainPaths = (version === 'mswin') ?
-    await setupMSWin(hostedRuby) : await setupMingw(hostedRuby, version)
+    await setupMSWin() : await setupMingw(version)
   const newPathEntries = [`${rubyPrefix}\\bin`, ...toolchainPaths]
 
   // Install Bundler if needed
@@ -4844,46 +4847,53 @@ async function install(platform, ruby) {
   return [rubyPrefix, newPathEntries]
 }
 
-function latestHostedRuby() {
+// Remove when Actions Windows image contains MSYS2 install
+async function symLinkToEmbeddedMSYS2() {
   const toolCacheVersions = tc.findAllVersions('Ruby')
   toolCacheVersions.sort()
   if (toolCacheVersions.length === 0) {
     throw new Error('Could not find MSYS2 in the toolcache')
   }
   const latestVersion = toolCacheVersions.slice(-1)[0]
-  return tc.find('Ruby', latestVersion)
+  const hostedRuby = tc.find('Ruby', latestVersion)
+  await exec.exec(`cmd /c mklink /D ${msys2} ${hostedRuby}\\msys64`)
 }
 
-async function setupMingw(hostedRuby, version) {
+async function setupMingw(version) {
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
-    core.exportVariable('SSL_CERT_FILE', `${hostedRuby}\\ssl\\cert.pem`)
+    core.exportVariable('SSL_CERT_FILE', certFile)
   }
 
-  // Link to embedded MSYS2 in hostedRuby
-  const msys2 = 'C:\\msys64'
+  // Remove when Actions Windows image contains MSYS2 install
   if (!fs.existsSync(msys2)) {
-    const hostedMSYS2 = `${hostedRuby}\\msys64`
-    await exec.exec(`cmd /c mklink /D ${msys2} ${hostedMSYS2}`)
+    await symLinkToEmbeddedMSYS2()
   }
 
   return [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
 }
 
-async function setupMSWin(hostedRuby) {
+async function setupMSWin() {
   // All standard MSVC OpenSSL builds use C:\Program Files\Common Files\SSL
   const certsDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
   if (!fs.existsSync(certsDir)) {
     fs.mkdirSync(certsDir)
   }
 
-  // Copy cert.pem from hosted Ruby
+  // cert.pem location is hard-coded by OpenSSL msvc builds
   const cert = 'C:\\Program Files\\Common Files\\SSL\\cert.pem'
   if (!fs.existsSync(cert)) {
-    const hostedCert = `${hostedRuby}\\ssl\\cert.pem`
-    fs.copyFileSync(hostedCert, cert)
+    fs.copyFileSync(certFile, cert)
   }
 
-  return addVCVARSEnv()
+  // Remove when Actions Windows image contains MSYS2 install
+  if (!fs.existsSync(msys2)) {
+    await symLinkToEmbeddedMSYS2()
+  }
+
+  let pathAry = addVCVARSEnv()
+  // add MSYS2 paths for misc gnu utilities like bison and ragel
+  pathAry.push(`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`)
+  return pathAry
 }
 
 /* Sets MSVC environment for use in Actions
