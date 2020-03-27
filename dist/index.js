@@ -4807,9 +4807,14 @@ const rubyInstallerVersions = __webpack_require__(471).versions
 // needed for 2.2, 2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
-// standard MSYS2 location, found by 'devkit'
+// standard MSYS2 location, found by 'devkit.rb'
 const msys2 = 'C:\\msys64'
 const msys2PathEntries = [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
+
+// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.2 and 2.3
+const msys = 'C:\\DevKit64'
+const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`,
+  `${msys}\\mingw\\bin`, `${msys}\\bin`]
 
 function getAvailableVersions(platform, engine) {
   if (engine === 'ruby') {
@@ -4863,14 +4868,32 @@ async function symLinkToEmbeddedMSYS2() {
 async function setupMingw(version) {
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', certFile)
-  }
+    await installMSYS()
+    return msysPathEntries
+  } else {
+    // Remove when Actions Windows image contains MSYS2 install
+    if (!fs.existsSync(msys2)) {
+      await symLinkToEmbeddedMSYS2()
+    }
 
-  // Remove when Actions Windows image contains MSYS2 install
-  if (!fs.existsSync(msys2)) {
-    await symLinkToEmbeddedMSYS2()
+    return msys2PathEntries
   }
+}
 
-  return msys2PathEntries
+// Ruby 2.2 and 2.3
+async function installMSYS() {
+  const url = 'https://dl.bintray.com/oneclick/rubyinstaller/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
+
+  const downloadPath = await tc.downloadTool(url)
+
+  await exec.exec(`7z x ${downloadPath} -o${msys}`)
+
+  // below are set in the old devkit.rb file ?
+  core.exportVariable('RI_DEVKIT', msys)
+  core.exportVariable('CC' , 'gcc')
+  core.exportVariable('CXX', 'g++')
+  core.exportVariable('CPP', 'cpp')
+  core.info('Installed RubyInstaller DevKit for Ruby 2.2 or 2.3')
 }
 
 async function setupMSWin() {
