@@ -33,14 +33,17 @@ jobs:
     - name: build compiler
       run: |
         ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
-    - name: ridk version (mingw)
+    - name: gcc and ridk version (mingw)
       if: startsWith(matrix.os, 'windows')
       run: |
         $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
-        if (($abi -ge '2.4') -and $plat.Contains('mingw')) {
-          ridk version
-        } else {
-          echo 'ridk is unavailable'
+        if ($plat.Contains('mingw')) {
+          gcc --version
+          if ($abi -ge '2.4') {
+            ridk version
+          } else {
+            echo 'ridk is unavailable'
+          }
         }
     - name: Subprocess test
       run: ruby test_subprocess.rb
@@ -87,14 +90,17 @@ jobs:
     - name: build compiler
       run: |
         ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
-    - name: ridk version (mingw)
-      if: startsWith(matrix.cfg.os, 'windows')
+    - name: gcc and ridk version (mingw)
+      if: startsWith(matrix.os, 'windows')
       run: |
         $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
-        if (($abi -ge '2.4') -and $plat.Contains('mingw')) {
-          ridk version
-        } else {
-          echo 'ridk is unavailable'
+        if ($plat.Contains('mingw')) {
+          gcc --version
+          if ($abi -ge '2.4') {
+            ridk version
+          } else {
+            echo 'ridk is unavailable'
+          }
         }
     - name: Subprocess test
       run: ruby test_subprocess.rb
