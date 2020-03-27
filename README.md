@@ -143,7 +143,8 @@ It is recommended to first get your build working on Ubuntu and macOS before try
 * The default shell on Windows is not Bash but [PowerShell](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#using-a-specific-shell).
   This can lead issues such as multi-line scripts [not working as expected](https://github.com/ruby/setup-ruby/issues/13).
 * The `PATH` contains [multiple compiler toolchains](https://github.com/ruby/setup-ruby/issues/19). Use `where.exe` to debug which tool is used.
-* MSYS2 is prepended to the `PATH`, similar to what RubyInstaller2 does.
+* For Rubies 2.4 and later, MSYS2 is prepended to the `Path`, similar to what RubyInstaller2 does.
+* For Rubies 2.2 and 2.3, the DevKit MSYS tools are installed and prepended to the `Path`.
 * JRuby on Windows has a known bug that `bundle exec rake` [fails](https://github.com/ruby/setup-ruby/issues/18).
 
 ## Limitations
