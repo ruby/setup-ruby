@@ -3,7 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const core = require('@actions/core')
 
-async function run() {
+export async function run() {
   try {
     const platform = getVirtualEnvironmentName()
     const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
@@ -121,4 +121,4 @@ function findUbuntuVersion() {
   }
 }
 
-run()
+if (__filename.endsWith('index.js')) { run() }
