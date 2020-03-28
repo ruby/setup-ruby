@@ -951,8 +951,11 @@ module.exports = require("os");
 /***/ }),
 
 /***/ 104:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "run", function() { return run; });
 const os = __webpack_require__(87)
 const fs = __webpack_require__(747)
 const path = __webpack_require__(622)
@@ -1076,7 +1079,7 @@ function findUbuntuVersion() {
   }
 }
 
-run()
+if (__filename.endsWith('index.js')) { run() }
 
 
 /***/ }),
