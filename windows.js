@@ -72,7 +72,8 @@ async function symLinkToEmbeddedMSYS2() {
 async function setupMingw(version) {
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', certFile)
-    await installMSYS()
+    await installMSYS(version)
+
     return msysPathEntries
   } else {
     // Remove when Actions Windows image contains MSYS2 install
@@ -85,19 +86,17 @@ async function setupMingw(version) {
 }
 
 // Ruby 2.2 and 2.3
-async function installMSYS() {
+async function installMSYS(version) {
   const url = 'https://dl.bintray.com/oneclick/rubyinstaller/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
-
   const downloadPath = await tc.downloadTool(url)
-
-  await exec.exec(`7z x ${downloadPath} -o${msys}`)
+  await exec.exec('7z', ['x', downloadPath, `-o${msys}`], { silent: true })
 
   // below are set in the old devkit.rb file ?
   core.exportVariable('RI_DEVKIT', msys)
   core.exportVariable('CC' , 'gcc')
   core.exportVariable('CXX', 'g++')
   core.exportVariable('CPP', 'cpp')
-  core.info('Installed RubyInstaller DevKit for Ruby 2.2 or 2.3')
+  core.info(`Installed RubyInstaller DevKit for Ruby ${version}`)
 }
 
 async function setupMSWin() {
