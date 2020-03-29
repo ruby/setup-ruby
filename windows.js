@@ -8,6 +8,9 @@ const exec = require('@actions/exec')
 const tc = require('@actions/tool-cache')
 const rubyInstallerVersions = require('./windows-versions').versions
 
+// Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
+const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
+
 // needed for 2.2, 2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
@@ -16,7 +19,7 @@ const msys2 = 'C:\\msys64'
 const msys2PathEntries = [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
 
 // location & path for old RubyInstaller DevKit (MSYS), Ruby 2.2 and 2.3
-const msys = 'C:\\DevKit64'
+const msys = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`,
   `${msys}\\mingw\\bin`, `${msys}\\bin`]
 
@@ -37,9 +40,6 @@ export async function install(platform, ruby) {
     throw new Error('URL should end in .7z')
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
-
-  // Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
-  const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
 
   const downloadPath = await tc.downloadTool(url)
   await exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true })
