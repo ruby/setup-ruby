@@ -976,6 +976,8 @@ async function run() {
     const engineVersions = installer.getAvailableVersions(platform, engine)
     const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
 
+    createGemRC()
+
     const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
 
     setupPath(ruby, newPathEntries)
@@ -1038,6 +1040,13 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, version)
   }
 
   return engine + '-' + version
+}
+
+function createGemRC() {
+  const gemrc = path.join(os.homedir(), '.gemrc')
+  if (!fs.existsSync(gemrc)) {
+    fs.writeFileSync(gemrc, `gem: --no-document${os.EOL}`)
+  }
 }
 
 function setupPath(ruby, newPathEntries) {
@@ -3415,7 +3424,7 @@ function getAvailableVersions(platform, engine) {
 
 async function install(platform, ruby) {
   const rubyPrefix = await downloadAndExtract(platform, ruby)
-  let newPathEntries;
+  let newPathEntries
   if (ruby.startsWith('rubinius')) {
     newPathEntries = [path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')]
   } else {
