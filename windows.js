@@ -2,6 +2,7 @@
 // https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
 
 const fs = require('fs')
+const path = require('path')
 const cp = require('child_process')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
@@ -141,7 +142,7 @@ export function addVCVARSEnv() {
   for (let [k, v] of newEnv) {
     if (process.env[k] !== v) {
       if (k === 'Path') {
-        newPathEntries = v.replace(process.env['Path'], '').split(';')
+        newPathEntries = v.replace(process.env['Path'], '').split(path.delimiter)
       } else {
         core.exportVariable(k, v)
       }

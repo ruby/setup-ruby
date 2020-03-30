@@ -4801,6 +4801,7 @@ __webpack_require__.r(__webpack_exports__);
 // https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
 
 const fs = __webpack_require__(747)
+const path = __webpack_require__(622)
 const cp = __webpack_require__(129)
 const core = __webpack_require__(470)
 const exec = __webpack_require__(986)
@@ -4940,7 +4941,7 @@ function addVCVARSEnv() {
   for (let [k, v] of newEnv) {
     if (process.env[k] !== v) {
       if (k === 'Path') {
-        newPathEntries = v.replace(process.env['Path'], '').split(';')
+        newPathEntries = v.replace(process.env['Path'], '').split(path.delimiter)
       } else {
         core.exportVariable(k, v)
       }
