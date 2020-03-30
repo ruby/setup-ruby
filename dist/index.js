@@ -4879,6 +4879,8 @@ async function symLinkToEmbeddedMSYS2() {
 }
 
 async function setupMingw(version) {
+  core.exportVariable('MAKE', 'make.exe')
+
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', certFile)
     await installMSYS(version)
@@ -4909,6 +4911,8 @@ async function installMSYS(version) {
 }
 
 async function setupMSWin() {
+  core.exportVariable('MAKE', 'nmake.exe')
+
   // All standard MSVC OpenSSL builds use C:\Program Files\Common Files\SSL
   const certsDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
   if (!fs.existsSync(certsDir)) {
