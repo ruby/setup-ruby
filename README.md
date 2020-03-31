@@ -105,9 +105,11 @@ jobs:
 
 ### Bundler
 
-Currently, Bundler is guaranteed to be installed for all versions.
-If the Ruby ships with Bundler (Ruby >= 2.6), that version is used.
-Otherwise (Ruby < 2.6), Bundler 1 is installed when that Ruby was built.
+By default, if there is a `Gemfile.lock` file with a `BUNDLED WITH` section,
+the latest version of Bundler with the same major version will be installed.
+Otherwise, the latest Bundler version is installed (except for Ruby 2.2 where only Bundler 1 is supported).
+
+This behavior can be customized, see [action.yml](action.yml) for details about the `bundler` input.
 
 ### Caching `bundle install`
 

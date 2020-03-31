@@ -983,7 +983,7 @@ async function run() {
 
     setupPath(ruby, newPathEntries)
 
-    await installBundler(platform, rubyPrefix)
+    await installBundler(platform, rubyPrefix, engine, version)
 
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
@@ -1069,11 +1069,55 @@ function setupPath(ruby, newPathEntries) {
     core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
 }
 
-async function installBundler(platform, rubyPrefix) {
-  const bundle_exe = platform === 'windows-latest' ? 'bundle.cmd' : 'bundle'
-  // Install Bundler if not already part of the stdlib
-  if (!fs.existsSync(path.join(rubyPrefix, 'bin', bundle_exe))) {
-    await exec.exec(path.join(rubyPrefix, 'bin', 'gem'), ['install', 'bundler', '-v', '~> 1', '--no-document'])
+function readBundledWithFromGemfileLock() {
+  if (fs.existsSync('Gemfile.lock')) {
+    const contents = fs.readFileSync('Gemfile.lock', 'utf8')
+    const lines = contents.split(/\r?\n/)
+    const bundledWithLine = lines.findIndex(line => /^BUNDLED WITH$/.test(line.trim()))
+    if (bundledWithLine !== -1) {
+      const nextLine = lines[bundledWithLine+1]
+      if (nextLine && /^\d+/.test(nextLine.trim())) {
+        const bundlerVersion = nextLine.trim()
+        const majorVersion = bundlerVersion.match(/^\d+/)[0]
+        console.log(`Using Bundler ${majorVersion} from Gemfile.lock BUNDLED WITH ${bundlerVersion}`)
+        return majorVersion
+      }
+    }
+  }
+  return null
+}
+
+async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
+  var bundlerVersion = core.getInput('bundler')
+  if (bundlerVersion === 'none') {
+    return
+  }
+
+  if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
+    bundlerVersion = readBundledWithFromGemfileLock()
+    if (!bundlerVersion) {
+      bundlerVersion = 'latest'
+    }
+  }
+
+  let versionArray
+  if (rubyVersion.startsWith('2.2')) {
+    console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby 2.2')
+    versionArray = ['-v', '~> 1']
+  } else if (/^\d+/.test(bundlerVersion)) {
+    versionArray = ['-v', `~> ${bundlerVersion}`]
+  } else if (bundlerVersion === 'latest') {
+    versionArray = []
+  } else {
+    throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
+  }
+
+  if (engine === 'rubinius') {
+    console.log(`Rubinius only supports the version of Bundler shipped with it`)
+  } else if (bundlerVersion === '1' && engine === 'truffleruby') {
+    console.log(`Using the Bundler version shipped with ${engine}`)
+  } else {
+    await exec.exec(path.join(rubyPrefix, 'bin', 'gem'), ['install', 'bundler', ...versionArray, '--no-document'])
   }
 }
 
