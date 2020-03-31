@@ -50,11 +50,6 @@ export async function install(platform, ruby) {
     await setupMSWin() : await setupMingw(version)
   const newPathEntries = [`${rubyPrefix}\\bin`, ...toolchainPaths]
 
-  // Install Bundler if needed
-  if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
-    await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
-  }
-
   return [rubyPrefix, newPathEntries]
 }
 

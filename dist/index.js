@@ -960,6 +960,7 @@ const os = __webpack_require__(87)
 const fs = __webpack_require__(747)
 const path = __webpack_require__(622)
 const core = __webpack_require__(470)
+const exec = __webpack_require__(986)
 
 async function run() {
   try {
@@ -981,6 +982,9 @@ async function run() {
     const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
 
     setupPath(ruby, newPathEntries)
+
+    await installBundler(platform, rubyPrefix)
+
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
@@ -1063,6 +1067,14 @@ function setupPath(ruby, newPathEntries) {
     }
 
     core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
+}
+
+async function installBundler(platform, rubyPrefix) {
+  const bundle_exe = platform === 'windows-latest' ? 'bundle.cmd' : 'bundle'
+  // Install Bundler if not already part of the stdlib
+  if (!fs.existsSync(path.join(rubyPrefix, 'bin', bundle_exe))) {
+    await exec.exec(path.join(rubyPrefix, 'bin', 'gem'), ['install', 'bundler', '-v', '~> 1', '--no-document'])
+  }
 }
 
 function getVirtualEnvironmentName() {
@@ -4857,11 +4869,6 @@ async function install(platform, ruby) {
   let toolchainPaths = (version === 'mswin') ?
     await setupMSWin() : await setupMingw(version)
   const newPathEntries = [`${rubyPrefix}\\bin`, ...toolchainPaths]
-
-  // Install Bundler if needed
-  if (!fs.existsSync(`${rubyPrefix}\\bin\\bundle.cmd`)) {
-    await exec.exec(`${rubyPrefix}\\bin\\gem install bundler -v "~> 1" --no-document`)
-  }
 
   return [rubyPrefix, newPathEntries]
 }

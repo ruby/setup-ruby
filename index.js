@@ -2,6 +2,7 @@ const os = require('os')
 const fs = require('fs')
 const path = require('path')
 const core = require('@actions/core')
+const exec = require('@actions/exec')
 
 export async function run() {
   try {
@@ -23,6 +24,9 @@ export async function run() {
     const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
 
     setupPath(ruby, newPathEntries)
+
+    await installBundler(platform, rubyPrefix)
+
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
     core.setFailed(error.message)
@@ -105,6 +109,14 @@ function setupPath(ruby, newPathEntries) {
     }
 
     core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
+}
+
+async function installBundler(platform, rubyPrefix) {
+  const bundle_exe = platform === 'windows-latest' ? 'bundle.cmd' : 'bundle'
+  // Install Bundler if not already part of the stdlib
+  if (!fs.existsSync(path.join(rubyPrefix, 'bin', bundle_exe))) {
+    await exec.exec(path.join(rubyPrefix, 'bin', 'gem'), ['install', 'bundler', '-v', '~> 1', '--no-document'])
+  }
 }
 
 function getVirtualEnvironmentName() {
