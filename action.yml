@@ -9,6 +9,10 @@ inputs:
     description: 'Engine and version to use, see the syntax in the README. Reads from .ruby-version if unset.'
     required: false
     default: 'default'
+  bundler:
+    description: 'The version of Bundler to install. Either none, 1, 2, latest or Gemfile.lock. The default tries Gemfile.lock and otherwise uses latest.'
+    required: false
+    default: 'default'
 outputs:
   ruby-prefix:
     description: 'The prefix of the installed ruby'
