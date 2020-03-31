@@ -3415,7 +3415,7 @@ const io = __webpack_require__(1)
 const tc = __webpack_require__(533)
 const rubyBuilderVersions = __webpack_require__(156)
 
-const builderReleaseTag = 'builds-no-warn'
+const builderReleaseTag = 'enable-shared'
 const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 
 function getAvailableVersions(platform, engine) {

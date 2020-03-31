@@ -5,7 +5,7 @@ const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
 const rubyBuilderVersions = require('./ruby-builder-versions')
 
-const builderReleaseTag = 'builds-no-warn'
+const builderReleaseTag = 'enable-shared'
 const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 
 export function getAvailableVersions(platform, engine) {
