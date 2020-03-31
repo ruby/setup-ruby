@@ -1,8 +1,5 @@
 # setup-ruby
 
-Note: this action used to be at `eregon/use-ruby-action` and was moved to the `ruby` organization.
-Please [update](https://github.com/ruby/setup-ruby/releases/tag/v1.13.0) if you are using `eregon/use-ruby-action`.
-
 This action downloads a prebuilt ruby and adds it to the `PATH`.
 
 It is very efficient and takes about 5 seconds to download, extract and add the given Ruby to the `PATH`.
@@ -157,6 +154,11 @@ It is recommended to first get your build working on Ubuntu and macOS before try
 
 This action follows semantic versioning with a moving `v1` branch.
 This follows the [recommendations](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) of GitHub Actions.
+
+## History
+
+This action used to be at `eregon/use-ruby-action` and was moved to the `ruby` organization.
+Please [update](https://github.com/ruby/setup-ruby/releases/tag/v1.13.0) if you are using `eregon/use-ruby-action`.
 
 ## Credits
 
