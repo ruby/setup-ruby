@@ -149,7 +149,7 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
   } else if (/^\d+/.test(bundlerVersion)) {
     versionArray = ['-v', `~> ${bundlerVersion}`]
   } else if (bundlerVersion === 'latest') {
-    versionArray = []
+    versionArray = ['-v', '>= 2.1']
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
@@ -159,7 +159,7 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
   } else if (bundlerVersion === '1' && engine === 'truffleruby') {
     console.log(`Using the Bundler version shipped with ${engine}`)
   } else {
-    await exec.exec(path.join(rubyPrefix, 'bin', 'gem'), ['install', 'bundler', ...versionArray, '--no-document'])
+    await exec.exec(path.join(rubyPrefix, 'bin', 'gem'), ['install', 'bundler', ...versionArray, '--no-document', '--conservative'])
   }
 }
 
