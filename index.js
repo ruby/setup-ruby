@@ -100,7 +100,7 @@ function setupPath(ruby, newPathEntries) {
     let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
     if (cleanPath.length !== originalPath.length) {
-        console.log("Entries removed from PATH to avoid conflicts with Ruby:")
+        console.log('Entries removed from PATH to avoid conflicts with Ruby:')
         for (const entry of originalPath) {
             if (!cleanPath.includes(entry)) {
                 console.log(`  ${entry}`)
@@ -142,14 +142,15 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
     }
   }
 
-  let versionArray
+  if (bundlerVersion === 'latest') {
+    bundlerVersion = '2'
+  }
+
   if (rubyVersion.startsWith('2.2')) {
     console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby 2.2')
-    versionArray = ['-v', '~> 1']
+    bundlerVersion = '1'
   } else if (/^\d+/.test(bundlerVersion)) {
-    versionArray = ['-v', `~> ${bundlerVersion}`]
-  } else if (bundlerVersion === 'latest') {
-    versionArray = []
+    // OK
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
@@ -159,7 +160,8 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
   } else if (bundlerVersion === '1' && engine === 'truffleruby') {
     console.log(`Using the Bundler version shipped with ${engine}`)
   } else {
-    await exec.exec(path.join(rubyPrefix, 'bin', 'gem'), ['install', 'bundler', ...versionArray, '--no-document'])
+    const gem = path.join(rubyPrefix, 'bin', 'gem')
+    await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
   }
 }
 
