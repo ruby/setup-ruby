@@ -157,12 +157,18 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
 
   if (engine === 'rubinius') {
     console.log(`Rubinius only supports the version of Bundler shipped with it`)
-  } else if (bundlerVersion === '1' && engine === 'truffleruby') {
+  } else if (engine === 'ruby' && isHeadVersion(rubyVersion) && bundlerVersion === '2') {
+    console.log(`Using the Bundler version shipped with ${engine}-${rubyVersion}`)
+  } else if (engine === 'truffleruby' && bundlerVersion === '1') {
     console.log(`Using the Bundler version shipped with ${engine}`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
   }
+}
+
+function isHeadVersion(rubyVersion) {
+  return rubyVersion === 'head' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
 }
 
 function getVirtualEnvironmentName() {
