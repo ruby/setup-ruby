@@ -17,7 +17,7 @@ versions = entries.select { |entry|
   end
   [version, builds.first]
 }.sort_by { |version, entry|
-  version
+  Gem::Version.new(version)
 }.select { |version, entry|
   Gem::Version.new(version) >= Gem::Version.new(min_version)
 }.map { |version, entry|
