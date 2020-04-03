@@ -163,5 +163,5 @@ Please [update](https://github.com/ruby/setup-ruby/releases/tag/v1.13.0) if you 
 ## Credits
 
 The current maintainer of this action is @eregon.
-Most of the Windows logic is from https://github.com/MSP-Greg/actions-ruby by MSP-Greg.
+Most of the Windows logic is based on work by MSP-Greg.
 Many thanks to MSP-Greg and Lars Kanis for the help with Ruby Installer.
