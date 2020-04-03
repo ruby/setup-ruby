@@ -1113,12 +1113,12 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  if (engine === 'rubinius') {
-    console.log(`Rubinius only supports the version of Bundler shipped with it`)
-  } else if (engine === 'ruby' && isHeadVersion(rubyVersion) && bundlerVersion === '2') {
+  if (engine === 'ruby' && isHeadVersion(rubyVersion) && bundlerVersion === '2') {
     console.log(`Using the Bundler version shipped with ${engine}-${rubyVersion}`)
   } else if (engine === 'truffleruby' && bundlerVersion === '1') {
     console.log(`Using the Bundler version shipped with ${engine}`)
+  } else if (engine === 'rubinius') {
+    console.log(`Rubinius only supports the version of Bundler shipped with it`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
