@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         # Use various version syntaxes here for testing
-        ruby: [ 2.2, 2.3, 2.4, 2.5, 2.6.5, 2.7, ruby-head, jruby-9.1, jruby, jruby-head, truffleruby, truffleruby-head ]
+        ruby: [ 2.2, 2.3, 2.4, 2.5, 2.6.6, 2.7, ruby-head, jruby-9.1, jruby, jruby-head, truffleruby, truffleruby-head ]
         exclude:
         - os: windows-latest
           ruby: truffleruby
