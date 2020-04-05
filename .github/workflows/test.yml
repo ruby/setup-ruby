@@ -38,7 +38,7 @@ jobs:
       run: |
         ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
     - name: gcc and ridk version (mingw)
-      if: startsWith(matrix.os, 'windows')
+      if: matrix.os == 'windows'
       run: |
         $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
         if ($plat.Contains('mingw')) {
@@ -64,10 +64,10 @@ jobs:
     - run: bundle exec rake --version
 
     - name: which ruby, rake
-      if: startsWith(matrix.os, 'windows') == false
+      if: matrix.os != 'windows'
       run: which -a ruby rake
     - name: where ruby, rake
-      if: startsWith(matrix.os, 'windows')
+      if: matrix.os == 'windows'
       run: |
         $ErrorActionPreference = 'Continue'
         $where = 'ruby', 'rake'
