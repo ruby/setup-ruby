@@ -97,19 +97,19 @@ function createGemRC() {
 }
 
 function setupPath(ruby, newPathEntries) {
-    const originalPath = process.env['PATH'].split(path.delimiter)
-    let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
+  const originalPath = process.env['PATH'].split(path.delimiter)
+  let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
-    if (cleanPath.length !== originalPath.length) {
-        console.log('Entries removed from PATH to avoid conflicts with Ruby:')
-        for (const entry of originalPath) {
-            if (!cleanPath.includes(entry)) {
-                console.log(`  ${entry}`)
-            }
-        }
+  if (cleanPath.length !== originalPath.length) {
+    console.log('Entries removed from PATH to avoid conflicts with Ruby:')
+    for (const entry of originalPath) {
+      if (!cleanPath.includes(entry)) {
+        console.log(`  ${entry}`)
+      }
     }
+  }
 
-    core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
+  core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
 }
 
 function readBundledWithFromGemfileLock() {
