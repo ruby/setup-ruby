@@ -17,11 +17,14 @@ jobs:
         os: [ ubuntu, macos, windows ]
         # Use various version syntaxes here for testing
         ruby: [ 2.2, 2.3, 2.4, 2.5, 2.6.6, 2.7, ruby-head, jruby-9.1, jruby, jruby-head, truffleruby, truffleruby-head ]
+        include:
+        - { os: ubuntu, ruby: rubinius }
+        - { os: windows, ruby: mingw }
+        - { os: windows, ruby: mswin }
         exclude:
-        - os: windows
-          ruby: truffleruby
-        - os: windows
-          ruby: truffleruby-head
+        - { os: windows, ruby: truffleruby }
+        - { os: windows, ruby: truffleruby-head }
+
     name: ${{ matrix.os }} ${{ matrix.ruby }}
     runs-on: ${{ matrix.os }}-latest
     steps:
@@ -61,60 +64,6 @@ jobs:
       run: which -a ruby rake
     - name: where ruby, rake
       if: startsWith(matrix.os, 'windows')
-      run: |
-        $ErrorActionPreference = 'Continue'
-        $where = 'ruby', 'rake'
-        foreach ($e in $where) {
-          $rslt = where.exe $e 2>&1 | Out-String
-          if ($rslt.contains($e)) { echo $rslt.Trim() }
-          else { echo "Can't find $e" }
-          echo ''
-        }
-
-  specials:
-    strategy:
-      fail-fast: false
-      matrix:
-        cfg:
-        - { ruby: rubinius, os: ubuntu  }
-        - { ruby: mingw   , os: windows }
-        - { ruby: mswin   , os: windows }
-    name: ${{ matrix.cfg.os }} ${{ matrix.cfg.ruby }}
-    runs-on: ${{ matrix.cfg.os }}-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ./
-      with:
-        ruby-version: ${{ matrix.cfg.ruby }}
-    - run: ruby -v
-    - name: build compiler
-      run: |
-        ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
-    - name: gcc and ridk version (mingw)
-      if: startsWith(matrix.os, 'windows')
-      run: |
-        $abi, $plat = $(ruby -e "STDOUT.write RbConfig::CONFIG['ruby_version'] + ' ' + RUBY_PLATFORM").split(' ')
-        if ($plat.Contains('mingw')) {
-          gcc --version
-          if ($abi -ge '2.4') {
-            ridk version
-          } else {
-            echo 'ridk is unavailable'
-          }
-        }
-    - name: Subprocess test
-      run: ruby test_subprocess.rb
-    - name: OpenSSL version
-      run: ruby -ropenssl -e 'puts OpenSSL::OPENSSL_LIBRARY_VERSION'
-    - name: OpenSSL test
-      run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
-    - name: C extension test
-      run: gem install json:2.2.0 --no-document
-    - run: bundle --version
-    - run: bundle install
-    - run: bundle exec rake --version
-    - name: where ruby, rake
-      if: startsWith(matrix.cfg.os, 'windows')
       run: |
         $ErrorActionPreference = 'Continue'
         $where = 'ruby', 'rake'
