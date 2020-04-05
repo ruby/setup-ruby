@@ -1118,9 +1118,9 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
   }
 
   if (engine === 'ruby' && isHeadVersion(rubyVersion) && bundlerVersion === '2') {
-    console.log(`Using the Bundler version shipped with ${engine}-${rubyVersion}`)
+    console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
   } else if (engine === 'truffleruby' && bundlerVersion === '1') {
-    console.log(`Using the Bundler version shipped with ${engine}`)
+    console.log(`Using Bundler 1 shipped with ${engine}`)
   } else if (engine === 'rubinius') {
     console.log(`Rubinius only supports the version of Bundler shipped with it`)
   } else {
