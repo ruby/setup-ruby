@@ -3,7 +3,6 @@ on:
   pull_request:
   push:
     branches-ignore:
-    - master
     - v1
     tags-ignore:
     - '*'
