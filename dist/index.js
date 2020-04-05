@@ -984,8 +984,10 @@ async function run() {
 
     setupPath(ruby, newPathEntries)
 
-    await common.measure('Installing Bundler', async () =>
-      installBundler(platform, rubyPrefix, engine, version))
+    if (core.getInput('bundler') !== 'none') {
+      await common.measure('Installing Bundler', async () =>
+        installBundler(platform, rubyPrefix, engine, version))
+    }
 
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
@@ -1093,9 +1095,6 @@ function readBundledWithFromGemfileLock() {
 
 async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
   var bundlerVersion = core.getInput('bundler')
-  if (bundlerVersion === 'none') {
-    return
-  }
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
     bundlerVersion = readBundledWithFromGemfileLock()
