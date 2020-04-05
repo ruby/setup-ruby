@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu, macos, windows ]
-        # Use various version syntaxes here for testing
+        # Use various version syntax here for testing
         ruby: [ 2.2, 2.3, 2.4, 2.5, 2.6.6, 2.7, ruby-head, jruby-9.1, jruby, jruby-head, truffleruby, truffleruby-head ]
         include:
         - { os: ubuntu, ruby: rubinius }
@@ -28,10 +28,12 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
     - uses: actions/checkout@v2
+
     - uses: ./
       with:
         ruby-version: ${{ matrix.ruby }}
     - run: ruby -v
+
     - name: build compiler
       run: |
         ruby -e "puts 'build compiler: ' + RbConfig::CONFIG.fetch('CC_VERSION_MESSAGE', 'unknown').lines.first"
@@ -47,17 +49,20 @@ jobs:
             echo 'ridk is unavailable'
           }
         }
+
     - name: Subprocess test
       run: ruby test_subprocess.rb
     - name: OpenSSL version
       run: ruby -ropenssl -e 'puts OpenSSL::OPENSSL_LIBRARY_VERSION'
     - name: OpenSSL test
       run: ruby -ropen-uri -e 'puts open(%{https://rubygems.org/}) { |f| f.read(1024) }'
+
     - name: C extension test
       run: gem install json:2.2.0 --no-document
     - run: bundle --version
     - run: bundle install
     - run: bundle exec rake --version
+
     - name: which ruby, rake
       if: startsWith(matrix.os, 'windows') == false
       run: which -a ruby rake
@@ -72,6 +77,7 @@ jobs:
           else { echo "Can't find $e" }
           echo ''
         }
+
 
   lint:
     runs-on: ubuntu-latest
