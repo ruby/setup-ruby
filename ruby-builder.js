@@ -3,6 +3,7 @@ const path = require('path')
 const exec = require('@actions/exec')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
+const common = require('./common')
 const rubyBuilderVersions = require('./ruby-builder-versions')
 
 const builderReleaseTag = 'enable-shared'
@@ -27,12 +28,15 @@ async function downloadAndExtract(platform, ruby) {
   const rubiesDir = path.join(os.homedir(), '.rubies')
   await io.mkdirP(rubiesDir)
 
-  const url = await getDownloadURL(platform, ruby)
-  console.log(url)
+  const downloadPath = await common.measure('Downloading Ruby', async () => {
+    const url = getDownloadURL(platform, ruby)
+    console.log(url)
+    return await tc.downloadTool(url)
+  })
 
-  const downloadPath = await tc.downloadTool(url)
   const tar = platform.startsWith('windows') ? 'C:\\Windows\\system32\\tar.exe' : 'tar'
-  await exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ])
+  await common.measure('Extracting Ruby', async () =>
+    exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ]))
 
   return path.join(rubiesDir, ruby)
 }

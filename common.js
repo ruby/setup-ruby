@@ -1,5 +1,20 @@
 const os = require('os')
 const fs = require('fs')
+const core = require('@actions/core')
+const { performance } = require('perf_hooks')
+
+export async function measure(name, block) {
+  return await core.group(name, async () => {
+    const start = performance.now()
+    try {
+      return await block()
+    } finally {
+      const end = performance.now()
+      const duration = (end - start) / 1000.0
+      console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
+    }
+  })
+}
 
 export function getVirtualEnvironmentName() {
   const platform = os.platform()

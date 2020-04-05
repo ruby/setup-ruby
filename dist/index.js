@@ -984,7 +984,8 @@ async function run() {
 
     setupPath(ruby, newPathEntries)
 
-    await installBundler(platform, rubyPrefix, engine, version)
+    await common.measure('Installing Bundler', async () =>
+      installBundler(platform, rubyPrefix, engine, version))
 
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
@@ -1059,12 +1060,14 @@ function setupPath(ruby, newPathEntries) {
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
   if (cleanPath.length !== originalPath.length) {
+    core.startGroup('Cleaning PATH')
     console.log('Entries removed from PATH to avoid conflicts with Ruby:')
     for (const entry of originalPath) {
       if (!cleanPath.includes(entry)) {
         console.log(`  ${entry}`)
       }
     }
+    core.endGroup()
   }
 
   core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
@@ -1482,9 +1485,25 @@ module.exports = require("https");
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "measure", function() { return measure; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
 const os = __webpack_require__(87)
 const fs = __webpack_require__(747)
+const core = __webpack_require__(470)
+const { performance } = __webpack_require__(630)
+
+async function measure(name, block) {
+  return await core.group(name, async () => {
+    const start = performance.now()
+    try {
+      return await block()
+    } finally {
+      const end = performance.now()
+      const duration = (end - start) / 1000.0
+      console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
+    }
+  })
+}
 
 function getVirtualEnvironmentName() {
   const platform = os.platform()
@@ -3494,6 +3513,7 @@ const path = __webpack_require__(622)
 const exec = __webpack_require__(986)
 const io = __webpack_require__(1)
 const tc = __webpack_require__(533)
+const common = __webpack_require__(239)
 const rubyBuilderVersions = __webpack_require__(156)
 
 const builderReleaseTag = 'enable-shared'
@@ -3518,12 +3538,15 @@ async function downloadAndExtract(platform, ruby) {
   const rubiesDir = path.join(os.homedir(), '.rubies')
   await io.mkdirP(rubiesDir)
 
-  const url = await getDownloadURL(platform, ruby)
-  console.log(url)
+  const downloadPath = await common.measure('Downloading Ruby', async () => {
+    const url = getDownloadURL(platform, ruby)
+    console.log(url)
+    return await tc.downloadTool(url)
+  })
 
-  const downloadPath = await tc.downloadTool(url)
   const tar = platform.startsWith('windows') ? 'C:\\Windows\\system32\\tar.exe' : 'tar'
-  await exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ])
+  await common.measure('Extracting Ruby', async () =>
+    exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ]))
 
   return path.join(rubiesDir, ruby)
 }
@@ -4616,6 +4639,13 @@ module.exports = require("path");
 
 /***/ }),
 
+/***/ 630:
+/***/ (function(module) {
+
+module.exports = require("perf_hooks");
+
+/***/ }),
+
 /***/ 631:
 /***/ (function(module) {
 
@@ -4896,6 +4926,7 @@ const cp = __webpack_require__(129)
 const core = __webpack_require__(470)
 const exec = __webpack_require__(986)
 const tc = __webpack_require__(533)
+const common = __webpack_require__(239)
 const rubyInstallerVersions = __webpack_require__(471).versions
 
 // Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
@@ -4924,15 +4955,19 @@ function getAvailableVersions(platform, engine) {
 async function install(platform, ruby) {
   const version = ruby.split('-', 2)[1]
   const url = rubyInstallerVersions[version]
-  console.log(url)
 
   if (!url.endsWith('.7z')) {
-    throw new Error('URL should end in .7z')
+    throw new Error(`URL should end in .7z: ${url}`)
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
-  const downloadPath = await tc.downloadTool(url)
-  await exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true })
+  const downloadPath = await common.measure('Downloading Ruby', async () => {
+    console.log(url)
+    return await tc.downloadTool(url)
+  })
+
+  await common.measure('Extracting Ruby', async () =>
+    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true }))
   const rubyPrefix = `${drive}:\\${base}`
 
   let toolchainPaths = (version === 'mswin') ?
@@ -4951,7 +4986,8 @@ async function symLinkToEmbeddedMSYS2() {
   }
   const latestVersion = toolCacheVersions.slice(-1)[0]
   const hostedRuby = tc.find('Ruby', latestVersion)
-  await exec.exec(`cmd /c mklink /D ${msys2} ${hostedRuby}\\msys64`)
+  await common.measure('Linking MSYS2', async () =>
+    exec.exec(`cmd /c mklink /D ${msys2} ${hostedRuby}\\msys64`))
 }
 
 async function setupMingw(version) {
@@ -4959,7 +4995,8 @@ async function setupMingw(version) {
 
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', certFile)
-    await installMSYS(version)
+    await common.measure('Installing MSYS1', async () =>
+      installMSYS(version))
 
     return msysPathEntries
   } else {
@@ -5006,7 +5043,10 @@ async function setupMSWin() {
     await symLinkToEmbeddedMSYS2()
   }
 
-  return [...addVCVARSEnv(), ...msys2PathEntries]
+  const VCPathEntries = await common.measure('Setting up MSVC environment', async () =>
+    addVCVARSEnv())
+
+  return [...VCPathEntries, ...msys2PathEntries]
 }
 
 /* Sets MSVC environment for use in Actions

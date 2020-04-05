@@ -26,7 +26,8 @@ export async function run() {
 
     setupPath(ruby, newPathEntries)
 
-    await installBundler(platform, rubyPrefix, engine, version)
+    await common.measure('Installing Bundler', async () =>
+      installBundler(platform, rubyPrefix, engine, version))
 
     core.setOutput('ruby-prefix', rubyPrefix)
   } catch (error) {
@@ -101,12 +102,14 @@ function setupPath(ruby, newPathEntries) {
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
   if (cleanPath.length !== originalPath.length) {
+    core.startGroup('Cleaning PATH')
     console.log('Entries removed from PATH to avoid conflicts with Ruby:')
     for (const entry of originalPath) {
       if (!cleanPath.includes(entry)) {
         console.log(`  ${entry}`)
       }
     }
+    core.endGroup()
   }
 
   core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))

@@ -7,6 +7,7 @@ const cp = require('child_process')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
 const tc = require('@actions/tool-cache')
+const common = require('./common')
 const rubyInstallerVersions = require('./windows-versions').versions
 
 // Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
@@ -35,15 +36,19 @@ export function getAvailableVersions(platform, engine) {
 export async function install(platform, ruby) {
   const version = ruby.split('-', 2)[1]
   const url = rubyInstallerVersions[version]
-  console.log(url)
 
   if (!url.endsWith('.7z')) {
-    throw new Error('URL should end in .7z')
+    throw new Error(`URL should end in .7z: ${url}`)
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
-  const downloadPath = await tc.downloadTool(url)
-  await exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true })
+  const downloadPath = await common.measure('Downloading Ruby', async () => {
+    console.log(url)
+    return await tc.downloadTool(url)
+  })
+
+  await common.measure('Extracting Ruby', async () =>
+    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true }))
   const rubyPrefix = `${drive}:\\${base}`
 
   let toolchainPaths = (version === 'mswin') ?
@@ -62,7 +67,8 @@ async function symLinkToEmbeddedMSYS2() {
   }
   const latestVersion = toolCacheVersions.slice(-1)[0]
   const hostedRuby = tc.find('Ruby', latestVersion)
-  await exec.exec(`cmd /c mklink /D ${msys2} ${hostedRuby}\\msys64`)
+  await common.measure('Linking MSYS2', async () =>
+    exec.exec(`cmd /c mklink /D ${msys2} ${hostedRuby}\\msys64`))
 }
 
 async function setupMingw(version) {
@@ -70,7 +76,8 @@ async function setupMingw(version) {
 
   if (version.startsWith('2.2') || version.startsWith('2.3')) {
     core.exportVariable('SSL_CERT_FILE', certFile)
-    await installMSYS(version)
+    await common.measure('Installing MSYS1', async () =>
+      installMSYS(version))
 
     return msysPathEntries
   } else {
@@ -117,7 +124,10 @@ async function setupMSWin() {
     await symLinkToEmbeddedMSYS2()
   }
 
-  return [...addVCVARSEnv(), ...msys2PathEntries]
+  const VCPathEntries = await common.measure('Setting up MSVC environment', async () =>
+    addVCVARSEnv())
+
+  return [...VCPathEntries, ...msys2PathEntries]
 }
 
 /* Sets MSVC environment for use in Actions
