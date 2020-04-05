@@ -3,10 +3,11 @@ const fs = require('fs')
 const path = require('path')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
+const common = require('./common')
 
 export async function run() {
   try {
-    const platform = getVirtualEnvironmentName()
+    const platform = common.getVirtualEnvironmentName()
     const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
 
     let installer
@@ -169,29 +170,6 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
 
 function isHeadVersion(rubyVersion) {
   return rubyVersion === 'head' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
-}
-
-function getVirtualEnvironmentName() {
-  const platform = os.platform()
-  if (platform === 'linux') {
-    return `ubuntu-${findUbuntuVersion()}`
-  } else if (platform === 'darwin') {
-    return 'macos-latest'
-  } else if (platform === 'win32') {
-    return 'windows-latest'
-  } else {
-    throw new Error(`Unknown platform ${platform}`)
-  }
-}
-
-function findUbuntuVersion() {
-  const lsb_release = fs.readFileSync('/etc/lsb-release', 'utf8')
-  const match = lsb_release.match(/^DISTRIB_RELEASE=(\d+\.\d+)$/m)
-  if (match) {
-    return match[1]
-  } else {
-    throw new Error('Could not find Ubuntu version')
-  }
 }
 
 if (__filename.endsWith('index.js')) { run() }
