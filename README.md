@@ -146,14 +146,14 @@ It is recommended to first get your build working on Ubuntu and macOS before try
 * For Ruby < 2.4, the DevKit MSYS tools are installed and prepended to the `Path`.
 * JRuby on Windows has a known bug that `bundle exec rake` [fails](https://github.com/ruby/setup-ruby/issues/18).
 
-## Limitations
-
-* This action currently only works with GitHub-hosted runners, not private runners.
-
 ## Versioning
 
 This action follows semantic versioning with a moving `v1` branch.
 This follows the [recommendations](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) of GitHub Actions.
+
+## Limitations
+
+* This action currently only works with GitHub-hosted runners, not private runners.
 
 ## History
 
