@@ -148,6 +148,13 @@ It is recommended to first get your build working on Ubuntu and macOS before try
 
 ## Versioning
 
+It is highly recommended to use `ruby/setup-ruby@v1` for the version of this action.
+This will provide the best experience by automatically getting bug fixes, new Ruby versions and new features.
+
+If you instead choose a specific version (v1.2.3) or a commit sha, there will be no automatic bug fixes and
+it will be your responsibility to update every time the action no longer works.
+Make sure to always use the latest release before reporting an issue on GitHub.
+
 This action follows semantic versioning with a moving `v1` branch.
 This follows the [recommendations](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) of GitHub Actions.
 
