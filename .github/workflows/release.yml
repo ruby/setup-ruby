@@ -1,0 +1,10 @@
+name: Update the v1 branch when a release is published
+on:
+  release:
+    types: [published]
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: git push origin HEAD:v1
