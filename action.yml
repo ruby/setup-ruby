@@ -13,6 +13,10 @@ inputs:
     description: 'The version of Bundler to install. Either none, 1, 2, latest or Gemfile.lock. The default tries Gemfile.lock and otherwise uses latest.'
     required: false
     default: 'default'
+  working-directory:
+    description: 'The working directory to use for this path. Useful if files like .ruby-version are somewhere other than the root of your repository. Defaults to leaving it unchanged.'
+    required: false
+    default: '.'
 outputs:
   ruby-prefix:
     description: 'The prefix of the installed ruby'

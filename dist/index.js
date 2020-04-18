@@ -965,6 +965,7 @@ const common = __webpack_require__(239)
 
 async function run() {
   try {
+    process.chdir(core.getInput('working-directory'))
     const platform = common.getVirtualEnvironmentName()
     const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
 
