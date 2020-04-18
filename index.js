@@ -7,35 +7,40 @@ const common = require('./common')
 
 export async function run() {
   try {
-    process.chdir(core.getInput('working-directory'))
-    const platform = common.getVirtualEnvironmentName()
-    const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
-
-    let installer
-    if (platform === 'windows-latest' && engine !== 'jruby') {
-      installer = require('./windows')
-    } else {
-      installer = require('./ruby-builder')
-    }
-
-    const engineVersions = installer.getAvailableVersions(platform, engine)
-    const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
-
-    createGemRC()
-
-    const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
-
-    setupPath(ruby, newPathEntries)
-
-    if (core.getInput('bundler') !== 'none') {
-      await common.measure('Installing Bundler', async () =>
-        installBundler(platform, rubyPrefix, engine, version))
-    }
-
-    core.setOutput('ruby-prefix', rubyPrefix)
+    await main()
   } catch (error) {
     core.setFailed(error.message)
   }
+}
+
+async function main() {
+  process.chdir(core.getInput('working-directory'))
+
+  const platform = common.getVirtualEnvironmentName()
+  const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
+
+  let installer
+  if (platform === 'windows-latest' && engine !== 'jruby') {
+    installer = require('./windows')
+  } else {
+    installer = require('./ruby-builder')
+  }
+
+  const engineVersions = installer.getAvailableVersions(platform, engine)
+  const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
+
+  createGemRC()
+
+  const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
+
+  setupPath(ruby, newPathEntries)
+
+  if (core.getInput('bundler') !== 'none') {
+    await common.measure('Installing Bundler', async () =>
+      installBundler(platform, rubyPrefix, engine, version))
+  }
+
+  core.setOutput('ruby-prefix', rubyPrefix)
 }
 
 function parseRubyEngineAndVersion(rubyVersion) {
