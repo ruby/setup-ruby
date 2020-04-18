@@ -134,6 +134,11 @@ This uses the [cache action](https://github.com/actions/cache).
 The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---bundler).
 Make sure to include `use-ruby` in the `key` to avoid conflicting with previous caches.
 
+### Working Directory
+
+The `working-directory` input can be set to resolve `.ruby-version`, `.tool-versions` and `Gemfile.lock`
+if they are not at the root of the repository, see [action.yml](action.yml) for details.
+
 ## Windows
 
 Note that running CI on Windows can be quite challenging if you are not very familiar with Windows.

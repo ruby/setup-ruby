@@ -6,7 +6,7 @@ branding:
   icon: download
 inputs:
   ruby-version:
-    description: 'Engine and version to use, see the syntax in the README. Reads from .ruby-version if unset.'
+    description: 'Engine and version to use, see the syntax in the README. Reads from .ruby-version or .tool-versions if unset.'
     required: false
     default: 'default'
   bundler:
@@ -14,7 +14,7 @@ inputs:
     required: false
     default: 'default'
   working-directory:
-    description: 'The working directory to use for this path. Useful if files like .ruby-version are somewhere other than the root of your repository. Defaults to leaving it unchanged.'
+    description: 'The working directory to use for resolving paths for .ruby-version, .tool-versions and Gemfile.lock.'
     required: false
     default: '.'
 outputs:
