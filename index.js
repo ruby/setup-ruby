@@ -7,6 +7,7 @@ const common = require('./common')
 
 export async function run() {
   try {
+    process.chdir(core.getInput('working-directory'))
     const platform = common.getVirtualEnvironmentName()
     const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
 
