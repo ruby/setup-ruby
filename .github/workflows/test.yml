@@ -9,7 +9,7 @@ on:
     paths-ignore:
     - README.md
 jobs:
-  common:
+  test:
     strategy:
       fail-fast: false
       matrix:
@@ -77,7 +77,6 @@ jobs:
           else { echo "Can't find $e" }
           echo ''
         }
-
 
   lint:
     runs-on: ubuntu-latest
