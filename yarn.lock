@@ -8,16 +8,16 @@
   integrity sha512-Wp4xnyokakM45Uuj4WLUxdsa8fJjKVl1fDTsPbTEcTcuu0Nb26IPQbOtjmnfaCPGcaoPOOqId8H9NapZ8gii4w==
 
 "@actions/exec@^1.0.0", "@actions/exec@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@actions/exec/-/exec-1.0.3.tgz#b967f8700d6ff011dcc91243b58bafc1bb9ab95f"
-  integrity sha512-TogJGnueOmM7ntCi0ASTUj4LapRRtDfj57Ja4IhPmg2fls28uVOPbAn8N+JifaOumN2UG3oEO/Ixek2A4NcYSA==
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@actions/exec/-/exec-1.0.4.tgz#99d75310e62e59fc37d2ee6dcff6d4bffadd3a5d"
+  integrity sha512-4DPChWow9yc9W3WqEbUj8Nr86xkpyE29ZzWjXucHItclLbEW6jr80Zx4nqv18QL6KK65+cifiQZXvnqgTV6oHw==
   dependencies:
     "@actions/io" "^1.0.1"
 
-"@actions/http-client@^1.0.3":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-1.0.6.tgz#6f9267ca50e1d74d8581f4a894a943cd4c97b49a"
-  integrity sha512-LGmio4w98UyGX33b/W6V6Nx/sQHRXZ859YlMkn36wPsXPB82u8xTVlA/Dq2DXrm6lEq9RVmisRJa1c+HETAIJA==
+"@actions/http-client@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-1.0.8.tgz#8bd76e8eca89dc8bcf619aa128eba85f7a39af45"
+  integrity sha512-G4JjJ6f9Hb3Zvejj+ewLLKLf99ZC+9v+yCxoYf9vSyH+WkzPLB2LuUtRMGNkooMqdugGBFStIKXOuvH1W+EctA==
   dependencies:
     tunnel "0.0.6"
 
@@ -27,13 +27,13 @@
   integrity sha512-J8KuFqVPr3p6U8W93DOXlXW6zFvrQAJANdS+vw0YhusLIq+bszW8zmK2Fh1C2kDPX8FMvwIl1OUcFgvJoXLbAg==
 
 "@actions/tool-cache@^1.3.1":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@actions/tool-cache/-/tool-cache-1.3.3.tgz#34cf87a0436a2178207a644932114a236194b0fd"
-  integrity sha512-AFVyTLcIxusDVI1gMhbZW8m/On7YNJG+xYaxorV+qic+f7lO7h37aT2mfzxqAq7mwHxtP1YlVFNrXe9QDf/bPg==
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@actions/tool-cache/-/tool-cache-1.3.4.tgz#2d2e3d109696edc7c12b0bd47ab6f66446428246"
+  integrity sha512-1Pfz4vDbKzqsWOi5CdNl377cwBNfsNrV3Wy8i94mw+49T+6JVqAH3gtFj/Woe93zyvlvzqM0rmQlPh5+jvKLag==
   dependencies:
     "@actions/core" "^1.2.0"
     "@actions/exec" "^1.0.0"
-    "@actions/http-client" "^1.0.3"
+    "@actions/http-client" "^1.0.8"
     "@actions/io" "^1.0.1"
     semver "^6.1.0"
     uuid "^3.3.2"
