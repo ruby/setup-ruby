@@ -120,9 +120,7 @@ You can cache the installed gems with these two steps:
         restore-keys: |
           bundle-use-ruby-${{ matrix.os }}-${{ matrix.ruby }}-
     - name: bundle install
-      run: |
-        bundle config path vendor/bundle
-        bundle install --jobs 4 --retry 3
+      run: bundle install --deployment --jobs 4
 ```
 
 When using a single OS, replace `${{ matrix.os }}` with the OS.  
