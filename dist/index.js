@@ -988,7 +988,7 @@ async function main() {
   process.chdir(core.getInput('working-directory'))
 
   const platform = common.getVirtualEnvironmentName()
-  const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
+  const [engine, parsedVersion] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
 
   let installer
   if (platform === 'windows-latest' && engine !== 'jruby') {
@@ -998,13 +998,13 @@ async function main() {
   }
 
   const engineVersions = installer.getAvailableVersions(platform, engine)
-  const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
+  const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
 
   createGemRC()
 
-  const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
+  const [rubyPrefix, newPathEntries] = await installer.install(platform, engine, version)
 
-  setupPath(ruby, newPathEntries)
+  setupPath(newPathEntries)
 
   if (core.getInput('bundler') !== 'none') {
     await common.measure('Installing Bundler', async () =>
@@ -1049,24 +1049,25 @@ function parseRubyEngineAndVersion(rubyVersion) {
   return [engine, version]
 }
 
-function validateRubyEngineAndVersion(platform, engineVersions, engine, version) {
+function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion) {
   if (!engineVersions) {
     throw new Error(`Unknown engine ${engine} on ${platform}`)
   }
 
-  if (!engineVersions.includes(version)) {
+  let version = parsedVersion
+  if (!engineVersions.includes(parsedVersion)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
-    const found = latestToFirstVersion.find(v => v !== 'head' && v.startsWith(version))
+    const found = latestToFirstVersion.find(v => v !== 'head' && v.startsWith(parsedVersion))
     if (found) {
       version = found
     } else {
-      throw new Error(`Unknown version ${version} for ${engine} on ${platform}
+      throw new Error(`Unknown version ${parsedVersion} for ${engine} on ${platform}
         available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
         File an issue at https://github.com/ruby/setup-ruby/issues if would like support for a new version`)
     }
   }
 
-  return engine + '-' + version
+  return version
 }
 
 function createGemRC() {
@@ -1076,7 +1077,7 @@ function createGemRC() {
   }
 }
 
-function setupPath(ruby, newPathEntries) {
+function setupPath(newPathEntries) {
   const originalPath = process.env['PATH'].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
@@ -1135,7 +1136,7 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  if (engine === 'ruby' && isHeadVersion(rubyVersion) && bundlerVersion === '2') {
+  if (engine === 'ruby' && common.isHeadVersion(rubyVersion) && bundlerVersion === '2') {
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
   } else if (engine === 'truffleruby' && bundlerVersion === '1') {
     console.log(`Using Bundler 1 shipped with ${engine}`)
@@ -1145,10 +1146,6 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
   }
-}
-
-function isHeadVersion(rubyVersion) {
-  return rubyVersion === 'head' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
 }
 
 if (__filename.endsWith('index.js')) { run() }
@@ -1504,6 +1501,7 @@ module.exports = require("https");
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "measure", function() { return measure; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isHeadVersion", function() { return isHeadVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
 const os = __webpack_require__(87)
 const fs = __webpack_require__(747)
@@ -1521,6 +1519,10 @@ async function measure(name, block) {
       console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
     }
   })
+}
+
+function isHeadVersion(rubyVersion) {
+  return rubyVersion === 'head' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
 }
 
 function getVirtualEnvironmentName() {
@@ -3541,10 +3543,10 @@ function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions.getVersions(platform)[engine]
 }
 
-async function install(platform, ruby) {
-  const rubyPrefix = await downloadAndExtract(platform, ruby)
+async function install(platform, engine, version) {
+  const rubyPrefix = await downloadAndExtract(platform, engine, version)
   let newPathEntries
-  if (ruby.startsWith('rubinius')) {
+  if (engine === 'rubinius') {
     newPathEntries = [path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')]
   } else {
     newPathEntries = [path.join(rubyPrefix, 'bin')]
@@ -3552,12 +3554,12 @@ async function install(platform, ruby) {
   return [rubyPrefix, newPathEntries]
 }
 
-async function downloadAndExtract(platform, ruby) {
+async function downloadAndExtract(platform, engine, version) {
   const rubiesDir = path.join(os.homedir(), '.rubies')
   await io.mkdirP(rubiesDir)
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
-    const url = getDownloadURL(platform, ruby)
+    const url = getDownloadURL(platform, engine, version)
     console.log(url)
     return await tc.downloadTool(url)
   })
@@ -3566,19 +3568,18 @@ async function downloadAndExtract(platform, ruby) {
   await common.measure('Extracting Ruby', async () =>
     exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ]))
 
-  return path.join(rubiesDir, ruby)
+  return path.join(rubiesDir, `${engine}-${version}`)
 }
 
-function getDownloadURL(platform, ruby) {
-  if (ruby.endsWith('-head')) {
-    return getLatestHeadBuildURL(platform, ruby)
+function getDownloadURL(platform, engine, version) {
+  if (common.isHeadVersion(version)) {
+    return getLatestHeadBuildURL(platform, engine, version)
   } else {
-    return `${releasesURL}/download/${builderReleaseTag}/${ruby}-${platform}.tar.gz`
+    return `${releasesURL}/download/${builderReleaseTag}/${engine}-${version}-${platform}.tar.gz`
   }
 }
 
-function getLatestHeadBuildURL(platform, ruby) {
-  const engine = ruby.split('-')[0]
+function getLatestHeadBuildURL(platform, engine, version) {
   return `https://github.com/ruby/${engine}-dev-builder/releases/latest/download/${engine}-head-${platform}.tar.gz`
 }
 
@@ -5001,8 +5002,7 @@ function getAvailableVersions(platform, engine) {
   }
 }
 
-async function install(platform, ruby) {
-  const version = ruby.split('-', 2)[1]
+async function install(platform, engine, version) {
   const url = rubyInstallerVersions[version]
 
   if (!url.endsWith('.7z')) {

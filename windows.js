@@ -33,8 +33,7 @@ export function getAvailableVersions(platform, engine) {
   }
 }
 
-export async function install(platform, ruby) {
-  const version = ruby.split('-', 2)[1]
+export async function install(platform, engine, version) {
   const url = rubyInstallerVersions[version]
 
   if (!url.endsWith('.7z')) {

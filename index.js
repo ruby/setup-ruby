@@ -17,7 +17,7 @@ async function main() {
   process.chdir(core.getInput('working-directory'))
 
   const platform = common.getVirtualEnvironmentName()
-  const [engine, version] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
+  const [engine, parsedVersion] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
 
   let installer
   if (platform === 'windows-latest' && engine !== 'jruby') {
@@ -27,13 +27,13 @@ async function main() {
   }
 
   const engineVersions = installer.getAvailableVersions(platform, engine)
-  const ruby = validateRubyEngineAndVersion(platform, engineVersions, engine, version)
+  const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
 
   createGemRC()
 
-  const [rubyPrefix, newPathEntries] = await installer.install(platform, ruby)
+  const [rubyPrefix, newPathEntries] = await installer.install(platform, engine, version)
 
-  setupPath(ruby, newPathEntries)
+  setupPath(newPathEntries)
 
   if (core.getInput('bundler') !== 'none') {
     await common.measure('Installing Bundler', async () =>
@@ -78,24 +78,25 @@ function parseRubyEngineAndVersion(rubyVersion) {
   return [engine, version]
 }
 
-function validateRubyEngineAndVersion(platform, engineVersions, engine, version) {
+function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion) {
   if (!engineVersions) {
     throw new Error(`Unknown engine ${engine} on ${platform}`)
   }
 
-  if (!engineVersions.includes(version)) {
+  let version = parsedVersion
+  if (!engineVersions.includes(parsedVersion)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
-    const found = latestToFirstVersion.find(v => v !== 'head' && v.startsWith(version))
+    const found = latestToFirstVersion.find(v => v !== 'head' && v.startsWith(parsedVersion))
     if (found) {
       version = found
     } else {
-      throw new Error(`Unknown version ${version} for ${engine} on ${platform}
+      throw new Error(`Unknown version ${parsedVersion} for ${engine} on ${platform}
         available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
         File an issue at https://github.com/ruby/setup-ruby/issues if would like support for a new version`)
     }
   }
 
-  return engine + '-' + version
+  return version
 }
 
 function createGemRC() {
@@ -105,7 +106,7 @@ function createGemRC() {
   }
 }
 
-function setupPath(ruby, newPathEntries) {
+function setupPath(newPathEntries) {
   const originalPath = process.env['PATH'].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
@@ -164,7 +165,7 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  if (engine === 'ruby' && isHeadVersion(rubyVersion) && bundlerVersion === '2') {
+  if (engine === 'ruby' && common.isHeadVersion(rubyVersion) && bundlerVersion === '2') {
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
   } else if (engine === 'truffleruby' && bundlerVersion === '1') {
     console.log(`Using Bundler 1 shipped with ${engine}`)
@@ -174,10 +175,6 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
   }
-}
-
-function isHeadVersion(rubyVersion) {
-  return rubyVersion === 'head' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
 }
 
 if (__filename.endsWith('index.js')) { run() }
