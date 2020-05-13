@@ -17,7 +17,7 @@ export async function measure(name, block) {
 }
 
 export function isHeadVersion(rubyVersion) {
-  return rubyVersion === 'head' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
+  return rubyVersion === 'head' || rubyVersion === 'debug' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
 }
 
 export function getVirtualEnvironmentName() {

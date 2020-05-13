@@ -50,5 +50,5 @@ function getDownloadURL(platform, engine, version) {
 }
 
 function getLatestHeadBuildURL(platform, engine, version) {
-  return `https://github.com/ruby/${engine}-dev-builder/releases/latest/download/${engine}-head-${platform}.tar.gz`
+  return `https://github.com/ruby/${engine}-dev-builder/releases/latest/download/${engine}-${version}-${platform}.tar.gz`
 }

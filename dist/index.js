@@ -1462,7 +1462,7 @@ function getVersions(platform) {
       "2.5.0", "2.5.1", "2.5.2", "2.5.3", "2.5.4", "2.5.5", "2.5.6", "2.5.7", "2.5.8",
       "2.6.0", "2.6.1", "2.6.2", "2.6.3", "2.6.4", "2.6.5", "2.6.6",
       "2.7.0", "2.7.1",
-      "head"
+      "head", "debug",
     ],
     "jruby": [
       "9.1.17.0",
@@ -1522,7 +1522,7 @@ async function measure(name, block) {
 }
 
 function isHeadVersion(rubyVersion) {
-  return rubyVersion === 'head' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
+  return rubyVersion === 'head' || rubyVersion === 'debug' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
 }
 
 function getVirtualEnvironmentName() {
@@ -3580,7 +3580,7 @@ function getDownloadURL(platform, engine, version) {
 }
 
 function getLatestHeadBuildURL(platform, engine, version) {
-  return `https://github.com/ruby/${engine}-dev-builder/releases/latest/download/${engine}-head-${platform}.tar.gz`
+  return `https://github.com/ruby/${engine}-dev-builder/releases/latest/download/${engine}-${version}-${platform}.tar.gz`
 }
 
 

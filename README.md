@@ -14,11 +14,12 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 
 | Interpreter | Versions |
 | ----------- | -------- |
-| Ruby | 2.2, 2.3.0 - 2.3.8, 2.4.0 - 2.4.10, 2.5.0 - 2.5.8, 2.6.0 - 2.6.6, 2.7.1, head, mingw, mswin |
+| Ruby | 2.2, 2.3.0 - 2.3.8, 2.4.0 - 2.4.10, 2.5.0 - 2.5.8, 2.6.0 - 2.6.6, 2.7.1, head, debug, mingw, mswin |
 | JRuby | 9.1.17.0, 9.2.9.0 - 9.2.11.1, head |
 | TruffleRuby | 19.3.0 - 20.0.0, head |
 | Rubinius | 4.14 |
 
+`ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).  
 On Windows, `mingw` and `mswin` are `ruby-head` builds using the MSYS2/MinGW and the MSVC toolchains respectively.
 
 Ruby 2.2 resolves to 2.2.6 on Windows (last build from RubyInstaller) and 2.2.10 otherwise.  
