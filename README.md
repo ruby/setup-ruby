@@ -94,8 +94,9 @@ jobs:
     - run: bundle exec rake
 ```
 
-See the [GitHub Actions documentation](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions)
-for more details about the workflow syntax.
+See the GitHub Actions documentation for more details about the
+[workflow syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions)
+and the [condition and expression syntax](https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions).
 
 ### Supported Version Syntax
 
