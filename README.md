@@ -64,13 +64,14 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6
-    - run: ruby -v
+        ruby-version: 2.6 # Not needed with a .ruby-version file
+    - run: bundle install
+    - run: bundle exec rake
 ```
 
 ### Matrix
 
-This matrix tests all stable releases of MRI, JRuby and TruffleRuby on Ubuntu and macOS.
+This matrix tests all stable releases and `head` versions of MRI, JRuby and TruffleRuby on Ubuntu and macOS.
 
 ```yaml
 name: My workflow
@@ -80,16 +81,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        ruby: [ 2.5, 2.6, 2.7, jruby, truffleruby ]
-    runs-on: ${{ matrix.os }}
+        os: [ubuntu, macos]
+        ruby: [2.5, 2.6, 2.7, head, debug, jruby, jruby-head, truffleruby, truffleruby-head]
+    runs-on: ${{ matrix.os }}-latest
+    continue-on-error: ${{ endsWith(matrix.ruby, 'head') || matrix.ruby == 'debug' }}
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-    - run: ruby -v
+    - run: bundle install
+    - run: bundle exec rake
 ```
+
+See the [GitHub Actions documentation](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions)
+for more details about the workflow syntax.
 
 ### Supported Version Syntax
 
