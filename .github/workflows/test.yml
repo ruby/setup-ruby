@@ -15,13 +15,13 @@ jobs:
       matrix:
         os: [ ubuntu, macos, windows ]
         # Use various version syntax here for testing
-        ruby: [ 2.2, 2.3, 2.4, 2.5, 2.6.6, 2.7, ruby-head, ruby-debug, jruby-9.1, jruby, jruby-head, truffleruby, truffleruby-head ]
+        ruby: [ 2.2, 2.3, 2.4, 2.5, 2.6.6, 2.7, ruby-head, debug, jruby-9.1, jruby, jruby-head, truffleruby, truffleruby-head ]
         include:
         - { os: ubuntu, ruby: rubinius }
         - { os: windows, ruby: mingw }
         - { os: windows, ruby: mswin }
         exclude:
-        - { os: windows, ruby: ruby-debug }
+        - { os: windows, ruby: debug }
         - { os: windows, ruby: truffleruby }
         - { os: windows, ruby: truffleruby-head }
 

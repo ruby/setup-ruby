@@ -65,7 +65,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
   }
 
   let engine, version
-  if (rubyVersion.match(/^(\d+|head|mingw|mswin)/)) { // X.Y.Z => ruby-X.Y.Z
+  if (rubyVersion.match(/^(\d+)/) || common.isHeadVersion(rubyVersion)) { // X.Y.Z => ruby-X.Y.Z
     engine = 'ruby'
     version = rubyVersion
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
@@ -86,7 +86,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   let version = parsedVersion
   if (!engineVersions.includes(parsedVersion)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
-    const found = latestToFirstVersion.find(v => v !== 'head' && v.startsWith(parsedVersion))
+    const found = latestToFirstVersion.find(v => !common.isHeadVersion(v) && v.startsWith(parsedVersion))
     if (found) {
       version = found
     } else {
