@@ -39,6 +39,7 @@ jobs:
     - uses: ./
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
     - run: ruby -v
 
     - name: build compiler
