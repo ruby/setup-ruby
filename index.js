@@ -3,11 +3,13 @@ const fs = require('fs')
 const path = require('path')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
+const cache = require('@actions/cache')
 const common = require('./common')
 
 const inputDefaults = {
   'ruby-version': 'default',
   'bundler': 'default',
+  'bundler-cache': 'true',
   'working-directory': '.',
 }
 
@@ -50,6 +52,11 @@ export async function setupRuby(options) {
   if (inputs['bundler'] !== 'none') {
     await common.measure('Installing Bundler', async () =>
       installBundler(inputs['bundler'], platform, rubyPrefix, engine, version))
+
+    if (inputs['bundler-cache'] === 'true') {
+      await common.measure('bundle install', async () =>
+          bundleInstall(platform, engine, version))
+    }
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
@@ -192,6 +199,83 @@ async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine,
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
   }
+}
+
+async function bundleInstall(platform, engine, version) {
+  if (!fs.existsSync('Gemfile')) {
+    console.log('No Gemfile, skipping "bundle install" and caching')
+    return
+  }
+
+  // config
+  const path = 'vendor/bundle'
+  const hasGemfileLock = fs.existsSync('Gemfile.lock');
+  if (hasGemfileLock) {
+    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'])
+  }
+  await exec.exec('bundle', ['config', '--local', 'path', path])
+
+  // cache key
+  const paths = [path]
+  const baseKey = await computeBaseKey(platform, engine, version)
+  let key = baseKey
+  let restoreKeys
+  if (hasGemfileLock) {
+    key += `-Gemfile.lock-${await common.hashFile('Gemfile.lock')}`
+    // If only Gemfile.lock we can reuse some of the cache (but it will keep old gem versions in the cache)
+    restoreKeys = [`${baseKey}-Gemfile.lock-`]
+  } else {
+    // Only exact key, to never mix native gems of different platforms or Ruby versions
+    restoreKeys = []
+  }
+  console.log(`Cache key: ${key}`)
+
+  // restore cache & install
+  const cachedKey = await cache.restoreCache(paths, key, restoreKeys)
+  if (cachedKey) {
+    console.log(`Found cache for key: ${cachedKey}`)
+  }
+
+  let alreadyInstalled = false
+  if (cachedKey === key) {
+    const exitCode = await exec.exec('bundle', ['check'], { ignoreReturnCode: true })
+    alreadyInstalled = (exitCode === 0)
+  }
+
+  if (!alreadyInstalled) {
+    await exec.exec('bundle', ['install', '--jobs', '4'])
+
+    // Error handling from https://github.com/actions/cache/blob/master/src/save.ts
+    console.log('Saving cache')
+    try {
+      await cache.saveCache(paths, key)
+    } catch (error) {
+      if (error.name === cache.ValidationError.name) {
+        throw error;
+      } else if (error.name === cache.ReserveCacheError.name) {
+        core.info(error.message);
+      } else {
+        core.info(`[warning]${error.message}`)
+      }
+    }
+  }
+}
+
+async function computeBaseKey(platform, engine, version) {
+  let baseKey = `setup-ruby-bundle-install-${platform}-${engine}-${version}`
+  if (engine === 'ruby' && common.isHeadVersion(version)) {
+    let revision = '';
+    await exec.exec('ruby', ['-e', 'print RUBY_REVISION'], {
+      silent: true,
+      listeners: {
+        stdout: (data) => {
+          revision += data.toString();
+        }
+      }
+    });
+    baseKey += `-revision-${revision}`
+  }
+  return baseKey
 }
 
 if (__filename.endsWith('index.js')) { run() }

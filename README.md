@@ -116,8 +116,27 @@ Otherwise, the latest Bundler version is installed (except for Ruby 2.2 and 2.3 
 
 This behavior can be customized, see [action.yml](action.yml) for details about the `bundler` input.
 
-### Caching `bundle install`
+### Caching `bundle install` automatically
 
+This action provides a way to automatically run `bundle install` and cache the result:
+```yaml
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+```
+
+This caching speeds up installing gems significantly and avoids too many requests to RubyGems.org.  
+It needs a `Gemfile` under the [`working-directory`](#working-directory).  
+The caching works whether there is a `Gemfile.lock` or not.
+If there is a `Gemfile.lock`, `bundle config --local deployment true` is used.
+  
+To perform caching, this action will use `bundle config --local path vendor/bundle`.  
+Therefore, the Bundler `path` should not be changed in your workflow for the cache to work.
+
+### Caching `bundle install` manually
+
+You can also cache gems manually,
+but this is not recommended because it is verbose and very difficult to use a correct cache key.
 You can cache the installed gems with these two steps:
 
 ```yaml
@@ -140,7 +159,8 @@ When using `.ruby-version`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.r
 When using `.tool-versions`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.tool-versions') }}`.
 
 This uses the [cache action](https://github.com/actions/cache).
-The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---bundler).
+The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---\
+bundler).
 Make sure to include `use-ruby` in the `key` to avoid conflicting with previous caches.
 
 ### Working Directory

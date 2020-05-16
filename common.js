@@ -1,5 +1,8 @@
 const os = require('os')
 const fs = require('fs')
+const util = require('util')
+const stream = require('stream')
+const crypto = require('crypto')
 const core = require('@actions/core')
 const { performance } = require('perf_hooks')
 
@@ -18,6 +21,14 @@ export async function measure(name, block) {
 
 export function isHeadVersion(rubyVersion) {
   return rubyVersion === 'head' || rubyVersion === 'debug' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
+}
+
+export async function hashFile(file) {
+  // See https://github.com/actions/runner/blob/master/src/Misc/expressionFunc/hashFiles/src/hashFiles.ts
+  const hash = crypto.createHash('sha256')
+  const pipeline = util.promisify(stream.pipeline)
+  await pipeline(fs.createReadStream(file), hash)
+  return hash.digest('hex')
 }
 
 export function getVirtualEnvironmentName() {
