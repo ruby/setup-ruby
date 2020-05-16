@@ -130,6 +130,7 @@ You can cache the installed gems with these two steps:
     - name: bundle install
       run: |
         bundle config deployment true
+        bundle config path vendor/bundle
         bundle install --jobs 4
 ```
 
