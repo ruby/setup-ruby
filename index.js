@@ -5,19 +5,31 @@ const core = require('@actions/core')
 const exec = require('@actions/exec')
 const common = require('./common')
 
+const inputDefaults = {
+  'ruby-version': 'default',
+  'bundler': 'default',
+  'working-directory': '.',
+}
+
 export async function run() {
   try {
-    await main()
+    const options = {}
+    for (const key in inputDefaults) {
+      options[key] = core.getInput(key)
+    }
+    await setupRuby(options)
   } catch (error) {
     core.setFailed(error.message)
   }
 }
 
-async function main() {
-  process.chdir(core.getInput('working-directory'))
+export async function setupRuby(options) {
+  const inputs = { ...inputDefaults, ...options }
+
+  process.chdir(inputs['working-directory'])
 
   const platform = common.getVirtualEnvironmentName()
-  const [engine, parsedVersion] = parseRubyEngineAndVersion(core.getInput('ruby-version'))
+  const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
   if (platform === 'windows-latest' && engine !== 'jruby') {
@@ -35,9 +47,9 @@ async function main() {
 
   setupPath(newPathEntries)
 
-  if (core.getInput('bundler') !== 'none') {
+  if (inputs['bundler'] !== 'none') {
     await common.measure('Installing Bundler', async () =>
-      installBundler(platform, rubyPrefix, engine, version))
+      installBundler(inputs['bundler'], platform, rubyPrefix, engine, version))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
@@ -142,8 +154,8 @@ function readBundledWithFromGemfileLock() {
   return null
 }
 
-async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
-  var bundlerVersion = core.getInput('bundler')
+async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine, rubyVersion) {
+  var bundlerVersion = bundlerVersionInput
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
     bundlerVersion = readBundledWithFromGemfileLock()
