@@ -1127,13 +1127,18 @@ async function installBundler(platform, rubyPrefix, engine, rubyVersion) {
     bundlerVersion = '2'
   }
 
-  if (rubyVersion.startsWith('2.2')) {
-    console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby 2.2')
-    bundlerVersion = '1'
-  } else if (/^\d+/.test(bundlerVersion)) {
+  if (/^\d+/.test(bundlerVersion)) {
     // OK
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
+  }
+
+  if (rubyVersion.startsWith('2.2')) {
+    console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby 2.2')
+    bundlerVersion = '1'
+  } else if (rubyVersion.startsWith('2.3')) {
+    console.log('Ruby 2.3 has a bug with Bundler 2 (https://github.com/rubygems/rubygems/issues/3570), using Bundler 1 instead on Ruby 2.3')
+    bundlerVersion = '1'
   }
 
   if (engine === 'ruby' && common.isHeadVersion(rubyVersion) && bundlerVersion === '2') {
