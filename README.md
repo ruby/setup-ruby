@@ -35,7 +35,7 @@ The action works for all [GitHub-hosted runners](https://help.github.com/en/acti
 
 | Operating System | Versions |
 | ----------- | -------- |
-| Ubuntu  | `ubuntu-latest` (= `ubuntu-18.04`), `ubuntu-16.04` |
+| Ubuntu  | `ubuntu-20.04`, `ubuntu-latest` (= `ubuntu-18.04`), `ubuntu-16.04` |
 | macOS   | `macos-latest` |
 | Windows | `windows-latest` |
 
