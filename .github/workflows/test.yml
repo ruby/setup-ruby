@@ -8,6 +8,8 @@ on:
     - '*'
     paths-ignore:
     - README.md
+  schedule:
+    - cron: '0 7 * * SUN'
 jobs:
   test:
     strategy:
