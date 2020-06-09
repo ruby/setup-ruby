@@ -1521,6 +1521,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "measure", function() { return measure; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isHeadVersion", function() { return isHeadVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "win2nix", function() { return win2nix; });
 const os = __webpack_require__(87)
 const fs = __webpack_require__(747)
 const core = __webpack_require__(470)
@@ -1564,6 +1565,15 @@ function findUbuntuVersion() {
   } else {
     throw new Error('Could not find Ubuntu version')
   }
+}
+
+// convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
+function win2nix(path) { 
+  if (/^[A-Z]:/i.test(path)) {
+    // path starts with drive
+    path = `/${path[0].toLowerCase()}${path.split(':')[1]}`
+  }
+  return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
 }
 
 
@@ -3582,9 +3592,16 @@ async function downloadAndExtract(platform, engine, version) {
     return await tc.downloadTool(url)
   })
 
-  const tar = platform.startsWith('windows') ? 'C:\\Windows\\system32\\tar.exe' : 'tar'
-  await common.measure('Extracting Ruby', async () =>
-    exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ]))
+  await common.measure('Extracting Ruby', async () => {
+    if (process.env.ImageOS === 'win16') {
+      const tar = '"C:\\Program Files\\Git\\usr\\bin\\tar.exe"'
+      await exec.exec(tar, [ '-xz', '-C', common.win2nix(rubiesDir), '-f',
+        common.win2nix(downloadPath) ])
+    } else {
+      const tar = platform.startsWith('windows') ? 'C:\\Windows\\system32\\tar.exe' : 'tar'
+      await exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ])
+    }
+  })
 
   return path.join(rubiesDir, `${engine}-${version}`)
 }

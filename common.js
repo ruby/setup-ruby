@@ -42,3 +42,12 @@ function findUbuntuVersion() {
     throw new Error('Could not find Ubuntu version')
   }
 }
+
+// convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
+export function win2nix(path) { 
+  if (/^[A-Z]:/i.test(path)) {
+    // path starts with drive
+    path = `/${path[0].toLowerCase()}${path.split(':')[1]}`
+  }
+  return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
+}
