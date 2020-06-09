@@ -121,7 +121,7 @@ This behavior can be customized, see [action.yml](action.yml) for details about 
 You can cache the installed gems with these two steps:
 
 ```yaml
-    - uses: actions/cache@v1
+    - uses: actions/cache@v2
       with:
         path: vendor/bundle
         key: bundle-use-ruby-${{ matrix.os }}-${{ matrix.ruby }}-${{ hashFiles('**/Gemfile.lock') }}
