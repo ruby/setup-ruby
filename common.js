@@ -47,7 +47,7 @@ function findUbuntuVersion() {
 export function win2nix(path) { 
   if (/^[A-Z]:/i.test(path)) {
     // path starts with drive
-    path = `/${path[0].toLowerCase()}${path.split(':')[1]}`
+    path = `/${path[0].toLowerCase()}${path.split(':', 2)[1]}`
   }
   return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
 }

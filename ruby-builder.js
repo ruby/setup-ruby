@@ -37,8 +37,7 @@ async function downloadAndExtract(platform, engine, version) {
   await common.measure('Extracting Ruby', async () => {
     if (process.env.ImageOS === 'win16') {
       const tar = '"C:\\Program Files\\Git\\usr\\bin\\tar.exe"'
-      await exec.exec(tar, [ '-xz', '-C', common.win2nix(rubiesDir), '-f',
-        common.win2nix(downloadPath) ])
+      await exec.exec(tar, [ '-xz', '-C', common.win2nix(rubiesDir), '-f', common.win2nix(downloadPath) ])
     } else {
       const tar = platform.startsWith('windows') ? 'C:\\Windows\\system32\\tar.exe' : 'tar'
       await exec.exec(tar, [ '-xz', '-C', rubiesDir, '-f',  downloadPath ])
