@@ -2202,14 +2202,14 @@ const inputDefaults = {
 // entry point when this action is run on its own
 async function run() {
   try {
-    await setupRuby({})
+    await setupRuby()
   } catch (error) {
     core.setFailed(error.message)
   }
 }
 
 // entry point when this action is run from other actions
-async function setupRuby(options) {
+async function setupRuby(options = {}) {
   const inputs = { ...options }
   for (const key in inputDefaults) {
     if (!inputs.hasOwnProperty(key)) {
@@ -2237,6 +2237,13 @@ async function setupRuby(options) {
   const [rubyPrefix, newPathEntries] = await installer.install(platform, engine, version)
 
   setupPath(newPathEntries)
+
+  // When setup-ruby is used by other actions, this allows code in them to run
+  // before 'bundle install'.  Installed dependencies may require additional
+  // libraries & headers, build tools, etc.
+  if (inputs['afterSetupPathHook'] instanceof Function) {
+    await inputs['afterSetupPathHook']({ platform, rubyPrefix, engine, version })
+  }
 
   if (inputs['bundler'] !== 'none') {
     await common.measure('Installing Bundler', async () =>
