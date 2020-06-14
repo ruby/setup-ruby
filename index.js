@@ -13,20 +13,23 @@ const inputDefaults = {
   'working-directory': '.',
 }
 
+// entry point when this action is run on its own
 export async function run() {
   try {
-    const options = {}
-    for (const key in inputDefaults) {
-      options[key] = core.getInput(key)
-    }
-    await setupRuby(options)
+    await setupRuby({})
   } catch (error) {
     core.setFailed(error.message)
   }
 }
 
+// entry point when this action is run from other actions
 export async function setupRuby(options) {
-  const inputs = { ...inputDefaults, ...options }
+  const inputs = { ...options }
+  for (const key in inputDefaults) {
+    if (!inputs.hasOwnProperty(key)) {
+      inputs[key] = core.getInput(key) || inputDefaults[key]
+    }
+  }
 
   process.chdir(inputs['working-directory'])
 
