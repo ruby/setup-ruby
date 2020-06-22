@@ -234,7 +234,19 @@ async function bundleInstall(platform, engine, version) {
   console.log(`Cache key: ${key}`)
 
   // restore cache & install
-  const cachedKey = await cache.restoreCache(paths, key, restoreKeys)
+  let cachedKey = null
+  try {
+    cachedKey = await cache.restoreCache(paths, key, restoreKeys)
+  } catch (error) {
+    var isPrematureClose = error.code === 'ERR_STREAM_PREMATURE_CLOSE'
+    if(isPrematureClose){
+      console.log("There was a premature stream close error while attempting to restore the cache. Making an additional attempt now.")
+      cachedKey = await cache.restoreCache(paths, key, restoreKeys)
+    } else {
+      throw error
+    }
+  }
+
   if (cachedKey) {
     console.log(`Found cache for key: ${cachedKey}`)
   }
