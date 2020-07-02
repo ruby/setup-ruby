@@ -15,7 +15,7 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | Interpreter | Versions |
 | ----------- | -------- |
 | Ruby | 2.2, 2.3.0 - 2.3.8, 2.4.0 - 2.4.10, 2.5.0 - 2.5.8, 2.6.0 - 2.6.6, 2.7.1, head, debug, mingw, mswin |
-| JRuby | 9.1.17.0, 9.2.9.0 - 9.2.11.1, head |
+| JRuby | 9.1.17.0, 9.2.9.0 - 9.2.12.0, head |
 | TruffleRuby | 19.3.0 - 20.1.0, head |
 | Rubinius | 4.14 |
 
@@ -129,7 +129,7 @@ This caching speeds up installing gems significantly and avoids too many request
 It needs a `Gemfile` under the [`working-directory`](#working-directory).  
 The caching works whether there is a `Gemfile.lock` or not.
 If there is a `Gemfile.lock`, `bundle config --local deployment true` is used.
-  
+
 To perform caching, this action will use `bundle config --local path vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work.
 
