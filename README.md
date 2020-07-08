@@ -31,7 +31,7 @@ On Windows, Ruby 2.4 uses OpenSSL 1.0.2, which is no longer maintained.
 
 ### Supported Platforms
 
-The action works for all [GitHub-hosted runners](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners).
+The action works for all [GitHub-hosted runners](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners), and [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners), under [certain conditions](#limitations)
 
 | Operating System | Recommended | Other Supported Versions |
 | ----------- | -------- | -------- |
@@ -194,7 +194,11 @@ This follows the [recommendations](https://github.com/actions/toolkit/blob/maste
 
 ## Limitations
 
-* This action currently only works with GitHub-hosted runners, not private runners.
+### Using self-hosted runners
+You must meet the following parameters to use this action with self-hosted runners:
+
+* Make sure that the operating system has `libyaml-0` installed
+* The runner software is running as user `runner` with a home directory of `/home/runner`, or you have created a symlink for the home directory of whatever user that the runner is running as to `/home/runner`.
 
 ## History
 
