@@ -283,7 +283,7 @@ async function bundleInstall(platform, engine, version) {
 
 async function computeBaseKey(platform, engine, version) {
   let baseKey = `setup-ruby-bundle-install-${platform}-${engine}-${version}`
-  if (engine === 'ruby' && common.isHeadVersion(version)) {
+  if (engine !== 'jruby' && common.isHeadVersion(version)) {
     let revision = '';
     await exec.exec('ruby', ['-e', 'print RUBY_REVISION'], {
       silent: true,
