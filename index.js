@@ -241,7 +241,17 @@ async function bundleInstall(platform, engine, version) {
   console.log(`Cache key: ${key}`)
 
   // restore cache & install
-  const cachedKey = await cache.restoreCache(paths, key, restoreKeys)
+  let cachedKey = null
+  try {
+    cachedKey = await cache.restoreCache(paths, key, restoreKeys)
+  } catch (error) {
+    if (error.name === cache.ValidationError.name) {
+      throw error;
+    } else {
+      core.info(`[warning] There was an error restoring the cache ${error.message}`)
+    }
+  }
+
   if (cachedKey) {
     console.log(`Found cache for key: ${cachedKey}`)
   }
