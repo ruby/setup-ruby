@@ -192,7 +192,7 @@ async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine,
   }
 
   if (rubyVersion.match(/^2\.[12]/)) {
-    console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby 2.1 and 2.2')
+    console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
     bundlerVersion = '1'
   } else if (rubyVersion.startsWith('2.3')) {
     console.log('Ruby 2.3 has a bug with Bundler 2 (https://github.com/rubygems/rubygems/issues/3570), using Bundler 1 instead on Ruby 2.3')
