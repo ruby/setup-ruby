@@ -2377,8 +2377,8 @@ async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine,
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  if (rubyVersion.startsWith('2.2')) {
-    console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby 2.2')
+  if (rubyVersion.match(/^2\.[12]/)) {
+    console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby 2.1 and 2.2')
     bundlerVersion = '1'
   } else if (rubyVersion.startsWith('2.3')) {
     console.log('Ruby 2.3 has a bug with Bundler 2 (https://github.com/rubygems/rubygems/issues/3570), using Bundler 1 instead on Ruby 2.3')
@@ -3093,6 +3093,7 @@ __webpack_require__.r(__webpack_exports__);
 function getVersions(platform) {
   const versions = {
     "ruby": [
+      "2.1.9",
       "2.2.10",
       "2.3.0", "2.3.1", "2.3.2", "2.3.3", "2.3.4", "2.3.5", "2.3.6", "2.3.7", "2.3.8",
       "2.4.0", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.4.5", "2.4.6", "2.4.7", "2.4.9", "2.4.10",
@@ -5923,6 +5924,7 @@ exports.getState = getState;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "versions", function() { return versions; });
 const versions = {
+  "2.1.9": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.1.9-x64-mingw32.7z",
   "2.2.6": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.2.6-x64-mingw32.7z",
   "2.3.0": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.3.0-x64-mingw32.7z",
   "2.3.1": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.3.1-x64-mingw32.7z",
@@ -7549,14 +7551,14 @@ const rubyInstallerVersions = __webpack_require__(471).versions
 // Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
 const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
 
-// needed for 2.2, 2.3, and mswin, cert file used by Git for Windows
+// needed for 2.1, 2.2, 2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
 // standard MSYS2 location, found by 'devkit.rb'
 const msys2 = 'C:\\msys64'
 const msys2PathEntries = [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
 
-// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.2 and 2.3
+// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.1, 2.2 and 2.3
 const msys = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`,
   `${msys}\\mingw\\bin`, `${msys}\\bin`]
@@ -7609,7 +7611,7 @@ async function symLinkToEmbeddedMSYS2() {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
-  if (version.startsWith('2.2') || version.startsWith('2.3')) {
+  if (version.match(/^2\.[123]/)) {
     core.exportVariable('SSL_CERT_FILE', certFile)
     await common.measure('Installing MSYS1', async () =>
       installMSYS(version))
@@ -7625,7 +7627,7 @@ async function setupMingw(version) {
   }
 }
 
-// Ruby 2.2 and 2.3
+// Ruby 2.1, 2.2 and 2.3
 async function installMSYS(version) {
   const url = 'https://dl.bintray.com/oneclick/rubyinstaller/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
   const downloadPath = await tc.downloadTool(url)

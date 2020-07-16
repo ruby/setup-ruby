@@ -13,14 +13,14 @@ const rubyInstallerVersions = require('./windows-versions').versions
 // Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
 const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
 
-// needed for 2.2, 2.3, and mswin, cert file used by Git for Windows
+// needed for 2.1, 2.2, 2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
 // standard MSYS2 location, found by 'devkit.rb'
 const msys2 = 'C:\\msys64'
 const msys2PathEntries = [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
 
-// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.2 and 2.3
+// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.1, 2.2 and 2.3
 const msys = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`,
   `${msys}\\mingw\\bin`, `${msys}\\bin`]
@@ -73,7 +73,7 @@ async function symLinkToEmbeddedMSYS2() {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
-  if (version.startsWith('2.2') || version.startsWith('2.3')) {
+  if (version.match(/^2\.[123]/)) {
     core.exportVariable('SSL_CERT_FILE', certFile)
     await common.measure('Installing MSYS1', async () =>
       installMSYS(version))
@@ -89,7 +89,7 @@ async function setupMingw(version) {
   }
 }
 
-// Ruby 2.2 and 2.3
+// Ruby 2.1, 2.2 and 2.3
 async function installMSYS(version) {
   const url = 'https://dl.bintray.com/oneclick/rubyinstaller/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
   const downloadPath = await tc.downloadTool(url)

@@ -3,6 +3,7 @@ versions = eval hash
 
 by_minor = versions[:ruby].group_by { |v| v[/^\d\.\d/] }
 
+p by_minor['2.1']
 p by_minor['2.2']
 p by_minor['2.3']
 
