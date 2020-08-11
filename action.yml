@@ -10,7 +10,7 @@ inputs:
     required: false
     default: 'default'
   bundler:
-    description: 'The version of Bundler to install. Either none, 1, 2, latest or Gemfile.lock. The default tries Gemfile.lock and otherwise uses latest.'
+    description: 'The version of Bundler to install. Either none, 1, 2, latest or Gemfile.lock. In case of none and Gemfile.lock, the version is determined based on the BUNDLE_GEMFILE environment variable. If the variable is not set, it will default to Gemfile.lock. If a bundler option is not provided, it falls back to using "latest".'
     required: false
     default: 'default'
   bundler-cache:
