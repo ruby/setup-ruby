@@ -175,7 +175,8 @@ async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine,
   var bundlerVersion = bundlerVersionInput
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
-    bundlerVersion = readBundledWithFromGemfileLock('Gemfile.lock')
+    const gemfilePath = `${process.env['BUNDLE_GEMFILE'] || 'Gemfile'}.lock`
+    bundlerVersion = readBundledWithFromGemfileLock(gemfilePath)
     if (!bundlerVersion) {
       bundlerVersion = 'latest'
     }
