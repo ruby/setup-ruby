@@ -153,9 +153,9 @@ function setupPath(newPathEntries) {
   core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
 }
 
-function readBundledWithFromGemfileLock() {
-  if (fs.existsSync('Gemfile.lock')) {
-    const contents = fs.readFileSync('Gemfile.lock', 'utf8')
+function readBundledWithFromGemfileLock(path) {
+  if (fs.existsSync(path)) {
+    const contents = fs.readFileSync(path, 'utf8')
     const lines = contents.split(/\r?\n/)
     const bundledWithLine = lines.findIndex(line => /^BUNDLED WITH$/.test(line.trim()))
     if (bundledWithLine !== -1) {
@@ -163,7 +163,7 @@ function readBundledWithFromGemfileLock() {
       if (nextLine && /^\d+/.test(nextLine.trim())) {
         const bundlerVersion = nextLine.trim()
         const majorVersion = bundlerVersion.match(/^\d+/)[0]
-        console.log(`Using Bundler ${majorVersion} from Gemfile.lock BUNDLED WITH ${bundlerVersion}`)
+        console.log(`Using Bundler ${majorVersion} from ${path} BUNDLED WITH ${bundlerVersion}`)
         return majorVersion
       }
     }
@@ -175,7 +175,7 @@ async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine,
   var bundlerVersion = bundlerVersionInput
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
-    bundlerVersion = readBundledWithFromGemfileLock()
+    bundlerVersion = readBundledWithFromGemfileLock('Gemfile.lock')
     if (!bundlerVersion) {
       bundlerVersion = 'latest'
     }
