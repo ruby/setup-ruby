@@ -4,7 +4,6 @@
   "description": "Download a prebuilt Ruby and add it to the PATH in 5 seconds",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint *.js",
     "package": "ncc build index.js -o dist"
   },
   "repository": {
