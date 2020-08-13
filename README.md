@@ -108,13 +108,16 @@ and the [condition and expression syntax](https://help.github.com/en/actions/ref
 * `.tool-versions` reads from the project's `.tool-versions` file
 * If the `ruby-version` input is not specified, `.ruby-version` is tried first, followed by `.tool-versions`
 
+### Working Directory
+
+The `working-directory` input can be set to resolve `.ruby-version`, `.tool-versions` and `Gemfile.lock`
+if they are not at the root of the repository, see [action.yml](action.yml) for details.
+
 ### Bundler
 
-By default, if there is a `Gemfile.lock` file with a `BUNDLED WITH` section,
+By default, if there is a `Gemfile.lock` file (or `$BUNDLE_GEMFILE.lock` if `$BUNDLE_GEMFILE` is set) with a `BUNDLED WITH` section,
 the latest version of Bundler with the same major version will be installed.
-Otherwise, the latest Bundler version is installed (except for Ruby 2.2 and 2.3 where only Bundler 1 is supported).
-
-If your gemfile is not named "Gemfile" or if your project includes multiple gemfiles, you can set the path to a gemfile with the `BUNDLE_GEMFILE` environment variable. The ".lock" suffix will be added to the path before evaluating the file.
+Otherwise, the latest compatible Bundler version is installed (Bundler 2 on Ruby >= 2.4, Bundler 1 on Ruby < 2.4).
 
 This behavior can be customized, see [action.yml](action.yml) for details about the `bundler` input.
 
@@ -128,7 +131,7 @@ This action provides a way to automatically run `bundle install` and cache the r
 ```
 
 This caching speeds up installing gems significantly and avoids too many requests to RubyGems.org.  
-It needs a `Gemfile` under the [`working-directory`](#working-directory).  
+It needs a `Gemfile` (or `$BUNDLE_GEMFILE`) under the [`working-directory`](#working-directory).  
 The caching works whether there is a `Gemfile.lock` or not.
 If there is a `Gemfile.lock`, `bundle config --local deployment true` is used.
 
@@ -164,11 +167,6 @@ This uses the [cache action](https://github.com/actions/cache).
 The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---bundler).
 Make sure to include `use-ruby` in the `key` to avoid conflicting with previous caches.
 
-### Working Directory
-
-The `working-directory` input can be set to resolve `.ruby-version`, `.tool-versions` and `Gemfile.lock`
-if they are not at the root of the repository, see [action.yml](action.yml) for details.
-
 ## Windows
 
 Note that running CI on Windows can be quite challenging if you are not very familiar with Windows.
@@ -193,9 +191,7 @@ Make sure to always use the latest release before reporting an issue on GitHub.
 This action follows semantic versioning with a moving `v1` branch.
 This follows the [recommendations](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) of GitHub Actions.
 
-## Limitations
-
-### Using self-hosted runners
+## Using self-hosted runners
 You must meet the following parameters to use this action with self-hosted runners:
 
 * Make sure that the operating system has `libyaml-0` installed
