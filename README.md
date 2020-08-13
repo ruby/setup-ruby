@@ -114,6 +114,8 @@ By default, if there is a `Gemfile.lock` file with a `BUNDLED WITH` section,
 the latest version of Bundler with the same major version will be installed.
 Otherwise, the latest Bundler version is installed (except for Ruby 2.2 and 2.3 where only Bundler 1 is supported).
 
+If your gemfile is not named "Gemfile" or if your project includes multiple gemfiles, you can set the path to a gemfile with the `BUNDLE_GEMFILE` environment variable. The ".lock" suffix will be added to the path before evaluating the file.
+
 This behavior can be customized, see [action.yml](action.yml) for details about the `bundler` input.
 
 ### Caching `bundle install` automatically
