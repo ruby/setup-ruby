@@ -159,8 +159,7 @@ When using `.ruby-version`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.r
 When using `.tool-versions`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.tool-versions') }}`.
 
 This uses the [cache action](https://github.com/actions/cache).
-The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---\
-bundler).
+The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---bundler).
 Make sure to include `use-ruby` in the `key` to avoid conflicting with previous caches.
 
 ### Working Directory
