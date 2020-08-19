@@ -3110,7 +3110,7 @@ function getVersions(platform) {
     ],
     "truffleruby": [
       "19.3.0", "19.3.1",
-      "20.0.0", "20.1.0",
+      "20.0.0", "20.1.0", "20.2.0",
       "head"
     ]
   }
