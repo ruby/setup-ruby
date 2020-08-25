@@ -1,10 +1,13 @@
 const os = require('os')
+const path = require('path')
 const fs = require('fs')
 const util = require('util')
 const stream = require('stream')
 const crypto = require('crypto')
 const core = require('@actions/core')
 const { performance } = require('perf_hooks')
+
+const isWin = (os.platform() === 'win32')
 
 export async function measure(name, block) {
   return await core.group(name, async () => {
@@ -61,4 +64,31 @@ export function win2nix(path) {
     path = `/${path[0].toLowerCase()}${path.split(':', 2)[1]}`
   }
   return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
+}
+
+export function setupPath(newPathEntries) {
+  const envPath = isWin ? 'Path' : 'PATH'
+  const originalPath = process.env[envPath].split(path.delimiter)
+  let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
+
+  if (cleanPath.length !== originalPath.length) {
+    core.startGroup(`Cleaning ${envPath}`)
+    console.log(`Entries removed from ${envPath} to avoid conflicts with Ruby:`)
+    for (const entry of originalPath) {
+      if (!cleanPath.includes(entry)) {
+        console.log(`  ${entry}`)
+      }
+    }
+    core.exportVariable(envPath, cleanPath.join(path.delimiter))
+    core.endGroup()
+  }
+  let newPath
+  if (isWin) {
+    // add MSYS2 path to all for bash shell
+    const msys2 = ['C:\\msys64\\mingw64\\bin', 'C:\\msys64\\usr\\bin']
+    newPath = [...newPathEntries, ...msys2]
+  } else {
+    newPath = newPathEntries
+  }
+  core.addPath(newPath.join(path.delimiter))
 }

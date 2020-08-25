@@ -16,10 +16,6 @@ const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
 // needed for 2.1, 2.2, 2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
-// standard MSYS2 location, found by 'devkit.rb'
-const msys2 = 'C:\\msys64'
-const msys2PathEntries = [`${msys2}\\mingw64\\bin`, `${msys2}\\usr\\bin`]
-
 // location & path for old RubyInstaller DevKit (MSYS), Ruby 2.1, 2.2 and 2.3
 const msys = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`,
@@ -41,6 +37,13 @@ export async function install(platform, engine, version) {
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
+  const rubyPrefix = `${drive}:\\${base}`
+
+  let toolchainPaths = (version === 'mswin') ?
+    await setupMSWin() : await setupMingw(version)
+
+  common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
+
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     console.log(url)
     return await tc.downloadTool(url)
@@ -48,13 +51,8 @@ export async function install(platform, engine, version) {
 
   await common.measure('Extracting Ruby', async () =>
     exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true }))
-  const rubyPrefix = `${drive}:\\${base}`
 
-  let toolchainPaths = (version === 'mswin') ?
-    await setupMSWin() : await setupMingw(version)
-  const newPathEntries = [`${rubyPrefix}\\bin`, ...toolchainPaths]
-
-  return [rubyPrefix, newPathEntries]
+  return rubyPrefix
 }
 
 async function setupMingw(version) {
@@ -65,7 +63,7 @@ async function setupMingw(version) {
     await common.measure('Installing MSYS', async () => installMSYS(version))
     return msysPathEntries
   } else {
-    return msys2PathEntries
+    return []
   }
 }
 
@@ -101,7 +99,7 @@ async function setupMSWin() {
   const VCPathEntries = await common.measure('Setting up MSVC environment', async () =>
     addVCVARSEnv())
 
-  return [...VCPathEntries, ...msys2PathEntries]
+  return VCPathEntries
 }
 
 /* Sets MSVC environment for use in Actions
@@ -124,8 +122,9 @@ export function addVCVARSEnv() {
   let newPathEntries = undefined
   for (let [k, v] of newEnv) {
     if (process.env[k] !== v) {
-      if (k === 'Path') {
-        newPathEntries = v.replace(process.env['Path'], '').split(path.delimiter)
+      if (/^Path$/i.test(k)) {
+        const newPathStr = v.replace(`$(path.delimiter)${process.env['Path']}`, '')
+        newPathEntries = newPathStr.split(path.delimiter)
       } else {
         core.exportVariable(k, v)
       }

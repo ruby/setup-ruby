@@ -6,6 +6,8 @@ const exec = require('@actions/exec')
 const cache = require('@actions/cache')
 const common = require('./common')
 
+const isWin = (os.platform() === 'win32')
+
 const inputDefaults = {
   'ruby-version': 'default',
   'bundler': 'default',
@@ -26,7 +28,7 @@ export async function run() {
 export async function setupRuby(options = {}) {
   const inputs = { ...options }
   for (const key in inputDefaults) {
-    if (!inputs.hasOwnProperty(key)) {
+    if (!Object.prototype.hasOwnProperty.call(inputs, key)) {
       inputs[key] = core.getInput(key) || inputDefaults[key]
     }
   }
@@ -48,9 +50,10 @@ export async function setupRuby(options = {}) {
 
   createGemRC()
 
-  const [rubyPrefix, newPathEntries] = await installer.install(platform, engine, version)
+  envPreInstall()
 
-  setupPath(newPathEntries)
+  const rubyPrefix = await installer.install(platform, engine, version)
+
 
   // When setup-ruby is used by other actions, this allows code in them to run
   // before 'bundle install'.  Installed dependencies may require additional
@@ -135,22 +138,18 @@ function createGemRC() {
   }
 }
 
-function setupPath(newPathEntries) {
-  const originalPath = process.env['PATH'].split(path.delimiter)
-  let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
-
-  if (cleanPath.length !== originalPath.length) {
-    core.startGroup('Cleaning PATH')
-    console.log('Entries removed from PATH to avoid conflicts with Ruby:')
-    for (const entry of originalPath) {
-      if (!cleanPath.includes(entry)) {
-        console.log(`  ${entry}`)
-      }
-    }
-    core.endGroup()
+// sets up ENV variables
+// currrently only used on Windows runners
+function envPreInstall() {
+  const ENV = process.env
+  if (isWin) {
+    // puts normal Ruby temp folder on SSD
+    core.exportVariable('TMPDIR', ENV['RUNNER_TEMP'])
+    // bash - sets home to match native windows, normally C:\Users\<user name>
+    core.exportVariable('HOME', ENV['HOMEDRIVE'] + ENV['HOMEPATH'])
+    // bash - needed to maintain Path from Windows
+    core.exportVariable('MSYS2_PATH_TYPE', 'inherit')
   }
-
-  core.exportVariable('PATH', [...newPathEntries, ...cleanPath].join(path.delimiter))
 }
 
 function readBundledWithFromGemfileLock(path) {
