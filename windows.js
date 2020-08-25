@@ -57,34 +57,14 @@ export async function install(platform, engine, version) {
   return [rubyPrefix, newPathEntries]
 }
 
-// Remove when Actions Windows image contains MSYS2 install
-async function symLinkToEmbeddedMSYS2() {
-  const toolCacheVersions = tc.findAllVersions('Ruby')
-  toolCacheVersions.sort()
-  if (toolCacheVersions.length === 0) {
-    throw new Error('Could not find MSYS2 in the toolcache')
-  }
-  const latestVersion = toolCacheVersions.slice(-1)[0]
-  const hostedRuby = tc.find('Ruby', latestVersion)
-  await common.measure('Linking MSYS2', async () =>
-    exec.exec(`cmd /c mklink /D ${msys2} ${hostedRuby}\\msys64`))
-}
-
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
   if (version.match(/^2\.[123]/)) {
     core.exportVariable('SSL_CERT_FILE', certFile)
-    await common.measure('Installing MSYS1', async () =>
-      installMSYS(version))
-
+    await common.measure('Installing MSYS', async () => installMSYS(version))
     return msysPathEntries
   } else {
-    // Remove when Actions Windows image contains MSYS2 install
-    if (!fs.existsSync(msys2)) {
-      await symLinkToEmbeddedMSYS2()
-    }
-
     return msys2PathEntries
   }
 }
@@ -116,11 +96,6 @@ async function setupMSWin() {
   const cert = 'C:\\Program Files\\Common Files\\SSL\\cert.pem'
   if (!fs.existsSync(cert)) {
     fs.copyFileSync(certFile, cert)
-  }
-
-  // Remove when Actions Windows image contains MSYS2 install
-  if (!fs.existsSync(msys2)) {
-    await symLinkToEmbeddedMSYS2()
   }
 
   const VCPathEntries = await common.measure('Setting up MSVC environment', async () =>
