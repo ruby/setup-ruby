@@ -223,8 +223,8 @@ async function bundleInstall(platform, engine, version) {
   console.log('No Gemfile/gems.rb, skipping "bundle install" and caching')
 }
 
-async function bundleInstallSpecific(gemsPath, lockPath, platform, engine, version) {
-  if (!fs.existsSync(gemsPath)) {
+async function bundleInstallSpecific(gemfilePath, lockPath, platform, engine, version) {
+  if (!fs.existsSync(gemfilePath)) {
     return false
   }
 
