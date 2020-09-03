@@ -51557,26 +51557,14 @@ async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine,
 }
 
 async function bundleInstall(platform, engine, version) {
-  if (await bundleInstallSpecific('gems.rb', 'gems.locked', platform, engine, version)) {
-    return true
-  }
-
-  if (await bundleInstallSpecific('Gemfile', 'Gemfile.lock', platform, engine, version)) {
-    return true
-  }
-
-  console.log('No Gemfile/gems.rb, skipping "bundle install" and caching')
-}
-
-async function bundleInstallSpecific(gemsPath, lockPath, platform, engine, version) {
-  if (!fs.existsSync(gemsPath)) {
-    return false
+  if (!fs.existsSync('Gemfile')) {
+    console.log('No Gemfile, skipping "bundle install" and caching')
+    return
   }
 
   // config
   const path = 'vendor/bundle'
-  const hasGemfileLock = fs.existsSync(lockPath)
-
+  const hasGemfileLock = fs.existsSync('Gemfile.lock');
   if (hasGemfileLock) {
     await exec.exec('bundle', ['config', '--local', 'deployment', 'true'])
   }
@@ -51588,9 +51576,9 @@ async function bundleInstallSpecific(gemsPath, lockPath, platform, engine, versi
   let key = baseKey
   let restoreKeys
   if (hasGemfileLock) {
-    key += `-${lockPath}-${await common.hashFile(lockPath)}`
+    key += `-Gemfile.lock-${await common.hashFile('Gemfile.lock')}`
     // If only Gemfile.lock we can reuse some of the cache (but it will keep old gem versions in the cache)
-    restoreKeys = [`${baseKey}-${lockPath}-`]
+    restoreKeys = [`${baseKey}-Gemfile.lock-`]
   } else {
     // Only exact key, to never mix native gems of different platforms or Ruby versions
     restoreKeys = []
