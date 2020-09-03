@@ -7,7 +7,9 @@ const crypto = require('crypto')
 const core = require('@actions/core')
 const { performance } = require('perf_hooks')
 
-const isWin = (os.platform() === 'win32')
+export const windows = (os.platform() === 'win32')
+// Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
+export const drive = (windows ? (process.env['GITHUB_WORKSPACE'] || 'C')[0] : undefined)
 
 export async function measure(name, block) {
   return await core.group(name, async () => {
@@ -58,7 +60,7 @@ function findUbuntuVersion() {
 }
 
 // convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
-export function win2nix(path) { 
+export function win2nix(path) {
   if (/^[A-Z]:/i.test(path)) {
     // path starts with drive
     path = `/${path[0].toLowerCase()}${path.split(':', 2)[1]}`
@@ -67,10 +69,11 @@ export function win2nix(path) {
 }
 
 export function setupPath(newPathEntries) {
-  const envPath = isWin ? 'Path' : 'PATH'
+  const envPath = windows ? 'Path' : 'PATH'
   const originalPath = process.env[envPath].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
+  // First remove the conflicting path entries
   if (cleanPath.length !== originalPath.length) {
     core.startGroup(`Cleaning ${envPath}`)
     console.log(`Entries removed from ${envPath} to avoid conflicts with Ruby:`)
@@ -82,9 +85,11 @@ export function setupPath(newPathEntries) {
     core.exportVariable(envPath, cleanPath.join(path.delimiter))
     core.endGroup()
   }
+
+  // Then add new path entries using core.addPath()
   let newPath
-  if (isWin) {
-    // add MSYS2 path to all for bash shell
+  if (windows) {
+    // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
     const msys2 = ['C:\\msys64\\mingw64\\bin', 'C:\\msys64\\usr\\bin']
     newPath = [...newPathEntries, ...msys2]
   } else {

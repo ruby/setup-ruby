@@ -27670,16 +27670,14 @@ const tc = __webpack_require__(188)
 const common = __webpack_require__(390)
 const rubyInstallerVersions = __webpack_require__(223).versions
 
-// Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
-const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
+const drive = common.drive
 
 // needed for 2.1, 2.2, 2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
 // location & path for old RubyInstaller DevKit (MSYS), Ruby 2.1, 2.2 and 2.3
 const msys = `${drive}:\\DevKit64`
-const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`,
-  `${msys}\\mingw\\bin`, `${msys}\\bin`]
+const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys}\\mingw\\bin`, `${msys}\\bin`]
 
 function getAvailableVersions(platform, engine) {
   if (engine === 'ruby') {
@@ -27699,8 +27697,7 @@ async function install(platform, engine, version) {
 
   const rubyPrefix = `${drive}:\\${base}`
 
-  let toolchainPaths = (version === 'mswin') ?
-    await setupMSWin() : await setupMingw(version)
+  let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
 
   common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
@@ -27756,10 +27753,7 @@ async function setupMSWin() {
     fs.copyFileSync(certFile, cert)
   }
 
-  const VCPathEntries = await common.measure('Setting up MSVC environment', async () =>
-    addVCVARSEnv())
-
-  return VCPathEntries
+  return await common.measure('Setting up MSVC environment', async () => addVCVARSEnv())
 }
 
 /* Sets MSVC environment for use in Actions
@@ -32059,6 +32053,8 @@ exports.default = _default;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "windows", function() { return windows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drive", function() { return drive; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "measure", function() { return measure; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isHeadVersion", function() { return isHeadVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hashFile", function() { return hashFile; });
@@ -32074,7 +32070,9 @@ const crypto = __webpack_require__(373)
 const core = __webpack_require__(186)
 const { performance } = __webpack_require__(630)
 
-const isWin = (os.platform() === 'win32')
+const windows = (os.platform() === 'win32')
+// Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
+const drive = (windows ? (process.env['GITHUB_WORKSPACE'] || 'C')[0] : undefined)
 
 async function measure(name, block) {
   return await core.group(name, async () => {
@@ -32125,7 +32123,7 @@ function findUbuntuVersion() {
 }
 
 // convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
-function win2nix(path) { 
+function win2nix(path) {
   if (/^[A-Z]:/i.test(path)) {
     // path starts with drive
     path = `/${path[0].toLowerCase()}${path.split(':', 2)[1]}`
@@ -32134,10 +32132,11 @@ function win2nix(path) {
 }
 
 function setupPath(newPathEntries) {
-  const envPath = isWin ? 'Path' : 'PATH'
+  const envPath = windows ? 'Path' : 'PATH'
   const originalPath = process.env[envPath].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
+  // First remove the conflicting path entries
   if (cleanPath.length !== originalPath.length) {
     core.startGroup(`Cleaning ${envPath}`)
     console.log(`Entries removed from ${envPath} to avoid conflicts with Ruby:`)
@@ -32149,9 +32148,11 @@ function setupPath(newPathEntries) {
     core.exportVariable(envPath, cleanPath.join(path.delimiter))
     core.endGroup()
   }
+
+  // Then add new path entries using core.addPath()
   let newPath
-  if (isWin) {
-    // add MSYS2 path to all for bash shell
+  if (windows) {
+    // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
     const msys2 = ['C:\\msys64\\mingw64\\bin', 'C:\\msys64\\usr\\bin']
     newPath = [...newPathEntries, ...msys2]
   } else {
@@ -51355,7 +51356,7 @@ const exec = __webpack_require__(514)
 const cache = __webpack_require__(799)
 const common = __webpack_require__(390)
 
-const isWin = (os.platform() === 'win32')
+const windows = common.windows
 
 const inputDefaults = {
   'ruby-version': 'default',
@@ -51398,11 +51399,9 @@ async function setupRuby(options = {}) {
   const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
 
   createGemRC()
-
   envPreInstall()
 
   const rubyPrefix = await installer.install(platform, engine, version)
-
 
   // When setup-ruby is used by other actions, this allows code in them to run
   // before 'bundle install'.  Installed dependencies may require additional
@@ -51488,10 +51487,10 @@ function createGemRC() {
 }
 
 // sets up ENV variables
-// currrently only used on Windows runners
+// currently only used on Windows runners
 function envPreInstall() {
   const ENV = process.env
-  if (isWin) {
+  if (windows) {
     // puts normal Ruby temp folder on SSD
     core.exportVariable('TMPDIR', ENV['RUNNER_TEMP'])
     // bash - sets home to match native windows, normally C:\Users\<user name>
@@ -53070,28 +53069,27 @@ const rubyBuilderVersions = __webpack_require__(694)
 const builderReleaseTag = 'enable-shared'
 const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 
-const isWin = (os.platform() === 'win32')
+const windows = common.windows
 
 function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions.getVersions(platform)[engine]
 }
 
 async function install(platform, engine, version) {
-  const rubyPrefix = await downloadAndExtract(platform, engine, version)
-  return rubyPrefix
+  return await downloadAndExtract(platform, engine, version)
 }
 
 async function downloadAndExtract(platform, engine, version) {
-  const rubiesDir = isWin ?
-    `${(process.env.GITHUB_WORKSPACE || 'C')[0]}:` :
-    path.join(os.homedir(), '.rubies')
+  const rubiesDir = windows ? `${common.drive}:` : path.join(os.homedir(), '.rubies')
 
   const rubyPrefix = path.join(rubiesDir, `${engine}-${version}`)
-  const newPathEntries = (engine === 'rubinius') ?
-    [path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')] :
-    [path.join(rubyPrefix, 'bin')]
 
-  common.setupPath(newPathEntries)
+  // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
+  if (engine === 'rubinius') {
+    common.setupPath([path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')])
+  } else {
+    common.setupPath([path.join(rubyPrefix, 'bin')])
+  }
 
   await io.mkdirP(rubiesDir)
 
@@ -53102,8 +53100,8 @@ async function downloadAndExtract(platform, engine, version) {
   })
 
   await common.measure('Extracting Ruby', async () => {
-    // Windows 2016 doesn't have system tar, use MSYS2's, it needs unix style paths
-    if (isWin) {
+    if (windows) {
+      // Windows 2016 doesn't have system tar, use MSYS2's, it needs unix style paths
       await exec.exec('tar', [ '-xz', '-C', common.win2nix(rubiesDir), '-f', common.win2nix(downloadPath) ])
     } else {
       await exec.exec('tar', [ '-xz', '-C', rubiesDir, '-f',  downloadPath ])
