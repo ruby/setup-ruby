@@ -41,6 +41,9 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - run: ruby -v
+    - name: PATH
+      shell: bash
+      run: echo $PATH
 
     - name: build compiler
       run: |
