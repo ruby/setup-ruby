@@ -10,16 +10,14 @@ const tc = require('@actions/tool-cache')
 const common = require('./common')
 const rubyInstallerVersions = require('./windows-versions').versions
 
-// Extract to SSD, see https://github.com/ruby/setup-ruby/pull/14
-const drive = (process.env['GITHUB_WORKSPACE'] || 'C')[0]
+const drive = common.drive
 
 // needed for 2.1, 2.2, 2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
 // location & path for old RubyInstaller DevKit (MSYS), Ruby 2.1, 2.2 and 2.3
 const msys = `${drive}:\\DevKit64`
-const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`,
-  `${msys}\\mingw\\bin`, `${msys}\\bin`]
+const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys}\\mingw\\bin`, `${msys}\\bin`]
 
 export function getAvailableVersions(platform, engine) {
   if (engine === 'ruby') {
@@ -39,8 +37,7 @@ export async function install(platform, engine, version) {
 
   const rubyPrefix = `${drive}:\\${base}`
 
-  let toolchainPaths = (version === 'mswin') ?
-    await setupMSWin() : await setupMingw(version)
+  let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
 
   common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
@@ -96,10 +93,7 @@ async function setupMSWin() {
     fs.copyFileSync(certFile, cert)
   }
 
-  const VCPathEntries = await common.measure('Setting up MSVC environment', async () =>
-    addVCVARSEnv())
-
-  return VCPathEntries
+  return await common.measure('Setting up MSVC environment', async () => addVCVARSEnv())
 }
 
 /* Sets MSVC environment for use in Actions

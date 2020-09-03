@@ -9,28 +9,27 @@ const rubyBuilderVersions = require('./ruby-builder-versions')
 const builderReleaseTag = 'enable-shared'
 const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 
-const isWin = (os.platform() === 'win32')
+const windows = common.windows
 
 export function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions.getVersions(platform)[engine]
 }
 
 export async function install(platform, engine, version) {
-  const rubyPrefix = await downloadAndExtract(platform, engine, version)
-  return rubyPrefix
+  return await downloadAndExtract(platform, engine, version)
 }
 
 async function downloadAndExtract(platform, engine, version) {
-  const rubiesDir = isWin ?
-    `${(process.env.GITHUB_WORKSPACE || 'C')[0]}:` :
-    path.join(os.homedir(), '.rubies')
+  const rubiesDir = windows ? `${common.drive}:` : path.join(os.homedir(), '.rubies')
 
   const rubyPrefix = path.join(rubiesDir, `${engine}-${version}`)
-  const newPathEntries = (engine === 'rubinius') ?
-    [path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')] :
-    [path.join(rubyPrefix, 'bin')]
 
-  common.setupPath(newPathEntries)
+  // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
+  if (engine === 'rubinius') {
+    common.setupPath([path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')])
+  } else {
+    common.setupPath([path.join(rubyPrefix, 'bin')])
+  }
 
   await io.mkdirP(rubiesDir)
 
@@ -41,8 +40,8 @@ async function downloadAndExtract(platform, engine, version) {
   })
 
   await common.measure('Extracting Ruby', async () => {
-    // Windows 2016 doesn't have system tar, use MSYS2's, it needs unix style paths
-    if (isWin) {
+    if (windows) {
+      // Windows 2016 doesn't have system tar, use MSYS2's, it needs unix style paths
       await exec.exec('tar', [ '-xz', '-C', common.win2nix(rubiesDir), '-f', common.win2nix(downloadPath) ])
     } else {
       await exec.exec('tar', [ '-xz', '-C', rubiesDir, '-f',  downloadPath ])

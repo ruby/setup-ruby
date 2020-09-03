@@ -6,7 +6,7 @@ const exec = require('@actions/exec')
 const cache = require('@actions/cache')
 const common = require('./common')
 
-const isWin = (os.platform() === 'win32')
+const windows = common.windows
 
 const inputDefaults = {
   'ruby-version': 'default',
@@ -49,11 +49,9 @@ export async function setupRuby(options = {}) {
   const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
 
   createGemRC()
-
   envPreInstall()
 
   const rubyPrefix = await installer.install(platform, engine, version)
-
 
   // When setup-ruby is used by other actions, this allows code in them to run
   // before 'bundle install'.  Installed dependencies may require additional
@@ -139,10 +137,10 @@ function createGemRC() {
 }
 
 // sets up ENV variables
-// currrently only used on Windows runners
+// currently only used on Windows runners
 function envPreInstall() {
   const ENV = process.env
-  if (isWin) {
+  if (windows) {
     // puts normal Ruby temp folder on SSD
     core.exportVariable('TMPDIR', ENV['RUNNER_TEMP'])
     // bash - sets home to match native windows, normally C:\Users\<user name>
