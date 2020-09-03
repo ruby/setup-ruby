@@ -27783,7 +27783,7 @@ function addVCVARSEnv() {
   for (let [k, v] of newEnv) {
     if (process.env[k] !== v) {
       if (/^Path$/i.test(k)) {
-        const newPathStr = v.replace(`$(path.delimiter)${process.env['Path']}`, '')
+        const newPathStr = v.replace(`${path.delimiter}${process.env['Path']}`, '')
         newPathEntries = newPathStr.split(path.delimiter)
       } else {
         core.exportVariable(k, v)
