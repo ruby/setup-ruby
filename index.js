@@ -291,6 +291,8 @@ async function bundleInstallSpecific(gemfilePath, lockPath, platform, engine, ve
       }
     }
   }
+
+  return true
 }
 
 async function computeBaseKey(platform, engine, version) {
