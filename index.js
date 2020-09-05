@@ -54,7 +54,6 @@ export async function setupRuby(options = {}) {
 
   const rubyPrefix = await installer.install(platform, engine, version)
 
-
   // When setup-ruby is used by other actions, this allows code in them to run
   // before 'bundle install'.  Installed dependencies may require additional
   // libraries & headers, build tools, etc.
@@ -63,16 +62,46 @@ export async function setupRuby(options = {}) {
   }
 
   if (inputs['bundler'] !== 'none') {
+    const [gemFile, lockFile] = detectGemfiles()
+
     await common.measure('Installing Bundler', async () =>
-      installBundler(inputs['bundler'], platform, rubyPrefix, engine, version))
+      installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
 
     if (inputs['bundler-cache'] === 'true') {
       await common.measure('bundle install', async () =>
-          bundleInstall(platform, engine, version))
+          bundleInstall(gemFile, lockFile, platform, engine, version))
     }
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
+}
+
+function detectGemfiles() {
+  const gemfilePath = process.env['BUNDLE_GEMFILE'] || 'Gemfile'
+
+  if (fs.existsSync(gemfilePath)) {
+    const lockPath = `${gemfilePath}.lock`
+
+    if (fs.existsSync(lockPath)) {
+      return [gemfilePath, lockPath]
+    } else {
+      return [gemfilePath, null]
+    }
+  }
+
+  const gemsPath = "gems.rb"
+
+  if (fs.existsSync(gemsPath)) {
+    const lockPath = "gems.locked"
+
+    if (fs.existsSync(lockPath)) {
+      return [gemsPath, lockPath]
+    } else {
+      return [gemsPath, null]
+    }
+  }
+
+  return [null, null]
 }
 
 function parseRubyEngineAndVersion(rubyVersion) {
@@ -170,12 +199,12 @@ function readBundledWithFromGemfileLock(path) {
   return null
 }
 
-async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine, rubyVersion) {
+async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefix, engine, rubyVersion) {
   var bundlerVersion = bundlerVersionInput
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
-    const gemfilePath = `${process.env['BUNDLE_GEMFILE'] || 'Gemfile'}.lock`
-    bundlerVersion = readBundledWithFromGemfileLock(gemfilePath)
+    bundlerVersion = readBundledWithFromGemfileLock(lockFile)
+
     if (!bundlerVersion) {
       bundlerVersion = 'latest'
     }
@@ -211,20 +240,9 @@ async function installBundler(bundlerVersionInput, platform, rubyPrefix, engine,
   }
 }
 
-async function bundleInstall(platform, engine, version) {
-  if (await bundleInstallSpecific('gems.rb', 'gems.locked', platform, engine, version)) {
-    return true
-  }
-
-  if (await bundleInstallSpecific('Gemfile', 'Gemfile.lock', platform, engine, version)) {
-    return true
-  }
-
-  console.log('No Gemfile/gems.rb, skipping "bundle install" and caching')
-}
-
-async function bundleInstallSpecific(gemfilePath, lockPath, platform, engine, version) {
+async function bundleInstall(gemfilePath, lockPath, platform, engine, version) {
   if (!fs.existsSync(gemfilePath)) {
+    console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
   }
 
