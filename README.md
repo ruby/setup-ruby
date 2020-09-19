@@ -31,7 +31,7 @@ On Windows, Ruby 2.4 uses OpenSSL 1.0.2, which is no longer maintained.
 
 ### Supported Platforms
 
-The action works for all [GitHub-hosted runners](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners), and [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners), under [certain conditions](#limitations)
+The action works for all [GitHub-hosted runners](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners).
 
 | Operating System | Recommended | Other Supported Versions |
 | ----------- | -------- | -------- |
@@ -191,10 +191,16 @@ This action follows semantic versioning with a moving `v1` branch.
 This follows the [recommendations](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) of GitHub Actions.
 
 ## Using self-hosted runners
-You must meet the following parameters to use this action with self-hosted runners:
 
+This action might work with [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners)
+if the [virtual environment](https://github.com/actions/virtual-environments) is very similar to the ones used by GitHub runners. Notably:
+
+* Make sure to use the same operating system and version.
+* Make sure to use the same version of libssl.
 * Make sure that the operating system has `libyaml-0` installed
 * The runner software is running as user `runner` with a home directory of `/home/runner`, or you have created a symlink for the home directory of whatever user that the runner is running as to `/home/runner`.
+
+In other cases, please use a system Ruby or [compile your own Ruby](https://github.com/postmodern/chruby/wiki#installing-rubies) instead.
 
 ## History
 
