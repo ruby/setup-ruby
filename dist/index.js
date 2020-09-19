@@ -51418,14 +51418,14 @@ async function setupRuby(options = {}) {
   }
 
   if (inputs['bundler'] !== 'none') {
-    const [gemFile, lockFile] = detectGemfiles()
+    const [gemfile, lockFile] = detectGemfiles()
 
     await common.measure('Installing Bundler', async () =>
       installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
 
     if (inputs['bundler-cache'] === 'true') {
       await common.measure('bundle install', async () =>
-          bundleInstall(gemFile, lockFile, platform, engine, version))
+          bundleInstall(gemfile, lockFile, platform, engine, version))
     }
   }
 
@@ -51434,10 +51434,8 @@ async function setupRuby(options = {}) {
 
 function detectGemfiles() {
   const gemfilePath = process.env['BUNDLE_GEMFILE'] || 'Gemfile'
-
   if (fs.existsSync(gemfilePath)) {
     const lockPath = `${gemfilePath}.lock`
-
     if (fs.existsSync(lockPath)) {
       return [gemfilePath, lockPath]
     } else {
@@ -51445,15 +51443,13 @@ function detectGemfiles() {
     }
   }
 
-  const gemsPath = "gems.rb"
-
-  if (fs.existsSync(gemsPath)) {
+  const gemsRbPath = "gems.rb"
+  if (fs.existsSync(gemsRbPath)) {
     const lockPath = "gems.locked"
-
     if (fs.existsSync(lockPath)) {
-      return [gemsPath, lockPath]
+      return [gemsRbPath, lockPath]
     } else {
-      return [gemsPath, null]
+      return [gemsRbPath, null]
     }
   }
 
@@ -51537,9 +51533,9 @@ function envPreInstall() {
   }
 }
 
-function readBundledWithFromGemfileLock(path) {
-  if (fs.existsSync(path)) {
-    const contents = fs.readFileSync(path, 'utf8')
+function readBundledWithFromGemfileLock(lockFile) {
+  if (lockFile !== null) {
+    const contents = fs.readFileSync(lockFile, 'utf8')
     const lines = contents.split(/\r?\n/)
     const bundledWithLine = lines.findIndex(line => /^BUNDLED WITH$/.test(line.trim()))
     if (bundledWithLine !== -1) {
@@ -51547,7 +51543,7 @@ function readBundledWithFromGemfileLock(path) {
       if (nextLine && /^\d+/.test(nextLine.trim())) {
         const bundlerVersion = nextLine.trim()
         const majorVersion = bundlerVersion.match(/^\d+/)[0]
-        console.log(`Using Bundler ${majorVersion} from ${path} BUNDLED WITH ${bundlerVersion}`)
+        console.log(`Using Bundler ${majorVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
         return majorVersion
       }
     }
@@ -51596,17 +51592,16 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
   }
 }
 
-async function bundleInstall(gemfilePath, lockPath, platform, engine, version) {
-  if (!fs.existsSync(gemfilePath)) {
+async function bundleInstall(gemfile, lockFile, platform, engine, version) {
+  if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
   }
 
   // config
   const path = 'vendor/bundle'
-  const hasGemfileLock = fs.existsSync(lockPath)
 
-  if (hasGemfileLock) {
+  if (lockFile !== null) {
     await exec.exec('bundle', ['config', '--local', 'deployment', 'true'])
   }
   await exec.exec('bundle', ['config', '--local', 'path', path])
@@ -51616,10 +51611,10 @@ async function bundleInstall(gemfilePath, lockPath, platform, engine, version) {
   const baseKey = await computeBaseKey(platform, engine, version)
   let key = baseKey
   let restoreKeys
-  if (hasGemfileLock) {
-    key += `-${lockPath}-${await common.hashFile(lockPath)}`
+  if (lockFile !== null) {
+    key += `-${lockFile}-${await common.hashFile(lockFile)}`
     // If only Gemfile.lock we can reuse some of the cache (but it will keep old gem versions in the cache)
-    restoreKeys = [`${baseKey}-${lockPath}-`]
+    restoreKeys = [`${baseKey}-${lockFile}-`]
   } else {
     // Only exact key, to never mix native gems of different platforms or Ruby versions
     restoreKeys = []
