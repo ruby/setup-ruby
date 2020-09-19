@@ -12,8 +12,8 @@ inputs:
   bundler:
     description: |
       The version of Bundler to install. Either 'none', 1, 2, 'latest' or 'Gemfile.lock'.
-      For 'Gemfile.lock', the version is determined based on the BUNDLED WITH section from the file ($BUNDLE_GEMFILE || Gemfile).lock.
-      Defaults to 'Gemfile.lock' if it exists and 'latest' otherwise.
+      For 'Gemfile.lock', the version is determined based on the BUNDLED WITH section from the file Gemfile.lock, $BUNDLE_GEMFILE.lock or gems.locked.
+      Defaults to 'Gemfile.lock' if the file exists and 'latest' otherwise.
     required: false
     default: 'default'
   bundler-cache:

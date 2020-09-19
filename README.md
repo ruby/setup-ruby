@@ -115,7 +115,7 @@ if they are not at the root of the repository, see [action.yml](action.yml) for 
 
 ### Bundler
 
-By default, if there is a `Gemfile.lock` file (or `$BUNDLE_GEMFILE.lock` if `$BUNDLE_GEMFILE` is set) with a `BUNDLED WITH` section,
+By default, if there is a `Gemfile.lock` file (or `$BUNDLE_GEMFILE.lock` or `gems.locked`) with a `BUNDLED WITH` section,
 the latest version of Bundler with the same major version will be installed.
 Otherwise, the latest compatible Bundler version is installed (Bundler 2 on Ruby >= 2.4, Bundler 1 on Ruby < 2.4).
 
@@ -131,9 +131,8 @@ This action provides a way to automatically run `bundle install` and cache the r
 ```
 
 This caching speeds up installing gems significantly and avoids too many requests to RubyGems.org.  
-It needs a `Gemfile` (or `$BUNDLE_GEMFILE`) under the [`working-directory`](#working-directory).  
-The caching works whether there is a `Gemfile.lock` or not.
-If there is a `Gemfile.lock`, `bundle config --local deployment true` is used.
+It needs a `Gemfile` (or `$BUNDLE_GEMFILE` or `gems.rb`) under the [`working-directory`](#working-directory).  
+If there is a `Gemfile.lock` (or `$BUNDLE_GEMFILE.lock` or `gems.locked`), `bundle config --local deployment true` is used.
 
 To perform caching, this action will use `bundle config --local path vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work.
