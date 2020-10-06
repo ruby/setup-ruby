@@ -28141,6 +28141,7 @@ const versions = {
   "2.6.6": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.6-1/rubyinstaller-2.6.6-1-x64.7z",
   "2.7.0": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.0-1/rubyinstaller-2.7.0-1-x64.7z",
   "2.7.1": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.1-1/rubyinstaller-2.7.1-1-x64.7z",
+  "2.7.2": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.2-1/rubyinstaller-2.7.2-1-x64.7z",
   "head": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-x64.7z",
   "mingw": "https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mingw.7z",
   "mswin": "https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mswin.7z"
