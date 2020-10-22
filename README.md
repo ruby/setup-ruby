@@ -131,12 +131,14 @@ This action provides a way to automatically run `bundle install` and cache the r
         bundler-cache: true
 ```
 
+Note that any step doing `bundle install` (for the root `Gemfile`) or `gem install bundler` can be removed with `bundler-cache: true`.
+
 This caching speeds up installing gems significantly and avoids too many requests to RubyGems.org.  
 It needs a `Gemfile` (or `$BUNDLE_GEMFILE` or `gems.rb`) under the [`working-directory`](#working-directory).  
 If there is a `Gemfile.lock` (or `$BUNDLE_GEMFILE.lock` or `gems.locked`), `bundle config --local deployment true` is used.
 
 To perform caching, this action will use `bundle config --local path vendor/bundle`.  
-Therefore, the Bundler `path` should not be changed in your workflow for the cache to work.
+Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
 
 ### Caching `bundle install` manually
 
