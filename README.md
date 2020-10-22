@@ -66,6 +66,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.6 # Not needed with a .ruby-version file
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bundle install
     - run: bundle exec rake
 ```
@@ -91,6 +92,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bundle install
     - run: bundle exec rake
 ```
