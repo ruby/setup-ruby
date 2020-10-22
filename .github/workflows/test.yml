@@ -71,6 +71,7 @@ jobs:
     - name: C extension test
       run: gem install json:2.2.0 --no-document
     - run: bundle --version
+    # This step is redundant with `bundler-cache: true` but is there to check a redundant `bundle install` still works
     - run: bundle install
     - run: bundle exec rake --version
 
