@@ -60,6 +60,10 @@ jobs:
             echo 'ridk is unavailable'
           }
         }
+    - name: RbConfig::CONFIG
+      run: ruby -rrbconfig -rpp -e 'pp RbConfig::CONFIG'
+    - name: RbConfig::MAKEFILE_CONFIG
+      run: ruby -rrbconfig -rpp -e 'pp RbConfig::MAKEFILE_CONFIG'
 
     - name: Subprocess test
       run: ruby test_subprocess.rb
