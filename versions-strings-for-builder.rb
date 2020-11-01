@@ -11,6 +11,10 @@ p by_minor['2.3']
   p by_minor["2.#{minor}"].map { |v| "ruby-#{v}" }
 end
 
+p (versions[:truffleruby] - %w[head]).map { |v| "truffleruby-#{v}" }
+
 p (versions[:jruby] - %w[head]).map { |v| "jruby-#{v}" }
 
-p (versions[:truffleruby] - %w[head]).map { |v| "truffleruby-#{v}" }
+(versions[:jruby] - %w[head]).each do |v|
+  puts "- { os: windows-latest, jruby-version: #{v}, ruby: jruby-#{v} }"
+end
