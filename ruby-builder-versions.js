@@ -22,11 +22,5 @@ export function getVersions(platform) {
     ]
   }
 
-  if (platform === 'ubuntu-18.04') {
-    versions['rubinius'] = [
-      "4.14"
-    ]
-  }
-
   return versions
 }

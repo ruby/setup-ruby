@@ -44499,12 +44499,6 @@ function getVersions(platform) {
     ]
   }
 
-  if (platform === 'ubuntu-18.04') {
-    versions['rubinius'] = [
-      "4.14"
-    ]
-  }
-
   return versions
 }
 
@@ -51349,8 +51343,6 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
   } else if (engine === 'truffleruby' && bundlerVersion === '1') {
     console.log(`Using Bundler 1 shipped with ${engine}`)
-  } else if (engine === 'rubinius') {
-    console.log(`Rubinius only supports the version of Bundler shipped with it`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
@@ -52886,12 +52878,7 @@ async function downloadAndExtract(platform, engine, version) {
   const rubyPrefix = path.join(rubiesDir, `${engine}-${version}`)
 
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
-  if (engine === 'rubinius') {
-    core.warning('Rubinius builds will no longer be provided, see https://github.com/ruby/setup-ruby/issues/101')
-    common.setupPath([path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')])
-  } else {
-    common.setupPath([path.join(rubyPrefix, 'bin')])
-  }
+  common.setupPath([path.join(rubyPrefix, 'bin')])
 
   await io.mkdirP(rubiesDir)
 

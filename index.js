@@ -227,8 +227,6 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
   } else if (engine === 'truffleruby' && bundlerVersion === '1') {
     console.log(`Using Bundler 1 shipped with ${engine}`)
-  } else if (engine === 'rubinius') {
-    console.log(`Rubinius only supports the version of Bundler shipped with it`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
