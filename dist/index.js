@@ -27682,6 +27682,7 @@ const path = __webpack_require__(622)
 const cp = __webpack_require__(129)
 const core = __webpack_require__(186)
 const exec = __webpack_require__(514)
+const io = __webpack_require__(436)
 const tc = __webpack_require__(188)
 const common = __webpack_require__(390)
 const rubyInstallerVersions = __webpack_require__(223).versions
@@ -27711,7 +27712,13 @@ async function install(platform, engine, version) {
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
-  const rubyPrefix = `${drive}:\\${base}`
+  let rubyPrefix
+  if (common.shouldExtractInToolCache(engine, version)) {
+    rubyPrefix = common.getToolCacheRubyPrefix(version)
+  } else {
+    rubyPrefix = `${drive}:\\${base}`
+  }
+  const parentDir = path.dirname(rubyPrefix)
 
   let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
 
@@ -27723,7 +27730,11 @@ async function install(platform, engine, version) {
   })
 
   await common.measure('Extracting Ruby', async () =>
-    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true }))
+    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
+
+  if (base !== path.basename(rubyPrefix)) {
+    await io.mv(path.join(parentDir, base), rubyPrefix)
+  }
 
   return rubyPrefix
 }
@@ -32087,6 +32098,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isHeadVersion", function() { return isHeadVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hashFile", function() { return hashFile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shouldExtractInToolCache", function() { return shouldExtractInToolCache; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getToolCacheRubyPrefix", function() { return getToolCacheRubyPrefix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "win2nix", function() { return win2nix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupPath", function() { return setupPath; });
 const os = __webpack_require__(87)
@@ -32148,6 +32161,18 @@ function findUbuntuVersion() {
   } else {
     throw new Error('Could not find Ubuntu version')
   }
+}
+
+function shouldExtractInToolCache(engine, version) {
+  return engine === 'ruby' && !isHeadVersion(version)
+}
+
+function getToolCacheRubyPrefix(version) {
+  const toolCache = process.env['RUNNER_TOOL_CACHE']
+  if (!toolCache) {
+    throw new Error('$RUNNER_TOOL_CACHE must be set')
+  }
+  return path.join(toolCache, 'Ruby', version, 'x64')
 }
 
 // convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
@@ -51155,7 +51180,7 @@ async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
-  if (platform === 'windows-latest' && engine !== 'jruby') {
+  if (platform === 'windows-latest' && engine === 'ruby') {
     installer = __webpack_require__(216)
   } else {
     installer = __webpack_require__(974)
@@ -51242,7 +51267,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
     version = rubyVersion
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
     engine = rubyVersion
-    version = '' // Let the logic below find the version
+    version = '' // Let the logic in validateRubyEngineAndVersion() find the version
   } else { // engine-X.Y.Z
     [engine, version] = rubyVersion.split('-', 2)
   }
@@ -51311,7 +51336,7 @@ function readBundledWithFromGemfileLock(lockFile) {
 }
 
 async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefix, engine, rubyVersion) {
-  var bundlerVersion = bundlerVersionInput
+  let bundlerVersion = bundlerVersionInput
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
     bundlerVersion = readBundledWithFromGemfileLock(lockFile)
@@ -52859,7 +52884,7 @@ const tc = __webpack_require__(188)
 const common = __webpack_require__(390)
 const rubyBuilderVersions = __webpack_require__(694)
 
-const builderReleaseTag = 'enable-shared'
+const builderReleaseTag = 'toolcache'
 const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 
 const windows = common.windows
@@ -52873,14 +52898,22 @@ async function install(platform, engine, version) {
 }
 
 async function downloadAndExtract(platform, engine, version) {
-  const rubiesDir = windows ? `${common.drive}:` : path.join(os.homedir(), '.rubies')
+  let rubyPrefix
+  if (common.shouldExtractInToolCache(engine, version)) {
+    rubyPrefix = common.getToolCacheRubyPrefix(version)
+  } else if (windows) {
+    rubyPrefix = path.join(`${common.drive}:`, `${engine}-${version}`)
+  } else {
+    rubyPrefix = path.join(os.homedir(), '.rubies', `${engine}-${version}`)
+  }
 
-  const rubyPrefix = path.join(rubiesDir, `${engine}-${version}`)
+  const parentDir = path.dirname(rubyPrefix)
 
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
   common.setupPath([path.join(rubyPrefix, 'bin')])
 
-  await io.mkdirP(rubiesDir)
+  await io.rmRF(rubyPrefix)
+  await io.mkdirP(parentDir)
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     const url = getDownloadURL(platform, engine, version)
@@ -52891,9 +52924,9 @@ async function downloadAndExtract(platform, engine, version) {
   await common.measure('Extracting Ruby', async () => {
     if (windows) {
       // Windows 2016 doesn't have system tar, use MSYS2's, it needs unix style paths
-      await exec.exec('tar', [ '-xz', '-C', common.win2nix(rubiesDir), '-f', common.win2nix(downloadPath) ])
+      await exec.exec('tar', [ '-xz', '-C', common.win2nix(parentDir), '-f', common.win2nix(downloadPath) ])
     } else {
-      await exec.exec('tar', [ '-xz', '-C', rubiesDir, '-f',  downloadPath ])
+      await exec.exec('tar', [ '-xz', '-C', parentDir, '-f',  downloadPath ])
     }
   })
 

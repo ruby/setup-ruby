@@ -6,6 +6,7 @@ const path = require('path')
 const cp = require('child_process')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
+const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
 const common = require('./common')
 const rubyInstallerVersions = require('./windows-versions').versions
@@ -35,7 +36,13 @@ export async function install(platform, engine, version) {
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
-  const rubyPrefix = `${drive}:\\${base}`
+  let rubyPrefix
+  if (common.shouldExtractInToolCache(engine, version)) {
+    rubyPrefix = common.getToolCacheRubyPrefix(version)
+  } else {
+    rubyPrefix = `${drive}:\\${base}`
+  }
+  const parentDir = path.dirname(rubyPrefix)
 
   let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
 
@@ -47,7 +54,11 @@ export async function install(platform, engine, version) {
   })
 
   await common.measure('Extracting Ruby', async () =>
-    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${drive}:\\`], { silent: true }))
+    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
+
+  if (base !== path.basename(rubyPrefix)) {
+    await io.mv(path.join(parentDir, base), rubyPrefix)
+  }
 
   return rubyPrefix
 }

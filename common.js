@@ -59,6 +59,18 @@ function findUbuntuVersion() {
   }
 }
 
+export function shouldExtractInToolCache(engine, version) {
+  return engine === 'ruby' && !isHeadVersion(version)
+}
+
+export function getToolCacheRubyPrefix(version) {
+  const toolCache = process.env['RUNNER_TOOL_CACHE']
+  if (!toolCache) {
+    throw new Error('$RUNNER_TOOL_CACHE must be set')
+  }
+  return path.join(toolCache, 'Ruby', version, 'x64')
+}
+
 // convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
 export function win2nix(path) {
   if (/^[A-Z]:/i.test(path)) {

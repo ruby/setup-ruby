@@ -39,7 +39,7 @@ export async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
-  if (platform === 'windows-latest' && engine !== 'jruby') {
+  if (platform === 'windows-latest' && engine === 'ruby') {
     installer = require('./windows')
   } else {
     installer = require('./ruby-builder')
@@ -126,7 +126,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
     version = rubyVersion
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
     engine = rubyVersion
-    version = '' // Let the logic below find the version
+    version = '' // Let the logic in validateRubyEngineAndVersion() find the version
   } else { // engine-X.Y.Z
     [engine, version] = rubyVersion.split('-', 2)
   }
@@ -195,7 +195,7 @@ function readBundledWithFromGemfileLock(lockFile) {
 }
 
 async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefix, engine, rubyVersion) {
-  var bundlerVersion = bundlerVersionInput
+  let bundlerVersion = bundlerVersionInput
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
     bundlerVersion = readBundledWithFromGemfileLock(lockFile)
