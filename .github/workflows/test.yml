@@ -100,9 +100,6 @@ jobs:
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
       run: gem install sassc -N
 
-    - name: Test installing rake to check RubyGems recognizes the executable as safe to override
-      run: gem install rake
-
   lint:
     runs-on: ubuntu-latest
     steps:
