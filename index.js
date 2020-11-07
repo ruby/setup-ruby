@@ -306,7 +306,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
 }
 
 async function computeBaseKey(platform, engine, version, gemfile) {
-  let baseKey = `setup-ruby-bundle-install-${platform}-${engine}-${version}-${gemfile}`
+  let baseKey = `setup-ruby-toolcache-bundle-install-${platform}-${engine}-${version}-${gemfile}`
   if (engine !== 'jruby' && common.isHeadVersion(version)) {
     let revision = '';
     await exec.exec('ruby', ['-e', 'print RUBY_REVISION'], {
