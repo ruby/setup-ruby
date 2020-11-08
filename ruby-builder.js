@@ -1,5 +1,6 @@
 const os = require('os')
 const path = require('path')
+const core = require('@actions/core')
 const exec = require('@actions/exec')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
@@ -26,6 +27,7 @@ async function downloadAndExtract(platform, engine, version) {
 
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
   if (engine === 'rubinius') {
+    core.warning('Rubinius builds will no longer be provided, see https://github.com/ruby/setup-ruby/issues/101')
     common.setupPath([path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')])
   } else {
     common.setupPath([path.join(rubyPrefix, 'bin')])

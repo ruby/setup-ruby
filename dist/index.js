@@ -52860,6 +52860,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
 const os = __webpack_require__(87)
 const path = __webpack_require__(622)
+const core = __webpack_require__(186)
 const exec = __webpack_require__(514)
 const io = __webpack_require__(436)
 const tc = __webpack_require__(188)
@@ -52886,6 +52887,7 @@ async function downloadAndExtract(platform, engine, version) {
 
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
   if (engine === 'rubinius') {
+    core.warning('Rubinius builds will no longer be provided, see https://github.com/ruby/setup-ruby/issues/101')
     common.setupPath([path.join(rubyPrefix, 'bin'), path.join(rubyPrefix, 'gems', 'bin')])
   } else {
     common.setupPath([path.join(rubyPrefix, 'bin')])
