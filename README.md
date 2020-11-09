@@ -21,6 +21,10 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 `ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).  
 On Windows, `mingw` and `mswin` are `ruby-head` builds using the MSYS2/MinGW and the MSVC toolchains respectively.
 
+Preview and RC versions of Ruby might be available too on Ubuntu and macOS (not on Windows).
+However, it is recommended to test against `ruby-head` rather than previews,
+as it provides more useful feedback for the Ruby core team and for upcoming changes.
+
 Only versions published by [RubyInstaller](https://rubyinstaller.org/downloads/archives/) are available on Windows.
 Due to that, Ruby 2.2 resolves to 2.2.6 on Windows and 2.2.10 on other platforms.
 And Ruby 2.3 on Windows only has builds for 2.3.0, 2.3.1 and 2.3.3.
