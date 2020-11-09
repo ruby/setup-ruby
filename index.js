@@ -249,12 +249,12 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
 
   // cache key
   const paths = [path]
-  const baseKey = await computeBaseKey(platform, engine, version)
+  const baseKey = await computeBaseKey(platform, engine, version, gemfile)
   let key = baseKey
   let restoreKeys
   if (lockFile !== null) {
     key += `-${lockFile}-${await common.hashFile(lockFile)}`
-    // If only Gemfile.lock we can reuse some of the cache (but it will keep old gem versions in the cache)
+    // If only Gemfile.lock changes we can reuse part of the cache (but it will keep old gem versions in the cache)
     restoreKeys = [`${baseKey}-${lockFile}-`]
   } else {
     // Only exact key, to never mix native gems of different platforms or Ruby versions
@@ -305,8 +305,8 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
   return true
 }
 
-async function computeBaseKey(platform, engine, version) {
-  let baseKey = `setup-ruby-bundle-install-${platform}-${engine}-${version}`
+async function computeBaseKey(platform, engine, version, gemfile) {
+  let baseKey = `setup-ruby-bundle-install-${platform}-${engine}-${version}-${gemfile}`
   if (engine !== 'jruby' && common.isHeadVersion(version)) {
     let revision = '';
     await exec.exec('ruby', ['-e', 'print RUBY_REVISION'], {
