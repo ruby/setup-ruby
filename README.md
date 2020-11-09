@@ -29,9 +29,8 @@ Only versions published by [RubyInstaller](https://rubyinstaller.org/downloads/a
 Due to that, Ruby 2.2 resolves to 2.2.6 on Windows and 2.2.10 on other platforms.
 And Ruby 2.3 on Windows only has builds for 2.3.0, 2.3.1 and 2.3.3.
 
-Note that Ruby ≤ 2.3 and the OpenSSL version it needs (1.0.2) are both end-of-life,
-which means Ruby ≤ 2.3 is unmaintained and considered insecure.
-On Windows, Ruby 2.4 uses OpenSSL 1.0.2, which is no longer maintained.
+Note that Ruby ≤ 2.4 and the OpenSSL version it needs (1.0.2) are both end-of-life,
+which means Ruby ≤ 2.4 is unmaintained and considered insecure.
 
 ### Supported Platforms
 
