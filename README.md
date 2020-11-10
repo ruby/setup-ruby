@@ -203,6 +203,9 @@ if the [virtual environment](https://github.com/actions/virtual-environments) is
 * Make sure to use the same operating system and version.
 * Make sure to use the same version of libssl.
 * Make sure that the operating system has `libyaml-0` installed
+* The environment variable `RUNNER_TOOL_CACHE` must be set to same value as on GitHub-hosted runners
+  (`/opt/hostedtoolcache` on Linux, `/Users/runner/hostedtoolcache` on macOS, `C:\hostedtoolcache\windows` on Windows).
+* That directory must be writable by the `runner` user.
 * The runner software is running as user `runner` with a home directory of `/home/runner`, or you have created a symlink for the home directory of whatever user that the runner is running as to `/home/runner`.
 
 In other cases, please use a system Ruby or [install Ruby manually](https://github.com/postmodern/chruby/wiki#installing-rubies) instead.
