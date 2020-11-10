@@ -51181,7 +51181,7 @@ async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
-  if (platform === 'windows-latest' && engine === 'ruby') {
+  if (platform.startsWith('windows-') && engine === 'ruby') {
     installer = __webpack_require__(216)
   } else {
     installer = __webpack_require__(974)
