@@ -223,9 +223,9 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     bundlerVersion = '1'
   }
 
-  if (engine === 'ruby' && common.isHeadVersion(rubyVersion) && bundlerVersion === '2') {
+  if ((engine === 'ruby' || engine === 'truffleruby') && common.isHeadVersion(rubyVersion) && bundlerVersion === '2') {
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
-  } else if (engine === 'truffleruby' && bundlerVersion === '1') {
+  } else if (engine === 'truffleruby' && !common.isHeadVersion(rubyVersion) && bundlerVersion === '1') {
     console.log(`Using Bundler 1 shipped with ${engine}`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
