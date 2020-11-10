@@ -23,7 +23,7 @@ export async function install(platform, engine, version) {
 async function downloadAndExtract(platform, engine, version) {
   let rubyPrefix
   if (common.shouldExtractInToolCache(engine, version)) {
-    rubyPrefix = common.getToolCacheRubyPrefix(version)
+    rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
   } else if (windows) {
     rubyPrefix = path.join(`${common.drive}:`, `${engine}-${version}`)
   } else {

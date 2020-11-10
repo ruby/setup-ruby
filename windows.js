@@ -38,7 +38,7 @@ export async function install(platform, engine, version) {
 
   let rubyPrefix
   if (common.shouldExtractInToolCache(engine, version)) {
-    rubyPrefix = common.getToolCacheRubyPrefix(version)
+    rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
   } else {
     rubyPrefix = `${drive}:\\${base}`
   }

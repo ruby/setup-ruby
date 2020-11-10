@@ -27714,7 +27714,7 @@ async function install(platform, engine, version) {
 
   let rubyPrefix
   if (common.shouldExtractInToolCache(engine, version)) {
-    rubyPrefix = common.getToolCacheRubyPrefix(version)
+    rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
   } else {
     rubyPrefix = `${drive}:\\${base}`
   }
@@ -32167,11 +32167,21 @@ function shouldExtractInToolCache(engine, version) {
   return engine === 'ruby' && !isHeadVersion(version)
 }
 
-function getToolCacheRubyPrefix(version) {
-  const toolCache = process.env['RUNNER_TOOL_CACHE']
-  if (!toolCache) {
-    throw new Error('$RUNNER_TOOL_CACHE must be set')
+function getPlatformToolCache(platform) {
+  // Hardcode paths rather than using $RUNNER_TOOL_CACHE because the prebuilt Rubies cannot be moved anyway
+  if (platform.startsWith('ubuntu-')) {
+    return '/opt/hostedtoolcache'
+  } else if (platform.startsWith('macos-')) {
+    return '/Users/runner/hostedtoolcache'
+  } else if (platform.startsWith('windows-')) {
+    return 'C:/hostedtoolcache/windows'
+  } else {
+    throw new Error('Unknown platform')
   }
+}
+
+function getToolCacheRubyPrefix(platform, version) {
+  const toolCache = getPlatformToolCache(platform)
   return path.join(toolCache, 'Ruby', version, 'x64')
 }
 
@@ -52901,7 +52911,7 @@ async function install(platform, engine, version) {
 async function downloadAndExtract(platform, engine, version) {
   let rubyPrefix
   if (common.shouldExtractInToolCache(engine, version)) {
-    rubyPrefix = common.getToolCacheRubyPrefix(version)
+    rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
   } else if (windows) {
     rubyPrefix = path.join(`${common.drive}:`, `${engine}-${version}`)
   } else {

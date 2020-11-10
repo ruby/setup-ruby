@@ -63,11 +63,21 @@ export function shouldExtractInToolCache(engine, version) {
   return engine === 'ruby' && !isHeadVersion(version)
 }
 
-export function getToolCacheRubyPrefix(version) {
-  const toolCache = process.env['RUNNER_TOOL_CACHE']
-  if (!toolCache) {
-    throw new Error('$RUNNER_TOOL_CACHE must be set')
+function getPlatformToolCache(platform) {
+  // Hardcode paths rather than using $RUNNER_TOOL_CACHE because the prebuilt Rubies cannot be moved anyway
+  if (platform.startsWith('ubuntu-')) {
+    return '/opt/hostedtoolcache'
+  } else if (platform.startsWith('macos-')) {
+    return '/Users/runner/hostedtoolcache'
+  } else if (platform.startsWith('windows-')) {
+    return 'C:/hostedtoolcache/windows'
+  } else {
+    throw new Error('Unknown platform')
   }
+}
+
+export function getToolCacheRubyPrefix(platform, version) {
+  const toolCache = getPlatformToolCache(platform)
   return path.join(toolCache, 'Ruby', version, 'x64')
 }
 
