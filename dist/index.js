@@ -51227,25 +51227,15 @@ async function setupRuby(options = {}) {
   core.setOutput('ruby-prefix', rubyPrefix)
 }
 
+// The returned gemfile is guaranteed to exist, the lockfile might not exist
 function detectGemfiles() {
   const gemfilePath = process.env['BUNDLE_GEMFILE'] || 'Gemfile'
   if (fs.existsSync(gemfilePath)) {
-    const lockPath = `${gemfilePath}.lock`
-    if (fs.existsSync(lockPath)) {
-      return [gemfilePath, lockPath]
-    } else {
-      return [gemfilePath, null]
-    }
+    return [gemfilePath, `${gemfilePath}.lock`]
   }
 
-  const gemsRbPath = "gems.rb"
-  if (fs.existsSync(gemsRbPath)) {
-    const lockPath = "gems.locked"
-    if (fs.existsSync(lockPath)) {
-      return [gemsRbPath, lockPath]
-    } else {
-      return [gemsRbPath, null]
-    }
+  if (fs.existsSync("gems.rb")) {
+    return ["gems.rb", "gems.locked"]
   }
 
   return [null, null]
@@ -51329,7 +51319,7 @@ function envPreInstall() {
 }
 
 function readBundledWithFromGemfileLock(lockFile) {
-  if (lockFile !== null) {
+  if (lockFile !== null && fs.existsSync(lockFile)) {
     const contents = fs.readFileSync(lockFile, 'utf8')
     const lines = contents.split(/\r?\n/)
     const bundledWithLine = lines.findIndex(line => /^BUNDLED WITH$/.test(line.trim()))
@@ -51397,24 +51387,22 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
   // config
   const path = 'vendor/bundle'
 
-  if (lockFile !== null) {
-    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'])
-  }
   await exec.exec('bundle', ['config', '--local', 'path', path])
+
+  if (fs.existsSync(lockFile)) {
+    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'])
+  } else {
+    // Generate the lockfile so we can use it to compute the cache key.
+    // This will also automatically pick up the latest gem versions compatible with the Gemfile.
+    await exec.exec('bundle', ['lock'])
+  }
 
   // cache key
   const paths = [path]
-  const baseKey = await computeBaseKey(platform, engine, version, gemfile)
-  let key = baseKey
-  let restoreKeys
-  if (lockFile !== null) {
-    key += `-${lockFile}-${await common.hashFile(lockFile)}`
-    // If only Gemfile.lock changes we can reuse part of the cache (but it will keep old gem versions in the cache)
-    restoreKeys = [`${baseKey}-${lockFile}-`]
-  } else {
-    // Only exact key, to never mix native gems of different platforms or Ruby versions
-    restoreKeys = []
-  }
+  const baseKey = await computeBaseKey(platform, engine, version, lockFile)
+  const key = `${baseKey}-${await common.hashFile(lockFile)}`
+  // If only Gemfile.lock changes we can reuse part of the cache (but it will keep old gem versions in the cache)
+  const restoreKeys = [`${baseKey}-`]
   console.log(`Cache key: ${key}`)
 
   // restore cache & install
@@ -51433,15 +51421,11 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
     console.log(`Found cache for key: ${cachedKey}`)
   }
 
-  let alreadyInstalled = false
-  if (cachedKey === key) {
-    const exitCode = await exec.exec('bundle', ['check'], { ignoreReturnCode: true })
-    alreadyInstalled = (exitCode === 0)
-  }
+  // Always run 'bundle install' to list the gems
+  await exec.exec('bundle', ['install', '--jobs', '4'])
 
-  if (!alreadyInstalled) {
-    await exec.exec('bundle', ['install', '--jobs', '4'])
-
+  // @actions/cache only allows to save for non-existing keys
+  if (cachedKey !== key) {
     // Error handling from https://github.com/actions/cache/blob/master/src/save.ts
     console.log('Saving cache')
     try {
@@ -51460,8 +51444,9 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
   return true
 }
 
-async function computeBaseKey(platform, engine, version, gemfile) {
-  let baseKey = `setup-ruby-toolcache-bundle-install-${platform}-${engine}-${version}-${gemfile}`
+async function computeBaseKey(platform, engine, version, lockFile) {
+  let key = `setup-ruby-bundler-cache-v2-${platform}-${engine}-${version}`
+
   if (engine !== 'jruby' && common.isHeadVersion(version)) {
     let revision = '';
     await exec.exec('ruby', ['-e', 'print RUBY_REVISION'], {
@@ -51472,9 +51457,11 @@ async function computeBaseKey(platform, engine, version, gemfile) {
         }
       }
     });
-    baseKey += `-revision-${revision}`
+    key += `-revision-${revision}`
   }
-  return baseKey
+
+  key += `-${lockFile}`
+  return key
 }
 
 if (__filename.endsWith('index.js')) { run() }
