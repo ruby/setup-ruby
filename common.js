@@ -59,6 +59,14 @@ function findUbuntuVersion() {
   }
 }
 
+export function getImageOS() {
+  const imageOS = process.env['ImageOS']
+  if (!imageOS) {
+    throw new Error('The environment variable ImageOS must be set')
+  }
+  return imageOS
+}
+
 export function shouldExtractInToolCache(engine, version) {
   return engine === 'ruby' && !isHeadVersion(version)
 }

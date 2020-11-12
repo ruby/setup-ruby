@@ -32098,6 +32098,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isHeadVersion", function() { return isHeadVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hashFile", function() { return hashFile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getImageOS", function() { return getImageOS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shouldExtractInToolCache", function() { return shouldExtractInToolCache; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getToolCacheRubyPrefix", function() { return getToolCacheRubyPrefix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "win2nix", function() { return win2nix; });
@@ -32161,6 +32162,14 @@ function findUbuntuVersion() {
   } else {
     throw new Error('Could not find Ubuntu version')
   }
+}
+
+function getImageOS() {
+  const imageOS = process.env['ImageOS']
+  if (!imageOS) {
+    throw new Error('The environment variable ImageOS must be set')
+  }
+  return imageOS
 }
 
 function shouldExtractInToolCache(engine, version) {
@@ -51445,7 +51454,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
 }
 
 async function computeBaseKey(platform, engine, version, lockFile) {
-  let key = `setup-ruby-bundler-cache-v2-${platform}-${engine}-${version}`
+  let key = `setup-ruby-bundler-cache-v2-${common.getImageOS()}-${engine}-${version}`
 
   if (engine !== 'jruby' && common.isHeadVersion(version)) {
     let revision = '';
