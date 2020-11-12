@@ -57,10 +57,17 @@ async function downloadAndExtract(platform, engine, version) {
 }
 
 function getDownloadURL(platform, engine, version) {
+  let builderPlatform = platform
+  if (platform.startsWith('windows-')) {
+    builderPlatform = 'windows-latest'
+  } else if (platform.startsWith('macos-')) {
+    builderPlatform = 'macos-latest'
+  }
+
   if (common.isHeadVersion(version)) {
-    return getLatestHeadBuildURL(platform, engine, version)
+    return getLatestHeadBuildURL(builderPlatform, engine, version)
   } else {
-    return `${releasesURL}/download/${builderReleaseTag}/${engine}-${version}-${platform}.tar.gz`
+    return `${releasesURL}/download/${builderReleaseTag}/${engine}-${version}-${builderPlatform}.tar.gz`
   }
 }
 

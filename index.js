@@ -293,7 +293,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
 }
 
 async function computeBaseKey(platform, engine, version, lockFile) {
-  let key = `setup-ruby-bundler-cache-v2-${common.getImageOS()}-${engine}-${version}`
+  let key = `setup-ruby-bundler-cache-v2-${platform}-${engine}-${version}`
 
   if (engine !== 'jruby' && common.isHeadVersion(version)) {
     let revision = '';

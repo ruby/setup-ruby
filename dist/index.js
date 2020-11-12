@@ -32098,7 +32098,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isHeadVersion", function() { return isHeadVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hashFile", function() { return hashFile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getImageOS", function() { return getImageOS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shouldExtractInToolCache", function() { return shouldExtractInToolCache; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getToolCacheRubyPrefix", function() { return getToolCacheRubyPrefix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "win2nix", function() { return win2nix; });
@@ -32141,35 +32140,33 @@ async function hashFile(file) {
   return hash.digest('hex')
 }
 
-function getVirtualEnvironmentName() {
-  const platform = os.platform()
-  if (platform === 'linux') {
-    return `ubuntu-${findUbuntuVersion()}`
-  } else if (platform === 'darwin') {
-    return 'macos-latest'
-  } else if (platform === 'win32') {
-    return 'windows-latest'
-  } else {
-    throw new Error(`Unknown platform ${platform}`)
-  }
-}
-
-function findUbuntuVersion() {
-  const lsb_release = fs.readFileSync('/etc/lsb-release', 'utf8')
-  const match = lsb_release.match(/^DISTRIB_RELEASE=(\d+\.\d+)$/m)
-  if (match) {
-    return match[1]
-  } else {
-    throw new Error('Could not find Ubuntu version')
-  }
-}
-
 function getImageOS() {
   const imageOS = process.env['ImageOS']
   if (!imageOS) {
     throw new Error('The environment variable ImageOS must be set')
   }
   return imageOS
+}
+
+function getVirtualEnvironmentName() {
+  const imageOS = getImageOS()
+
+  let match = imageOS.match(/^ubuntu(\d+)/) // e.g. ubuntu18
+  if (match) {
+    return `ubuntu-${match[1]}.04`
+  }
+
+  match = imageOS.match(/^macos(\d{2})(\d+)/) // e.g. macos1015
+  if (match) {
+    return `macos-${match[1]}.${match[2]}`
+  }
+
+  match = imageOS.match(/^win(\d+)/) // e.g. win19
+  if (match) {
+    return `windows-20${match[1]}`
+  }
+
+  throw new Error(`Unknown ImageOS ${imageOS}`)
 }
 
 function shouldExtractInToolCache(engine, version) {
@@ -51454,7 +51451,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
 }
 
 async function computeBaseKey(platform, engine, version, lockFile) {
-  let key = `setup-ruby-bundler-cache-v2-${common.getImageOS()}-${engine}-${version}`
+  let key = `setup-ruby-bundler-cache-v2-${platform}-${engine}-${version}`
 
   if (engine !== 'jruby' && common.isHeadVersion(version)) {
     let revision = '';
@@ -52944,10 +52941,17 @@ async function downloadAndExtract(platform, engine, version) {
 }
 
 function getDownloadURL(platform, engine, version) {
+  let builderPlatform = platform
+  if (platform.startsWith('windows-')) {
+    builderPlatform = 'windows-latest'
+  } else if (platform.startsWith('macos-')) {
+    builderPlatform = 'macos-latest'
+  }
+
   if (common.isHeadVersion(version)) {
-    return getLatestHeadBuildURL(platform, engine, version)
+    return getLatestHeadBuildURL(builderPlatform, engine, version)
   } else {
-    return `${releasesURL}/download/${builderReleaseTag}/${engine}-${version}-${platform}.tar.gz`
+    return `${releasesURL}/download/${builderReleaseTag}/${engine}-${version}-${builderPlatform}.tar.gz`
   }
 }
 

@@ -36,35 +36,33 @@ export async function hashFile(file) {
   return hash.digest('hex')
 }
 
-export function getVirtualEnvironmentName() {
-  const platform = os.platform()
-  if (platform === 'linux') {
-    return `ubuntu-${findUbuntuVersion()}`
-  } else if (platform === 'darwin') {
-    return 'macos-latest'
-  } else if (platform === 'win32') {
-    return 'windows-latest'
-  } else {
-    throw new Error(`Unknown platform ${platform}`)
-  }
-}
-
-function findUbuntuVersion() {
-  const lsb_release = fs.readFileSync('/etc/lsb-release', 'utf8')
-  const match = lsb_release.match(/^DISTRIB_RELEASE=(\d+\.\d+)$/m)
-  if (match) {
-    return match[1]
-  } else {
-    throw new Error('Could not find Ubuntu version')
-  }
-}
-
-export function getImageOS() {
+function getImageOS() {
   const imageOS = process.env['ImageOS']
   if (!imageOS) {
     throw new Error('The environment variable ImageOS must be set')
   }
   return imageOS
+}
+
+export function getVirtualEnvironmentName() {
+  const imageOS = getImageOS()
+
+  let match = imageOS.match(/^ubuntu(\d+)/) // e.g. ubuntu18
+  if (match) {
+    return `ubuntu-${match[1]}.04`
+  }
+
+  match = imageOS.match(/^macos(\d{2})(\d+)/) // e.g. macos1015
+  if (match) {
+    return `macos-${match[1]}.${match[2]}`
+  }
+
+  match = imageOS.match(/^win(\d+)/) // e.g. win19
+  if (match) {
+    return `windows-20${match[1]}`
+  }
+
+  throw new Error(`Unknown ImageOS ${imageOS}`)
 }
 
 export function shouldExtractInToolCache(engine, version) {
