@@ -140,35 +140,6 @@ If there is a `Gemfile.lock` (or `$BUNDLE_GEMFILE.lock` or `gems.locked`), `bund
 To perform caching, this action will use `bundle config --local path vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
 
-### Caching `bundle install` manually
-
-You can also cache gems manually,
-but this is not recommended because it is verbose and very difficult to use a correct cache key.
-You can cache the installed gems with these two steps:
-
-```yaml
-    - uses: actions/cache@v2
-      with:
-        path: vendor/bundle
-        key: bundle-use-ruby-${{ matrix.os }}-${{ matrix.ruby }}-${{ hashFiles('**/Gemfile.lock') }}
-        restore-keys: |
-          bundle-use-ruby-${{ matrix.os }}-${{ matrix.ruby }}-
-    - name: bundle install
-      run: |
-        bundle config deployment true
-        bundle config path vendor/bundle
-        bundle install --jobs 4
-```
-
-When using a single OS, replace `${{ matrix.os }}` with the OS.  
-When using a single job with a Ruby version, replace `${{ matrix.ruby }}` with the Ruby version.  
-When using `.ruby-version`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.ruby-version') }}`.  
-When using `.tool-versions`, replace `${{ matrix.ruby }}` with `${{ hashFiles('.tool-versions') }}`.
-
-This uses the [cache action](https://github.com/actions/cache).
-The code above is a more complete version of the [Ruby - Bundler example](https://github.com/actions/cache/blob/master/examples.md#ruby---bundler).
-Make sure to include `use-ruby` in the `key` to avoid conflicting with previous caches.
-
 ## Windows
 
 Note that running CI on Windows can be quite challenging if you are not very familiar with Windows.
