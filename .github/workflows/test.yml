@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2016, windows-2019 ]
+        os: [ ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11.0, windows-2016, windows-2019 ]
         # Use various version syntax here for testing
         ruby: [ 2.1, 2.2, 2.3, 2.4, 2.5, 2.6.6, 2.7, ruby-head, debug, jruby-9.1, jruby, jruby-head, truffleruby, truffleruby-head ]
         include:

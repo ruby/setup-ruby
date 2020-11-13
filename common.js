@@ -52,9 +52,9 @@ export function getVirtualEnvironmentName() {
     return `ubuntu-${match[1]}.04`
   }
 
-  match = imageOS.match(/^macos(\d{2})(\d+)/) // e.g. macos1015
+  match = imageOS.match(/^macos(\d{2})(\d+)?/) // e.g. macos1015, macos11
   if (match) {
-    return `macos-${match[1]}.${match[2]}`
+    return `macos-${match[1]}.${match[2] || '0'}`
   }
 
   match = imageOS.match(/^win(\d+)/) // e.g. win19
