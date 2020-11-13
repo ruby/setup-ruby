@@ -29,6 +29,8 @@ jobs:
         - { os: windows-2019, ruby: debug }
         - { os: windows-2019, ruby: truffleruby }
         - { os: windows-2019, ruby: truffleruby-head }
+        - { os: macos-11.0, ruby: truffleruby }
+        - { os: macos-11.0, ruby: truffleruby-head }
 
     name: ${{ matrix.os }} ${{ matrix.ruby }}
     runs-on: ${{ matrix.os }}
