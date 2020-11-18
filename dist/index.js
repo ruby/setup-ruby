@@ -32096,6 +32096,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drive", function() { return drive; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "measure", function() { return measure; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isHeadVersion", function() { return isHeadVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isStableVersion", function() { return isStableVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hashFile", function() { return hashFile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shouldExtractInToolCache", function() { return shouldExtractInToolCache; });
@@ -32130,6 +32131,10 @@ async function measure(name, block) {
 
 function isHeadVersion(rubyVersion) {
   return rubyVersion === 'head' || rubyVersion === 'debug' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
+}
+
+function isStableVersion(rubyVersion) {
+  return /^\d+(\.\d+)*$/.test(rubyVersion)
 }
 
 async function hashFile(file) {
@@ -51290,7 +51295,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   let version = parsedVersion
   if (!engineVersions.includes(parsedVersion)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
-    const found = latestToFirstVersion.find(v => !common.isHeadVersion(v) && v.startsWith(parsedVersion))
+    const found = latestToFirstVersion.find(v => common.isStableVersion(v) && v.startsWith(parsedVersion))
     if (found) {
       version = found
     } else {

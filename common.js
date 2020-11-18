@@ -28,6 +28,10 @@ export function isHeadVersion(rubyVersion) {
   return rubyVersion === 'head' || rubyVersion === 'debug' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
 }
 
+export function isStableVersion(rubyVersion) {
+  return /^\d+(\.\d+)*$/.test(rubyVersion)
+}
+
 export async function hashFile(file) {
   // See https://github.com/actions/runner/blob/master/src/Misc/expressionFunc/hashFiles/src/hashFiles.ts
   const hash = crypto.createHash('sha256')
