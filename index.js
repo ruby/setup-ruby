@@ -106,7 +106,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
   } else if (rubyVersion === '.tool-versions') { // Read from .tool-versions
     const toolVersions = fs.readFileSync('.tool-versions', 'utf8').trim()
     const rubyLine = toolVersions.split(/\r?\n/).filter(e => e.match(/^ruby\s/))[0]
-    rubyVersion = rubyLine.split(/\s+/, 2)[1]
+    rubyVersion = rubyLine.match(/^ruby\s+(.+)$/)[1]
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
   }
 
@@ -118,7 +118,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
     engine = rubyVersion
     version = '' // Let the logic in validateRubyEngineAndVersion() find the version
   } else { // engine-X.Y.Z
-    [engine, version] = rubyVersion.split('-', 2)
+    [engine, version] = common.partition(rubyVersion, '-')
   }
 
   return [engine, version]

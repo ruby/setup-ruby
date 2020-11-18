@@ -120,7 +120,7 @@ export function addVCVARSEnv() {
   let newSet = cp.execSync(cmd).toString().trim().split(/\r?\n/)
   newSet = newSet.filter(line => line.match(/\S=\S/))
   newSet.forEach(s => {
-    let [k,v] = s.split('=', 2)
+    let [k,v] = common.partition(s, '=')
     newEnv.set(k,v)
   })
 

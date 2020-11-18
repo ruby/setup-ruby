@@ -11,6 +11,14 @@ export const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
 export const drive = (windows ? (process.env['GITHUB_WORKSPACE'] || 'C')[0] : undefined)
 
+export function partition(string, separator) {
+  const i = string.indexOf(separator)
+  if (i === -1) {
+    throw new Error(`No separator ${separator} in string ${string}`)
+  }
+  return [string.slice(0, i), string.slice(i + separator.length, string.length)]
+}
+
 export async function measure(name, block) {
   return await core.group(name, async () => {
     const start = performance.now()
@@ -95,7 +103,7 @@ export function getToolCacheRubyPrefix(platform, version) {
 export function win2nix(path) {
   if (/^[A-Z]:/i.test(path)) {
     // path starts with drive
-    path = `/${path[0].toLowerCase()}${path.split(':', 2)[1]}`
+    path = `/${path[0].toLowerCase()}${partition(path, ':')[1]}`
   }
   return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
 }
