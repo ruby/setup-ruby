@@ -132,7 +132,13 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   let version = parsedVersion
   if (!engineVersions.includes(parsedVersion)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
-    const found = latestToFirstVersion.find(v => common.isStableVersion(v) && v.startsWith(parsedVersion))
+    // Try to match stable versions first, so an empty version (engine-only) matches the latest stable version
+    let found = latestToFirstVersion.find(v => common.isStableVersion(v) && v.startsWith(parsedVersion))
+    if (!found) {
+      // Exclude head versions, they must be exact matches
+      found = latestToFirstVersion.find(v => !common.isHeadVersion(v) && v.startsWith(parsedVersion))
+    }
+
     if (found) {
       version = found
     } else {
