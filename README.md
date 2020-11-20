@@ -85,7 +85,6 @@ jobs:
         os: [ubuntu, macos]
         ruby: [2.5, 2.6, 2.7, head, debug, jruby, jruby-head, truffleruby, truffleruby-head]
     runs-on: ${{ matrix.os }}-latest
-    continue-on-error: ${{ endsWith(matrix.ruby, 'head') || matrix.ruby == 'debug' }}
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
