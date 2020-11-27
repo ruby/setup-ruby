@@ -136,14 +136,13 @@ This caching speeds up installing gems significantly and avoids too many request
 It needs a `Gemfile` (or `$BUNDLE_GEMFILE` or `gems.rb`) under the [`working-directory`](#working-directory).  
 If there is a `Gemfile.lock` (or `$BUNDLE_GEMFILE.lock` or `gems.locked`), `bundle config --local deployment true` is used.
 
-To use a `Gemfile` which is not at the root, set `BUNDLE_GEMFILE` in the `env` at the job level, so it is set for all steps:
+To use a `Gemfile` which is not at the root or has a different name, set `BUNDLE_GEMFILE` in the `env` at the job level, so it is set for all steps:
 ```yaml
-
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      BUNDLE_GEMFILE: subdir/Gemfile
+      BUNDLE_GEMFILE: subdir/mygemfile
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
@@ -152,6 +151,7 @@ jobs:
         bundler-cache: true
     - run: bundle exec rake
 ```
+Of course you can also use a matrix of gemfiles if you need to test multiple gemfiles.
 
 To perform caching, this action will use `bundle config --local path vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
