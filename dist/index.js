@@ -51421,7 +51421,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
   const paths = [path]
   const baseKey = await computeBaseKey(platform, engine, version, lockFile)
   const key = `${baseKey}-${await common.hashFile(lockFile)}`
-  // If only Gemfile.lock changes we can reuse part of the cache (but it will keep old gem versions in the cache)
+  // If only Gemfile.lock changes we can reuse part of the cache, and clean old gem versions below
   const restoreKeys = [`${baseKey}-`]
   console.log(`Cache key: ${key}`)
 
@@ -51446,6 +51446,10 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
 
   // @actions/cache only allows to save for non-existing keys
   if (cachedKey !== key) {
+    if (cachedKey) { // existing cache but Gemfile.lock differs, clean old gems
+      await exec.exec('bundle', ['clean'])
+    }
+
     // Error handling from https://github.com/actions/cache/blob/master/src/save.ts
     console.log('Saving cache')
     try {
