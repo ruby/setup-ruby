@@ -230,6 +230,8 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
   }
+
+  core.exportVariable('BUNDLER_VERSION', bundlerVersion)
 }
 
 async function bundleInstall(gemfile, lockFile, platform, engine, version) {
