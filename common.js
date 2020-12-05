@@ -99,6 +99,11 @@ export function getToolCacheRubyPrefix(platform, version) {
   return path.join(toolCache, 'Ruby', version, 'x64')
 }
 
+export function createToolCacheCompleteFile(toolCacheRubyPrefix) {
+  const completeFile = `${toolCacheRubyPrefix}.complete`
+  fs.writeFileSync(completeFile, '')
+}
+
 // convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
 export function win2nix(path) {
   if (/^[A-Z]:/i.test(path)) {

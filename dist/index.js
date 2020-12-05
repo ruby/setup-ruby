@@ -27729,13 +27729,13 @@ async function install(platform, engine, version) {
   common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
   if (!inToolCache) {
-    await downloadAndExtract(url, base, rubyPrefix);
+    await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
   return rubyPrefix
 }
 
-async function downloadAndExtract(url, base, rubyPrefix) {
+async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   const parentDir = path.dirname(rubyPrefix)
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
@@ -27748,6 +27748,10 @@ async function downloadAndExtract(url, base, rubyPrefix) {
 
   if (base !== path.basename(rubyPrefix)) {
     await io.mv(path.join(parentDir, base), rubyPrefix)
+  }
+
+  if (common.shouldUseToolCache(engine, version)) {
+    common.createToolCacheCompleteFile(rubyPrefix)
   }
 }
 
@@ -32114,6 +32118,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shouldUseToolCache", function() { return shouldUseToolCache; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getToolCacheRubyPrefix", function() { return getToolCacheRubyPrefix; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createToolCacheCompleteFile", function() { return createToolCacheCompleteFile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "win2nix", function() { return win2nix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupPath", function() { return setupPath; });
 const os = __webpack_require__(87)
@@ -32215,6 +32220,11 @@ function getPlatformToolCache(platform) {
 function getToolCacheRubyPrefix(platform, version) {
   const toolCache = getPlatformToolCache(platform)
   return path.join(toolCache, 'Ruby', version, 'x64')
+}
+
+function createToolCacheCompleteFile(toolCacheRubyPrefix) {
+  const completeFile = `${toolCacheRubyPrefix}.complete`
+  fs.writeFileSync(completeFile, '')
 }
 
 // convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
@@ -52982,6 +52992,10 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
       await exec.exec('tar', ['-xz', '-C', parentDir, '-f', downloadPath])
     }
   })
+
+  if (common.shouldUseToolCache(engine, version)) {
+    common.createToolCacheCompleteFile(rubyPrefix)
+  }
 }
 
 function getDownloadURL(platform, engine, version) {

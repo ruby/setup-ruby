@@ -60,6 +60,10 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
       await exec.exec('tar', ['-xz', '-C', parentDir, '-f', downloadPath])
     }
   })
+
+  if (common.shouldUseToolCache(engine, version)) {
+    common.createToolCacheCompleteFile(rubyPrefix)
+  }
 }
 
 function getDownloadURL(platform, engine, version) {

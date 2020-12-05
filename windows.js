@@ -53,13 +53,13 @@ export async function install(platform, engine, version) {
   common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
   if (!inToolCache) {
-    await downloadAndExtract(url, base, rubyPrefix);
+    await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
   return rubyPrefix
 }
 
-async function downloadAndExtract(url, base, rubyPrefix) {
+async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   const parentDir = path.dirname(rubyPrefix)
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
@@ -72,6 +72,10 @@ async function downloadAndExtract(url, base, rubyPrefix) {
 
   if (base !== path.basename(rubyPrefix)) {
     await io.mv(path.join(parentDir, base), rubyPrefix)
+  }
+
+  if (common.shouldUseToolCache(engine, version)) {
+    common.createToolCacheCompleteFile(rubyPrefix)
   }
 }
 
