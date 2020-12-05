@@ -27712,17 +27712,31 @@ async function install(platform, engine, version) {
   }
   const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
 
-  let rubyPrefix
-  if (common.shouldExtractInToolCache(engine, version)) {
-    rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
+  let rubyPrefix, inToolCache
+  if (common.shouldUseToolCache(engine, version)) {
+    inToolCache = tc.find('Ruby', version)
+    if (inToolCache) {
+      rubyPrefix = inToolCache
+    } else {
+      rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
+    }
   } else {
     rubyPrefix = `${drive}:\\${base}`
   }
-  const parentDir = path.dirname(rubyPrefix)
 
   let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
 
   common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
+
+  if (!inToolCache) {
+    await downloadAndExtract(url, base, rubyPrefix);
+  }
+
+  return rubyPrefix
+}
+
+async function downloadAndExtract(url, base, rubyPrefix) {
+  const parentDir = path.dirname(rubyPrefix)
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     console.log(url)
@@ -27730,13 +27744,11 @@ async function install(platform, engine, version) {
   })
 
   await common.measure('Extracting Ruby', async () =>
-    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
+      exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], {silent: true}))
 
   if (base !== path.basename(rubyPrefix)) {
     await io.mv(path.join(parentDir, base), rubyPrefix)
   }
-
-  return rubyPrefix
 }
 
 async function setupMingw(version) {
@@ -32100,7 +32112,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isStableVersion", function() { return isStableVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hashFile", function() { return hashFile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getVirtualEnvironmentName", function() { return getVirtualEnvironmentName; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shouldExtractInToolCache", function() { return shouldExtractInToolCache; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shouldUseToolCache", function() { return shouldUseToolCache; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getToolCacheRubyPrefix", function() { return getToolCacheRubyPrefix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "win2nix", function() { return win2nix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupPath", function() { return setupPath; });
@@ -32183,7 +32195,7 @@ function getVirtualEnvironmentName() {
   throw new Error(`Unknown ImageOS ${imageOS}`)
 }
 
-function shouldExtractInToolCache(engine, version) {
+function shouldUseToolCache(engine, version) {
   return engine === 'ruby' && !isHeadVersion(version)
 }
 
@@ -52910,7 +52922,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
 const os = __webpack_require__(87)
 const path = __webpack_require__(622)
-const core = __webpack_require__(186)
 const exec = __webpack_require__(514)
 const io = __webpack_require__(436)
 const tc = __webpack_require__(188)
@@ -52927,23 +52938,32 @@ function getAvailableVersions(platform, engine) {
 }
 
 async function install(platform, engine, version) {
-  return await downloadAndExtract(platform, engine, version)
-}
-
-async function downloadAndExtract(platform, engine, version) {
-  let rubyPrefix
-  if (common.shouldExtractInToolCache(engine, version)) {
-    rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
+  let rubyPrefix, inToolCache
+  if (common.shouldUseToolCache(engine, version)) {
+    inToolCache = tc.find('Ruby', version)
+    if (inToolCache) {
+      rubyPrefix = inToolCache
+    } else {
+      rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
+    }
   } else if (windows) {
     rubyPrefix = path.join(`${common.drive}:`, `${engine}-${version}`)
   } else {
     rubyPrefix = path.join(os.homedir(), '.rubies', `${engine}-${version}`)
   }
 
-  const parentDir = path.dirname(rubyPrefix)
-
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
   common.setupPath([path.join(rubyPrefix, 'bin')])
+
+  if (!inToolCache) {
+    await downloadAndExtract(platform, engine, version, rubyPrefix);
+  }
+
+  return rubyPrefix
+}
+
+async function downloadAndExtract(platform, engine, version, rubyPrefix) {
+  const parentDir = path.dirname(rubyPrefix)
 
   await io.rmRF(rubyPrefix)
   await io.mkdirP(parentDir)
@@ -52957,13 +52977,11 @@ async function downloadAndExtract(platform, engine, version) {
   await common.measure('Extracting Ruby', async () => {
     if (windows) {
       // Windows 2016 doesn't have system tar, use MSYS2's, it needs unix style paths
-      await exec.exec('tar', [ '-xz', '-C', common.win2nix(parentDir), '-f', common.win2nix(downloadPath) ])
+      await exec.exec('tar', ['-xz', '-C', common.win2nix(parentDir), '-f', common.win2nix(downloadPath)])
     } else {
-      await exec.exec('tar', [ '-xz', '-C', parentDir, '-f',  downloadPath ])
+      await exec.exec('tar', ['-xz', '-C', parentDir, '-f', downloadPath])
     }
   })
-
-  return rubyPrefix
 }
 
 function getDownloadURL(platform, engine, version) {

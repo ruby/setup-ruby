@@ -77,7 +77,7 @@ export function getVirtualEnvironmentName() {
   throw new Error(`Unknown ImageOS ${imageOS}`)
 }
 
-export function shouldExtractInToolCache(engine, version) {
+export function shouldUseToolCache(engine, version) {
   return engine === 'ruby' && !isHeadVersion(version)
 }
 
