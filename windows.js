@@ -68,7 +68,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   })
 
   await common.measure('Extracting Ruby', async () =>
-      exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], {silent: true}))
+    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
 
   if (base !== path.basename(rubyPrefix)) {
     await io.mv(path.join(parentDir, base), rubyPrefix)

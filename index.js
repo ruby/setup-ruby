@@ -240,9 +240,11 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
     return false
   }
 
+  // Before the lockfile exists, we need to specify which Bundler version to use explicitly
+  const optionsWithBundlerVersion = { env: { ...process.env, BUNDLER_VERSION: bundlerVersion } }
+
   // config
   const path = 'vendor/bundle'
-  const optionsWithBundlerVersion = {options: {env: {...process.env, BUNDLER_VERSION: bundlerVersion}}}
 
   await exec.exec('bundle', ['config', '--local', 'path', path], optionsWithBundlerVersion)
 
