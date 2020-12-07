@@ -63,12 +63,12 @@ export async function setupRuby(options = {}) {
   if (inputs['bundler'] !== 'none') {
     const [gemfile, lockFile] = detectGemfiles()
 
-    await common.measure('Installing Bundler', async () =>
+    const bundlerVersion = await common.measure('Installing Bundler', async () =>
       installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
 
     if (inputs['bundler-cache'] === 'true') {
       await common.measure('bundle install', async () =>
-          bundleInstall(gemfile, lockFile, platform, engine, version))
+          bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion))
     }
   }
 
@@ -231,10 +231,10 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     await exec.exec(gem, ['install', 'bundler', '-v', `~> ${bundlerVersion}`, '--no-document'])
   }
 
-  core.exportVariable('BUNDLER_VERSION', bundlerVersion)
+  return bundlerVersion
 }
 
-async function bundleInstall(gemfile, lockFile, platform, engine, version) {
+async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion) {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
@@ -242,20 +242,21 @@ async function bundleInstall(gemfile, lockFile, platform, engine, version) {
 
   // config
   const path = 'vendor/bundle'
+  const optionsWithBundlerVersion = {options: {env: {...process.env, BUNDLER_VERSION: bundlerVersion}}}
 
-  await exec.exec('bundle', ['config', '--local', 'path', path])
+  await exec.exec('bundle', ['config', '--local', 'path', path], optionsWithBundlerVersion)
 
   if (fs.existsSync(lockFile)) {
-    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'])
+    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'], optionsWithBundlerVersion)
   } else {
     // Generate the lockfile so we can use it to compute the cache key.
     // This will also automatically pick up the latest gem versions compatible with the Gemfile.
-    await exec.exec('bundle', ['lock'])
+    await exec.exec('bundle', ['lock'], optionsWithBundlerVersion)
   }
 
   // cache key
   const paths = [path]
-  const baseKey = await computeBaseKey(platform, engine, version, lockFile)
+  const baseKey = await computeBaseKey(platform, engine, rubyVersion, lockFile)
   const key = `${baseKey}-${await common.hashFile(lockFile)}`
   // If only Gemfile.lock changes we can reuse part of the cache, and clean old gem versions below
   const restoreKeys = [`${baseKey}-`]
