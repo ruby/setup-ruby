@@ -222,7 +222,7 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     bundlerVersion = '1'
   }
 
-  if ((engine === 'ruby' || engine === 'truffleruby') && common.isHeadVersion(rubyVersion) && bundlerVersion === '2') {
+  if (common.isHeadVersion(rubyVersion) && common.isBundler2Default(engine, rubyVersion) && bundlerVersion === '2') {
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
   } else if (engine === 'truffleruby' && !common.isHeadVersion(rubyVersion) && bundlerVersion === '1') {
     console.log(`Using Bundler 1 shipped with ${engine}`)
@@ -240,20 +240,25 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
     return false
   }
 
-  // Before the lockfile exists, we need to specify which Bundler version to use explicitly
-  const optionsWithBundlerVersion = { env: { ...process.env, BUNDLER_VERSION: bundlerVersion } }
+  let envOptions = {}
+  if (bundlerVersion.startsWith('1') && common.isBundler2Default(engine, rubyVersion)) {
+    // If Bundler 1 is specified on Rubies which ship with Bundler 2,
+    // we need to specify which Bundler version to use explicitly until the lockfile exists.
+    console.log(`Setting BUNDLER_VERSION=${bundlerVersion} for "bundle config|lock" commands below to ensure Bundler 1 is used`)
+    envOptions = { env: { ...process.env, BUNDLER_VERSION: bundlerVersion } }
+  }
 
   // config
   const path = 'vendor/bundle'
 
-  await exec.exec('bundle', ['config', '--local', 'path', path], optionsWithBundlerVersion)
+  await exec.exec('bundle', ['config', '--local', 'path', path], envOptions)
 
   if (fs.existsSync(lockFile)) {
-    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'], optionsWithBundlerVersion)
+    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'], envOptions)
   } else {
     // Generate the lockfile so we can use it to compute the cache key.
     // This will also automatically pick up the latest gem versions compatible with the Gemfile.
-    await exec.exec('bundle', ['lock'], optionsWithBundlerVersion)
+    await exec.exec('bundle', ['lock'], envOptions)
   }
 
   // cache key

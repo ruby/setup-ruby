@@ -40,6 +40,25 @@ export function isStableVersion(rubyVersion) {
   return /^\d+(\.\d+)*$/.test(rubyVersion)
 }
 
+export function isBundler2Default(engine, rubyVersion) {
+  if (engine === 'ruby') {
+    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 2.7
+  } else if (engine === 'truffleruby') {
+    return isHeadVersion(rubyVersion)
+  } else {
+    return false
+  }
+}
+
+export function floatVersion(rubyVersion) {
+  const match = rubyVersion.match(/^\d+\.\d+/)
+  if (match) {
+    return parseFloat(match[0])
+  } else {
+    return 0.0
+  }
+}
+
 export async function hashFile(file) {
   // See https://github.com/actions/runner/blob/master/src/Misc/expressionFunc/hashFiles/src/hashFiles.ts
   const hash = crypto.createHash('sha256')
