@@ -51426,7 +51426,7 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  if (engine === 'ruby' && rubyVersion.match(/^2\.[12]/)) {
+  if (engine === 'ruby' && rubyVersion.match(/^2\.[012]/)) {
     console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
     bundlerVersion = '1'
   } else if (engine === 'ruby' && rubyVersion.startsWith('2.3')) {
@@ -51437,9 +51437,9 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     bundlerVersion = '1'
   }
 
-  if (common.isHeadVersion(rubyVersion) && common.isBundler2Default(engine, rubyVersion) && bundlerVersion === '2') {
+  if (common.isHeadVersion(rubyVersion) && common.isBundler2Default(engine, rubyVersion) && bundlerVersion.startsWith('2')) {
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
-  } else if (engine === 'truffleruby' && !common.isHeadVersion(rubyVersion) && bundlerVersion === '1') {
+  } else if (engine === 'truffleruby' && !common.isHeadVersion(rubyVersion) && bundlerVersion.startsWith('1')) {
     console.log(`Using Bundler 1 shipped with ${engine}`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
