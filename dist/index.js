@@ -51396,9 +51396,8 @@ function readBundledWithFromGemfileLock(lockFile) {
       const nextLine = lines[bundledWithLine+1]
       if (nextLine && /^\d+/.test(nextLine.trim())) {
         const bundlerVersion = nextLine.trim()
-        const majorVersion = bundlerVersion.match(/^\d+/)[0]
-        console.log(`Using Bundler ${majorVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
-        return majorVersion
+        console.log(`Using Bundler ${bundlerVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
+        return bundlerVersion
       }
     }
   }
