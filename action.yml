@@ -11,7 +11,7 @@ inputs:
     default: 'default'
   bundler:
     description: |
-      The version of Bundler to install. Either 'none', 'latest', 'Gemfile.lock', or a version number (eg 1, 2, "2.1.4").
+      The version of Bundler to install. Either 'none', 'latest', 'Gemfile.lock', or a version number (e.g., 1, 2, 2.1.4).
       For 'Gemfile.lock', the version is determined based on the BUNDLED WITH section from the file Gemfile.lock, $BUNDLE_GEMFILE.lock or gems.locked.
       Defaults to 'Gemfile.lock' if the file exists and 'latest' otherwise.
     required: false
