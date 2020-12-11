@@ -102,6 +102,17 @@ jobs:
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
       run: gem install sassc -N
 
+  testExactBundlerVersion:
+    name: "Test with an exact Bundler version"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./
+      with:
+        ruby-version: 2.6
+        bundler: 2.1.4
+    - run: bundle --version | grep -F 2.1.4
+
   lint:
     runs-on: ubuntu-20.04
     steps:
