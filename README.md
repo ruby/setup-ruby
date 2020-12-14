@@ -116,10 +116,10 @@ if they are not at the root of the repository, see [action.yml](action.yml) for 
 ### Bundler
 
 By default, if there is a `Gemfile.lock` file (or `$BUNDLE_GEMFILE.lock` or `gems.locked`) with a `BUNDLED WITH` section,
-the latest version of Bundler with the same major version will be installed.
+that version of Bundler will be installed and used.
 Otherwise, the latest compatible Bundler version is installed (Bundler 2 on Ruby >= 2.4, Bundler 1 on Ruby < 2.4).
 
-This behavior can be customized, see [action.yml](action.yml) for details about the `bundler` input.
+This behavior can be customized, see [action.yml](action.yml) for more details about the `bundler` input.
 
 ### Caching `bundle install` automatically
 
