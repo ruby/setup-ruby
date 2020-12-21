@@ -113,6 +113,23 @@ jobs:
         bundler: 2.1.4
     - run: bundle --version | grep -F 2.1.4
 
+  testGemfileMatrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        gemfile: [ rails5, rails6 ]
+    name: "Test with ${{ matrix.gemfile }} gemfile"
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+      - run: bundle exec rails --version
+
   lint:
     runs-on: ubuntu-20.04
     steps:
