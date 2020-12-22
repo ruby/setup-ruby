@@ -113,7 +113,7 @@ jobs:
       - uses: ./
         with:
           ruby-version: 2.6
-          bundler-cache: true
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - run: bundle exec rake
 ```
 
