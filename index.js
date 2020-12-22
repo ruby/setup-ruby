@@ -80,6 +80,8 @@ function detectGemfiles() {
   const gemfilePath = process.env['BUNDLE_GEMFILE'] || 'Gemfile'
   if (fs.existsSync(gemfilePath)) {
     return [gemfilePath, `${gemfilePath}.lock`]
+  } else if (process.env['BUNDLE_GEMFILE']) {
+    throw new Error(`$BUNDLE_GEMFILE is set to ${gemfilePath} but does not exist`)
   }
 
   if (fs.existsSync("gems.rb")) {
