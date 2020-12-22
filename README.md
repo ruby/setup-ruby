@@ -70,7 +70,7 @@ jobs:
     - run: bundle exec rake
 ```
 
-### Matrix
+### Matrix of Ruby Versions
 
 This matrix tests all stable releases and `head` versions of MRI, JRuby and TruffleRuby on Ubuntu and macOS.
 
@@ -92,6 +92,29 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bundle exec rake
+```
+
+### Matrix of Gemfiles
+
+```yaml
+name: My workflow
+on: [push]
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        gemfile: [ rails5, rails6 ]
+    runs-on: ubuntu-latest
+    env: # $BUNDLE_GEMFILE must be set at the job level, so it is set for all steps
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+      - run: bundle exec rake
 ```
 
 See the GitHub Actions documentation for more details about the
@@ -136,24 +159,10 @@ This caching speeds up installing gems significantly and avoids too many request
 It needs a `Gemfile` (or `$BUNDLE_GEMFILE` or `gems.rb`) under the [`working-directory`](#working-directory).  
 If there is a `Gemfile.lock` (or `$BUNDLE_GEMFILE.lock` or `gems.locked`), `bundle config --local deployment true` is used.
 
-To use a `Gemfile` which is not at the root or has a different name, set `BUNDLE_GEMFILE` in the `env` at the job level, so it is set for all steps:
-```yaml
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    env:
-      BUNDLE_GEMFILE: subdir/mygemfile
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 2.6
-        bundler-cache: true
-    - run: bundle exec rake
-```
-Of course you can also use a matrix of gemfiles if you need to test multiple gemfiles.
+To use a `Gemfile` which is not at the root or has a different name, set `BUNDLE_GEMFILE` in the `env` at the job level
+as shown in the [example](#matrix-of-gemfiles).
 
-To perform caching, this action will use `bundle config --local path vendor/bundle`.  
+To perform caching, this action will use `bundle config --local path $PWD/vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
 
 ## Windows
