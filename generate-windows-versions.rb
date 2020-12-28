@@ -30,4 +30,4 @@ versions['mingw'] = 'https://github.com/MSP-Greg/ruby-loco/releases/download/rub
 versions['mswin'] = 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mswin.7z'
 
 js = "export const versions = #{JSON.pretty_generate(versions)}\n"
-File.write 'windows-versions.js', js
+File.binwrite 'windows-versions.js', js
