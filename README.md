@@ -162,13 +162,17 @@ If there is a `Gemfile.lock` (or `$BUNDLE_GEMFILE.lock` or `gems.locked`), `bund
 To use a `Gemfile` which is not at the root or has a different name, set `BUNDLE_GEMFILE` in the `env` at the job level
 as shown in the [example](#matrix-of-gemfiles).
 
+When there is no lockfile, one is generated with `bundle lock`, which is the same as `bundle install` would do first before actually fetching any gem.
+In other words, it works exactly like `bundle install`.
+The hash of the generated lockfile is then used for caching, which is the only correct approach.
+
 To perform caching, this action will use `bundle config --local path $PWD/vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
 
 #### Caching `bundle install` manually
 
-It is also possible to cache gems manually,
-but this is not recommended because it is verbose and *very difficult* to use a correct cache key.
+It is also possible to cache gems manually, but this is not recommended because it is verbose and *very difficult* to do correctly.
+There are many concerns which means using `actions/cache` is never enough for caching gems (e.g., incomplete cache key, cleaning old gems when restoring from another key, correctly hashing the lockfile if not checked in, OS versions, ABI compatibility for `ruby-head`, etc).
 So, please use `bundler-cache: true` instead and report any issue.
 
 ## Windows
