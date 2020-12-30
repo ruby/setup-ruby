@@ -57,7 +57,7 @@ for Ubuntu and macOS and in [windows-versions.js](windows-versions.js) for Windo
 
 ```yaml
 name: My workflow
-on: [push]
+on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ This matrix tests all stable releases and `head` versions of MRI, JRuby and Truf
 
 ```yaml
 name: My workflow
-on: [push]
+on: [push, pull_request]
 jobs:
   test:
     strategy:
@@ -98,7 +98,7 @@ jobs:
 
 ```yaml
 name: My workflow
-on: [push]
+on: [push, pull_request]
 jobs:
   test:
     strategy:
