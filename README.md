@@ -165,6 +165,12 @@ as shown in the [example](#matrix-of-gemfiles).
 To perform caching, this action will use `bundle config --local path $PWD/vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
 
+#### Caching `bundle install` manually
+
+It is also possible to cache gems manually,
+but this is not recommended because it is verbose and *very difficult* to use a correct cache key.
+So, please use `bundler-cache: true` instead and report any issue.
+
 ## Windows
 
 Note that running CI on Windows can be quite challenging if you are not very familiar with Windows.
