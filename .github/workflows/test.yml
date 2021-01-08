@@ -108,8 +108,8 @@ jobs:
     - uses: ./
       with:
         ruby-version: 2.6
-        bundler: 2.1.4
-    - run: bundle --version | grep -F "Bundler version 2.1.4"
+        bundler: 2.2.3
+    - run: bundle --version | grep -F "Bundler version 2.2.3"
 
   testDependencyOnBundler1:
     name: "Test gemfile depending on Bundler 1"
