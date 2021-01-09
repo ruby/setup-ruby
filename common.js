@@ -19,8 +19,10 @@ export function partition(string, separator) {
   return [string.slice(0, i), string.slice(i + separator.length, string.length)]
 }
 
+let inGroup = false
+
 export async function measure(name, block) {
-  return await core.group(name, async () => {
+  const body = async () => {
     const start = performance.now()
     try {
       return await block()
@@ -29,7 +31,20 @@ export async function measure(name, block) {
       const duration = (end - start) / 1000.0
       console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
     }
-  })
+  }
+
+  if (inGroup) {
+    // Nested groups are not yet supported on GitHub Actions
+    console.log(`> ${name}`)
+    return await body()
+  } else {
+    inGroup = true
+    try {
+      return await core.group(name, body)
+    } finally {
+      inGroup = false
+    }
+  }
 }
 
 export function isHeadVersion(rubyVersion) {

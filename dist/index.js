@@ -32811,8 +32811,10 @@ function partition(string, separator) {
   return [string.slice(0, i), string.slice(i + separator.length, string.length)]
 }
 
+let inGroup = false
+
 async function measure(name, block) {
-  return await core.group(name, async () => {
+  const body = async () => {
     const start = performance.now()
     try {
       return await block()
@@ -32821,7 +32823,20 @@ async function measure(name, block) {
       const duration = (end - start) / 1000.0
       console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
     }
-  })
+  }
+
+  if (inGroup) {
+    // Nested groups are not yet supported on GitHub Actions
+    console.log(`> ${name}`)
+    return await body()
+  } else {
+    inGroup = true
+    try {
+      return await core.group(name, body)
+    } finally {
+      inGroup = false
+    }
+  }
 }
 
 function isHeadVersion(rubyVersion) {
@@ -44559,6 +44574,16 @@ function readBundledWithFromGemfileLock(lockFile) {
   return null
 }
 
+async function afterLockFile(lockFile, platform, engine) {
+  if (engine === 'truffleruby' && platform.startsWith('ubuntu-')) {
+    const contents = fs.readFileSync(lockFile, 'utf8')
+    if (contents.includes('nokogiri')) {
+      await common.measure('Installing libxml2-dev libxslt-dev, required to install nokogiri on TruffleRuby', async () =>
+          exec.exec('sudo', ['apt-get', '-yqq', 'install', 'libxml2-dev', 'libxslt-dev'], { silent: true }))
+    }
+  }
+}
+
 async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefix, engine, rubyVersion) {
   let bundlerVersion = bundlerVersionInput
 
@@ -44632,6 +44657,8 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
     // This will also automatically pick up the latest gem versions compatible with the Gemfile.
     await exec.exec('bundle', ['lock'], envOptions)
   }
+
+  await afterLockFile(lockFile, platform, engine)
 
   // cache key
   const paths = [cachePath]

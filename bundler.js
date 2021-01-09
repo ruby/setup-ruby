@@ -38,6 +38,16 @@ function readBundledWithFromGemfileLock(lockFile) {
   return null
 }
 
+async function afterLockFile(lockFile, platform, engine) {
+  if (engine === 'truffleruby' && platform.startsWith('ubuntu-')) {
+    const contents = fs.readFileSync(lockFile, 'utf8')
+    if (contents.includes('nokogiri')) {
+      await common.measure('Installing libxml2-dev libxslt-dev, required to install nokogiri on TruffleRuby', async () =>
+          exec.exec('sudo', ['apt-get', '-yqq', 'install', 'libxml2-dev', 'libxslt-dev'], { silent: true }))
+    }
+  }
+}
+
 export async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefix, engine, rubyVersion) {
   let bundlerVersion = bundlerVersionInput
 
@@ -111,6 +121,8 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
     // This will also automatically pick up the latest gem versions compatible with the Gemfile.
     await exec.exec('bundle', ['lock'], envOptions)
   }
+
+  await afterLockFile(lockFile, platform, engine)
 
   // cache key
   const paths = [cachePath]
