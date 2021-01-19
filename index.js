@@ -38,7 +38,7 @@ export async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
-  if (platform.startsWith('windows-') && engine === 'ruby') {
+  if (platform.startsWith('windows-') && engine !== 'jruby') {
     installer = require('./windows')
   } else {
     installer = require('./ruby-builder')
