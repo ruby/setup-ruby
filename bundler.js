@@ -72,6 +72,9 @@ export async function installBundler(bundlerVersionInput, lockFile, platform, ru
   if (engine === 'ruby' && rubyVersion.match(/^2\.[012]/)) {
     console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
     bundlerVersion = '1'
+  } else if (engine === 'ruby' && rubyVersion.match(/^2\.3\.[01]/)) {
+    console.log('Ruby 2.3.0 and 2.3.1 have shipped with an old rubygems that only works with Bundler 1')
+    bundlerVersion = '1'
   } else if (engine === 'jruby' && rubyVersion.startsWith('9.1')) { // JRuby 9.1 targets Ruby 2.3, treat it the same
     console.log('JRuby 9.1 has a bug with Bundler 2 (https://github.com/ruby/setup-ruby/issues/108), using Bundler 1 instead on JRuby 9.1')
     bundlerVersion = '1'
