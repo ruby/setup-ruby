@@ -148,8 +148,18 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
     console.log(`Found cache for key: ${cachedKey}`)
   }
 
+  const installFlags = [
+    '--jobs', '4',
+  ]
+
+  // Use binary cache if available
+  const vendorCachePath = process.env['BUNDLE_CACHE_PATH'] || 'vendor/cache'
+  if (fs.existsSync(vendorCachePath)) {
+    installFlags.push('--local')
+  }
+
   // Always run 'bundle install' to list the gems
-  await exec.exec('bundle', ['install', '--jobs', '4'])
+  await exec.exec('bundle', ['install', ...installFlags])
 
   // @actions/cache only allows to save for non-existing keys
   if (cachedKey !== key) {
