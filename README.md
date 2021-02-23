@@ -168,6 +168,7 @@ When using `bundler-cache: true` you might notice there is no good place to run 
 These can be replaced by `BUNDLE_*` environment variables, which are also faster.
 They should be set in the `env` at the job level as shown in the [example](#matrix-of-gemfiles).
 To find the correct the environment variable name, see the [Bundler docs](https://bundler.io/man/bundle-config.1.html) or look at `.bundle/config` after running `bundle config --local KEY VALUE` locally.
+You might need to `"`-quote the environment variable name in YAML if it has unusual characters like `/`.
 
 To perform caching, this action will use `bundle config --local path $PWD/vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
