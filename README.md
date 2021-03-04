@@ -15,7 +15,7 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | Interpreter | Versions |
 | ----------- | -------- |
 | `ruby` | 2.1.9, 2.2, 2.3.0 - 2.3.8, 2.4.0 - 2.4.10, 2.5.0 - 2.5.8, 2.6.0 - 2.6.6, 2.7.2, 3.0.0, head, debug, mingw, mswin |
-| `jruby` | 9.1.17.0, 9.2.9.0 - 9.2.15.0, head |
+| `jruby` | 9.1.17.0, 9.2.9.0 - 9.2.16.0, head |
 | `truffleruby` | 19.3.0 - 21.0.0, head |
 
 `ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).  
