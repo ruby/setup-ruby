@@ -32852,6 +32852,8 @@ function isBundler2Default(engine, rubyVersion) {
     return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 2.7
   } else if (engine === 'truffleruby') {
     return isHeadVersion(rubyVersion)
+  } else if (engine === 'jruby') {
+    return isHeadVersion(rubyVersion)
   } else {
     return false
   }
