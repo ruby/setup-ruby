@@ -59,9 +59,9 @@ export function isBundler2Default(engine, rubyVersion) {
   if (engine === 'ruby') {
     return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 2.7
   } else if (engine === 'truffleruby') {
-    return isHeadVersion(rubyVersion)
+    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 21.0
   } else if (engine === 'jruby') {
-    return isHeadVersion(rubyVersion)
+    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 9.3
   } else {
     return false
   }
