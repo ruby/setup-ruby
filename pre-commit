@@ -1,4 +1,5 @@
 #!/usr/bin/sh
 set -e
+yarn install
 yarn run package
 exec git add dist/index.js
