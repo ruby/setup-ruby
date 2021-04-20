@@ -9,6 +9,7 @@ assignees: ''
 
 <!--
 Before filing this issue:
+* Make sure you use the latest version with `- uses: ruby/setup-ruby@v1` (see https://github.com/ruby/setup-ruby/blob/master/README.md#versioning)
 * If the issue happens on JRuby or TruffleRuby, and does not happen on CRuby (please check), file an issue there instead. It's very unlikely ruby/setup-ruby is the cause.
 * Try to reproduce the issue locally by following the workflow steps (including all commands done by ruby/setup-ruby, except for `Downloading Ruby` & `Extracting Ruby`). If it does reproduce locally, it's not a ruby/setup-ruby issue.
 
