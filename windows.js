@@ -93,7 +93,7 @@ async function setupMingw(version) {
 
 // Ruby 2.1, 2.2 and 2.3
 async function installMSYS(version) {
-  const url = 'https://dl.bintray.com/oneclick/rubyinstaller/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
+  const url = 'https://github.com/oneclick/rubyinstaller/releases/download/devkit-4.7.2/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
   const downloadPath = await tc.downloadTool(url)
   await exec.exec('7z', ['x', downloadPath, `-o${msys}`], { silent: true })
 

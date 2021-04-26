@@ -27833,7 +27833,7 @@ async function setupMingw(version) {
 
 // Ruby 2.1, 2.2 and 2.3
 async function installMSYS(version) {
-  const url = 'https://dl.bintray.com/oneclick/rubyinstaller/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
+  const url = 'https://github.com/oneclick/rubyinstaller/releases/download/devkit-4.7.2/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
   const downloadPath = await tc.downloadTool(url)
   await exec.exec('7z', ['x', downloadPath, `-o${msys}`], { silent: true })
 
@@ -28202,11 +28202,11 @@ exports.debug = debug; // for test
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "versions", function() { return versions; });
 const versions = {
-  "2.1.9": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.1.9-x64-mingw32.7z",
-  "2.2.6": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.2.6-x64-mingw32.7z",
-  "2.3.0": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.3.0-x64-mingw32.7z",
-  "2.3.1": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.3.1-x64-mingw32.7z",
-  "2.3.3": "https://dl.bintray.com/oneclick/rubyinstaller/ruby-2.3.3-x64-mingw32.7z",
+  "2.1.9": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.1.9/ruby-2.1.9-x64-mingw32.7z",
+  "2.2.6": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.2.6/ruby-2.2.6-x64-mingw32.7z",
+  "2.3.0": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.0/ruby-2.3.0-x64-mingw32.7z",
+  "2.3.1": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.1/ruby-2.3.1-x64-mingw32.7z",
+  "2.3.3": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.3/ruby-2.3.3-x64-mingw32.7z",
   "2.4.1": "https://github.com/oneclick/rubyinstaller2/releases/download/2.4.1-2/rubyinstaller-2.4.1-2-x64.7z",
   "2.4.2": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.2-2/rubyinstaller-2.4.2-2-x64.7z",
   "2.4.3": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.3-2/rubyinstaller-2.4.3-2-x64.7z",
