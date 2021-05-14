@@ -12,6 +12,7 @@ const inputDefaults = {
   'bundler': 'default',
   'bundler-cache': 'true',
   'working-directory': '.',
+  'cache-version': bundler.DEFAULT_CACHE_VERSION,
 }
 
 // entry point when this action is run on its own
@@ -67,7 +68,7 @@ export async function setupRuby(options = {}) {
 
     if (inputs['bundler-cache'] === 'true') {
       await common.measure('bundle install', async () =>
-          bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion))
+          bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
     }
   }
 
