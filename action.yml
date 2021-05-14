@@ -24,6 +24,12 @@ inputs:
     description: 'The working directory to use for resolving paths for .ruby-version, .tool-versions and Gemfile.lock.'
     required: false
     default: '.'
+  cache-version:
+    description: |
+      Arbitrary string that will be added to the cache key of the bundler cache. Set or change it if you need
+      to invalidate the cache.
+    required: false
+    default: '0'
 outputs:
   ruby-prefix:
     description: 'The prefix of the installed ruby'
