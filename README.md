@@ -180,6 +180,20 @@ When there is no lockfile, one is generated with `bundle lock`, which is the sam
 In other words, it works exactly like `bundle install`.
 The hash of the generated lockfile is then used for caching, which is the only correct approach.
 
+#### Dealing with a corrupted cache
+
+In some rare scenarios (like using gems with C extensions whose functionality depends on libraries found on the system
+at the time of the gem's build) it may be necessary to ignore contents of the cache and get and build all the gems anew.
+In order to achieve this, set the `cache-version` option to any value other than `0` (or change it to a new unique value
+if you have already used it before.)
+
+```yaml
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+        cache-version: 1
+```
+
 #### Caching `bundle install` manually
 
 It is also possible to cache gems manually, but this is not recommended because it is verbose and *very difficult* to do correctly.
