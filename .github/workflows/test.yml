@@ -16,15 +16,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11.0, windows-2016, windows-2019 ]
-        ruby: [ 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, '3.0', ruby-head, jruby, jruby-head, truffleruby, truffleruby-head ]
+        ruby: [ '2.0', 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, '3.0', ruby-head, jruby, jruby-head, truffleruby, truffleruby-head ]
         include:
         - { os: windows-2016, ruby: mingw }
         - { os: windows-2019, ruby: mingw }
         - { os: windows-2019, ruby: mswin }
         exclude:
+        - { os: windows-2016, ruby: '2.0' }
         - { os: windows-2016, ruby: debug }
         - { os: windows-2016, ruby: truffleruby }
         - { os: windows-2016, ruby: truffleruby-head }
+        - { os: windows-2019, ruby: '2.0' }
         - { os: windows-2019, ruby: debug }
         - { os: windows-2019, ruby: truffleruby }
         - { os: windows-2019, ruby: truffleruby-head }
