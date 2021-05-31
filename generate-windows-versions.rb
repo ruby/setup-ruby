@@ -2,7 +2,7 @@ require 'net/http'
 require 'yaml'
 require 'json'
 
-min_requirements = ['~> 2.1.9', '>= 2.2.6'].map { |req| Gem::Requirement.new(req) }
+min_requirements = ['~> 2.0.0', '~> 2.1.9', '>= 2.2.6'].map { |req| Gem::Requirement.new(req) }
 
 url = 'https://raw.githubusercontent.com/oneclick/rubyinstaller.org-website/master/_data/downloads.yaml'
 entries = YAML.load(Net::HTTP.get(URI(url)), symbolize_names: true)

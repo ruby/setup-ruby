@@ -13,10 +13,10 @@ const rubyInstallerVersions = require('./windows-versions').versions
 
 const drive = common.drive
 
-// needed for 2.1, 2.2, 2.3, and mswin, cert file used by Git for Windows
+// needed for 2.0-2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
-// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.1, 2.2 and 2.3
+// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.0-2.3
 const msys = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys}\\mingw\\bin`, `${msys}\\bin`]
 
@@ -82,7 +82,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
-  if (version.match(/^2\.[123]/)) {
+  if (version.match(/^2\.[0123]/)) {
     core.exportVariable('SSL_CERT_FILE', certFile)
     await common.measure('Installing MSYS', async () => installMSYS(version))
     return msysPathEntries
@@ -91,7 +91,7 @@ async function setupMingw(version) {
   }
 }
 
-// Ruby 2.1, 2.2 and 2.3
+// Ruby 2.0, 2.1, 2.2 and 2.3
 async function installMSYS(version) {
   const url = 'https://github.com/oneclick/rubyinstaller/releases/download/devkit-4.7.2/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
   const downloadPath = await tc.downloadTool(url)
