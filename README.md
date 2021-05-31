@@ -14,7 +14,7 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 
 | Interpreter | Versions |
 | ----------- | -------- |
-| `ruby` | 2.1.9, 2.2, all versions from 2.3.0 until 3.0.1, head, debug, mingw, mswin |
+| `ruby` | 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 3.0.1, head, debug, mingw, mswin |
 | `jruby` | 9.1.17.0, 9.2.9.0 - 9.2.17.0, head |
 | `truffleruby` | 19.3.0 - 21.1.0, head |
 
