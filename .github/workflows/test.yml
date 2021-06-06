@@ -70,6 +70,7 @@ jobs:
     - name: OpenSSL test
       run: ruby -ropen-uri -e 'puts URI.send(:open, %{https://rubygems.org/}) { |f| f.read(1024) }'
 
+    - run: gem env
     - name: C extension test
       run: gem install json:2.2.0 --no-document
     - run: bundle --version
