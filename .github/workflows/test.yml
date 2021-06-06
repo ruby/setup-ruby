@@ -95,10 +95,10 @@ jobs:
     - name: bash test
       shell: bash
       run: echo ~
-    # Disabled until https://github.com/jruby/jruby/issues/6648 is fixed
+    # Disabled until https://github.com/jruby/jruby/issues/6648 is fixed (9.2.18.0)
     # - name: Windows JRuby
     #   if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
-    #   run: gem install sassc -N
+    #   run: gem install sassc
 
   testExactBundlerVersion:
     name: "Test with an exact Bundler version"
