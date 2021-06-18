@@ -50,13 +50,51 @@ export async function install(platform, engine, version) {
 
   let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
 
-  common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
-
   if (!inToolCache) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
+  const winMSYS2Type = common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
+
+  const virtualEnv = common.getVirtualEnvironmentName()
+
+  if (( winMSYS2Type === 'ucrt64') || !['windows-2019', 'windows-2016'].includes(virtualEnv)) {
+    await installGCCTools(winMSYS2Type)
+
+    if (!['windows-2019', 'windows-2016'].includes(virtualEnv)) {
+      await installMSY2Tools()
+    }
+  }
+
   return rubyPrefix
+}
+
+// Actions windows-2022 image does not contain any mingw or ucrt build tools.  Install tools for it,
+// and also install ucrt tools on earlier versions, which have msys2 and mingw tools preinstalled.
+async function installGCCTools(type) {
+  const downloadPath = await common.measure(`Download ${type} build tools`, async () => {
+    let url = `https://github.com/MSP-Greg/setup-msys2-gcc/releases/download/msys2-gcc-pkgs/${type}.7z`
+    console.log(url)
+    return await tc.downloadTool(url)
+  })
+
+  await common.measure(`Extracting ${type} build tools`, async () =>
+    // -aoa overwrite existing, -bd disable progress indicator
+    exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', '-oC:\\msys64'], { silent: true }))
+}
+
+// Actions windows-2022 image does not contain any MSYS2 build tools.  Install tools for it.
+// A subset of the MSYS2 base-devel group
+async function installMSY2Tools() {
+  const downloadPath = await common.measure(`Download msys2 build tools`, async () => {
+    let url = `https://github.com/MSP-Greg/setup-msys2-gcc/releases/download/msys2-gcc-pkgs/msys2.7z`
+    console.log(url)
+    return await tc.downloadTool(url)
+  })
+
+  await common.measure(`Extracting msys2 build tools`, async () =>
+    // -aoa overwrite existing, -bd disable progress indicator
+    exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', '-oC:\\msys64'], { silent: true }))
 }
 
 async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
@@ -68,7 +106,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   })
 
   await common.measure('Extracting Ruby', async () =>
-    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
+    exec.exec('7z', ['x', downloadPath, '-bd', `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
 
   if (base !== path.basename(rubyPrefix)) {
     await io.mv(path.join(parentDir, base), rubyPrefix)
