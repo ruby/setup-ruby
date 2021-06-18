@@ -1,4 +1,5 @@
 const os = require('os')
+const fs = require('fs')
 const path = require('path')
 const exec = require('@actions/exec')
 const io = require('@actions/io')
@@ -44,7 +45,9 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
   const parentDir = path.dirname(rubyPrefix)
 
   await io.rmRF(rubyPrefix)
-  await io.mkdirP(parentDir)
+  if (!(fs.existsSync(parentDir) && fs.statSync(parentDir).isDirectory())) {
+    await io.mkdirP(parentDir)
+  }
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     const url = getDownloadURL(platform, engine, version)
