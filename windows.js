@@ -50,11 +50,11 @@ export async function install(platform, engine, version) {
 
   let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
 
-  common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
-
   if (!inToolCache) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
+
+  common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
   return rubyPrefix
 }
