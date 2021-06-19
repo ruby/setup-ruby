@@ -10,6 +10,8 @@ on:
     - README.md
   schedule:
     - cron: '0 7 * * SUN'
+  workflow_dispatch:
+
 jobs:
   test:
     strategy:
@@ -40,8 +42,10 @@ jobs:
         bundler-cache: true
     - run: ruby -v
     - name: PATH
-      shell: bash
-      run: echo $PATH
+      shell: pwsh
+      run: |
+        # Show PATH with Powershell
+        $f, $r = $env:PATH.split([IO.Path]::PathSeparator); $r
 
     - name: build compiler
       run: |
