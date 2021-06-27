@@ -178,9 +178,7 @@ export function setupPath(newPathEntries) {
   }
   console.log(`Entries added to ${envPath} to use selected Ruby:`)
   for (const entry of newPath) {
-    if (!cleanPath.includes(entry)) {
-      console.log(`  ${entry}`)
-    }
+    console.log(`  ${entry}`)
   }
   core.endGroup()
 
