@@ -237,6 +237,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
 /* harmony export */   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
 /* harmony export */   "win2nix": () => (/* binding */ win2nix),
+/* harmony export */   "rubyIsUCRT": () => (/* binding */ rubyIsUCRT),
 /* harmony export */   "setupPath": () => (/* binding */ setupPath)
 /* harmony export */ });
 const os = __nccwpck_require__(2087)
@@ -245,6 +246,7 @@ const fs = __nccwpck_require__(5747)
 const util = __nccwpck_require__(1669)
 const stream = __nccwpck_require__(2413)
 const crypto = __nccwpck_require__(6417)
+const child_process = __nccwpck_require__(3129)
 const core = __nccwpck_require__(2186)
 const { performance } = __nccwpck_require__(630)
 
@@ -416,16 +418,27 @@ function setupPath(newPathEntries) {
   }
 
   // Then add new path entries using core.addPath()
-  let newPath
+  let newPath = newPathEntries
   if (windows) {
-    // main Ruby dll determines whether mingw or ucrt build
-    let build_sys = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+    try {
+      // Use RubyInstaller mechanisms to set various evenironment variables including the PATH to MSYS2 tools
+      // Same as "ridk enable" on the command line
+      const envbuf = child_process.execFileSync(`${newPathEntries[0]}\\ruby`, ['-rruby_installer/runtime', '-e', 'puts RubyInstaller::Runtime.msys2_installation.enable_msys_apps_per_cmd'])
+      const envvars = envbuf.toString().trim().split(/\r?\n/)
 
-    // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
-    const msys2 = [`C:\\msys64\\${build_sys}\\bin`, 'C:\\msys64\\usr\\bin']
-    newPath = [...newPathEntries, ...msys2]
-  } else {
-    newPath = newPathEntries
+      envvars.forEach( (envvar) => {
+        console.log(`SET ${envvar}`)
+        const parts = envvar.split("=", 2)
+        core.exportVariable(parts[0], parts[1])
+      })
+    } catch (ex) {
+      // main Ruby dll determines whether mingw or ucrt build
+      let build_sys = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+
+      // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
+      const msys2 = [`C:\\msys64\\${build_sys}\\bin`, 'C:\\msys64\\usr\\bin']
+      newPath = [...newPathEntries, ...msys2]
+    }
   }
   console.log(`Entries added to ${envPath} to use selected Ruby:`)
   for (const entry of newPath) {
@@ -59019,6 +59032,10 @@ async function install(platform, engine, version) {
 
   common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
+  if (common.rubyIsUCRT(`${rubyPrefix}\\bin`)) {
+    await installUCRT()
+  }
+
   return rubyPrefix
 }
 
@@ -59040,6 +59057,12 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   if (common.shouldUseToolCache(engine, version)) {
     common.createToolCacheCompleteFile(rubyPrefix)
   }
+}
+
+async function installUCRT() {
+  await common.measure('Installing MSYS2 UCRT build tools', async () => {
+    cp.execSync(`pacman -S --noconfirm --noprogressbar --needed %MINGW_PACKAGE_PREFIX%-gcc`)
+  })
 }
 
 async function setupMingw(version) {
