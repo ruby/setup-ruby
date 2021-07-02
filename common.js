@@ -4,6 +4,7 @@ const fs = require('fs')
 const util = require('util')
 const stream = require('stream')
 const crypto = require('crypto')
+const child_process = require('child_process')
 const core = require('@actions/core')
 const { performance } = require('perf_hooks')
 
@@ -175,16 +176,27 @@ export function setupPath(newPathEntries) {
   }
 
   // Then add new path entries using core.addPath()
-  let newPath
+  let newPath = newPathEntries
   if (windows) {
-    // main Ruby dll determines whether mingw or ucrt build
-    let build_sys = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+    try {
+      // Use RubyInstaller mechanisms to set various evenironment variables including the PATH to MSYS2 tools
+      // Same as "ridk enable" on the command line
+      const envbuf = child_process.execFileSync(`${newPathEntries[0]}\\ruby`, ['-rruby_installer/runtime', '-e', 'puts RubyInstaller::Runtime.msys2_installation.enable_msys_apps_per_cmd'])
+      const envvars = envbuf.toString().trim().split(/\r?\n/)
 
-    // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
-    const msys2 = [`C:\\msys64\\${build_sys}\\bin`, 'C:\\msys64\\usr\\bin']
-    newPath = [...newPathEntries, ...msys2]
-  } else {
-    newPath = newPathEntries
+      envvars.forEach( (envvar) => {
+        console.log(`SET ${envvar}`)
+        const parts = envvar.split("=", 2)
+        core.exportVariable(parts[0], parts[1])
+      })
+    } catch (ex) {
+      // main Ruby dll determines whether mingw or ucrt build
+      let build_sys = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+
+      // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
+      const msys2 = [`C:\\msys64\\${build_sys}\\bin`, 'C:\\msys64\\usr\\bin']
+      newPath = [...newPathEntries, ...msys2]
+    }
   }
   console.log(`Entries added to ${envPath} to use selected Ruby:`)
   for (const entry of newPath) {

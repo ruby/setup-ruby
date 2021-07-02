@@ -31,10 +31,10 @@ export function getAvailableVersions(platform, engine) {
 export async function install(platform, engine, version) {
   const url = rubyInstallerVersions[version]
 
-  if (!url.endsWith('.7z')) {
-    throw new Error(`URL should end in .7z: ${url}`)
+  if (!url.endsWith('.7z') && !url.endsWith('.exe')) {
+    throw new Error(`URL should end in .7z or .exe: ${url}`)
   }
-  const base = url.slice(url.lastIndexOf('/') + 1, url.length - '.7z'.length)
+  const base = url.slice(url.lastIndexOf('/') + 1, url.length).replace(/\.(exe|7z)$/, "")
 
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
@@ -64,11 +64,17 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const fname = url.slice(url.lastIndexOf('/') + 1, url.length)
+    return await tc.downloadTool(url, fname)
   })
 
-  await common.measure('Extracting Ruby', async () =>
-    exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
+  await common.measure('Extracting Ruby', async () => {
+    if (url.endsWith('.7z')) {
+      await exec.exec('7z', ['x', downloadPath, `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true })
+    } else if (url.endsWith('.exe')) {
+      await exec.exec('cmd', ['/c', `${downloadPath} /verysilent /dir=${parentDir}\\${base} /tasks=noassocfiles,nomodpath,noridkinstall /components=ruby,msys2`])
+    }
+  })
 
   if (base !== path.basename(rubyPrefix)) {
     await io.mv(path.join(parentDir, base), rubyPrefix)
