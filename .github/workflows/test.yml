@@ -8,8 +8,6 @@ on:
     - '*'
     paths-ignore:
     - README.md
-  schedule:
-    - cron: '0 7 * * SUN'
   workflow_dispatch:
 
 jobs:
