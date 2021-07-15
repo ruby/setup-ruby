@@ -116,7 +116,7 @@ jobs:
     name: "Test gemfile depending on Bundler 1"
     runs-on: ubuntu-latest
     env:
-      BUNDLE_GEMFILE: gemfiles/bundler1.gemfile
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler1.gemfile
     steps:
       - uses: actions/checkout@v2
       - uses: ./
@@ -134,7 +134,7 @@ jobs:
     name: "Test with ${{ matrix.gemfile }} gemfile"
     runs-on: ubuntu-latest
     env:
-      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
     steps:
       - uses: actions/checkout@v2
       - uses: ./
@@ -147,7 +147,7 @@ jobs:
     name: "Test installing a Gemfile with nokogiri on TruffleRuby"
     runs-on: ubuntu-latest
     env:
-      BUNDLE_GEMFILE: gemfiles/nokogiri.gemfile
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/nokogiri.gemfile
     steps:
       - uses: actions/checkout@v2
       - uses: ./
