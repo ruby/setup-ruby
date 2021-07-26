@@ -58761,6 +58761,7 @@ __nccwpck_require__.r(__webpack_exports__);
 function getVersions(platform) {
   const versions = {
     "ruby": [
+      "1.9.3-p551",
       "2.0.0-p648",
       "2.1.9",
       "2.2.10",
