@@ -86,8 +86,8 @@ export async function installBundler(bundlerVersionInput, lockFile, platform, ru
     // Avoid installing a newer Bundler version for head versions as it might not work.
     // For releases, even if they ship with Bundler 2 we install the latest Bundler.
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
-  } else if (engine === 'truffleruby' && !common.isHeadVersion(rubyVersion) && bundlerVersion.startsWith('1')) {
-    console.log(`Using Bundler 1 shipped with ${engine}`)
+  } else if (engine === 'truffleruby' && common.isBundler1Default(engine, rubyVersion) && bundlerVersion.startsWith('1')) {
+    console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     const bundlerVersionConstraint = bundlerVersion.match(/^\d+\.\d+\.\d+/) ? bundlerVersion : `~> ${bundlerVersion}`

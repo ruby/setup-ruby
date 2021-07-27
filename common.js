@@ -55,6 +55,10 @@ export function isStableVersion(rubyVersion) {
   return /^\d+(\.\d+)*$/.test(rubyVersion)
 }
 
+export function isBundler1Default(engine, rubyVersion) {
+  return !isBundler2Default(engine, rubyVersion)
+}
+
 export function isBundler2Default(engine, rubyVersion) {
   if (engine === 'ruby') {
     return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 2.7

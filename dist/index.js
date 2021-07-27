@@ -100,8 +100,8 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     // Avoid installing a newer Bundler version for head versions as it might not work.
     // For releases, even if they ship with Bundler 2 we install the latest Bundler.
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
-  } else if (engine === 'truffleruby' && !common.isHeadVersion(rubyVersion) && bundlerVersion.startsWith('1')) {
-    console.log(`Using Bundler 1 shipped with ${engine}`)
+  } else if (engine === 'truffleruby' && common.isBundler1Default(engine, rubyVersion) && bundlerVersion.startsWith('1')) {
+    console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     const bundlerVersionConstraint = bundlerVersion.match(/^\d+\.\d+\.\d+/) ? bundlerVersion : `~> ${bundlerVersion}`
@@ -229,6 +229,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "measure": () => (/* binding */ measure),
 /* harmony export */   "isHeadVersion": () => (/* binding */ isHeadVersion),
 /* harmony export */   "isStableVersion": () => (/* binding */ isStableVersion),
+/* harmony export */   "isBundler1Default": () => (/* binding */ isBundler1Default),
 /* harmony export */   "isBundler2Default": () => (/* binding */ isBundler2Default),
 /* harmony export */   "floatVersion": () => (/* binding */ floatVersion),
 /* harmony export */   "hashFile": () => (/* binding */ hashFile),
@@ -294,6 +295,10 @@ function isHeadVersion(rubyVersion) {
 
 function isStableVersion(rubyVersion) {
   return /^\d+(\.\d+)*$/.test(rubyVersion)
+}
+
+function isBundler1Default(engine, rubyVersion) {
+  return !isBundler2Default(engine, rubyVersion)
 }
 
 function isBundler2Default(engine, rubyVersion) {
