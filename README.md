@@ -205,6 +205,7 @@ So, please use `bundler-cache: true` instead and report any issue.
 Note that running CI on Windows can be quite challenging if you are not very familiar with Windows.
 It is recommended to first get your build working on Ubuntu and macOS before trying Windows.
 
+* Use Bundler 2.2.18+ on Windows (older versions have [bugs](https://github.com/ruby/setup-ruby/issues/209#issuecomment-889064123)) by not setting the `bundler:` input and ensuring there is no `BUNDLED WITH 1.x.y` in a checked-in `Gemfile.lock`.
 * The default shell on Windows is not Bash but [PowerShell](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#using-a-specific-shell).
   This can lead issues such as multi-line scripts [not working as expected](https://github.com/ruby/setup-ruby/issues/13).
 * The `PATH` contains [multiple compiler toolchains](https://github.com/ruby/setup-ruby/issues/19). Use `where.exe` to debug which tool is used.
