@@ -79,6 +79,7 @@ jobs:
     # This step is redundant with `bundler-cache: true` but is there to check a redundant `bundle install` still works
     - run: bundle install
     - run: bundle exec rake --version
+    - run: bundle exec rake
 
     - name: which ruby, rake
       if: "!startsWith(matrix.os, 'windows')"
