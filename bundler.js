@@ -71,7 +71,7 @@ export async function installBundler(bundlerVersionInput, lockFile, platform, ru
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  if (engine === 'ruby' && rubyVersion.match(/^2\.[012]/)) {
+  if (engine === 'ruby' && common.floatVersion(rubyVersion) <= 2.2) {
     console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
     bundlerVersion = '1'
   } else if (engine === 'ruby' && rubyVersion.match(/^2\.3\.[01]/)) {
@@ -91,7 +91,7 @@ export async function installBundler(bundlerVersionInput, lockFile, platform, ru
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     const bundlerVersionConstraint = bundlerVersion.match(/^\d+\.\d+\.\d+/) ? bundlerVersion : `~> ${bundlerVersion}`
-    await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint, '--no-document'])
+    await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint])
   }
 
   return bundlerVersion

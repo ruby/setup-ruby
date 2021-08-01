@@ -85,7 +85,7 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  if (engine === 'ruby' && rubyVersion.match(/^2\.[012]/)) {
+  if (engine === 'ruby' && common.floatVersion(rubyVersion) <= 2.2) {
     console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
     bundlerVersion = '1'
   } else if (engine === 'ruby' && rubyVersion.match(/^2\.3\.[01]/)) {
@@ -105,7 +105,7 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     const bundlerVersionConstraint = bundlerVersion.match(/^\d+\.\d+\.\d+/) ? bundlerVersion : `~> ${bundlerVersion}`
-    await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint, '--no-document'])
+    await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint])
   }
 
   return bundlerVersion
@@ -303,11 +303,11 @@ function isBundler1Default(engine, rubyVersion) {
 
 function isBundler2Default(engine, rubyVersion) {
   if (engine === 'ruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 2.7
+    return floatVersion(rubyVersion) >= 2.7
   } else if (engine === 'truffleruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 21.0
+    return floatVersion(rubyVersion) >= 21.0
   } else if (engine === 'jruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 9.3
+    return floatVersion(rubyVersion) >= 9.3
   } else {
     return false
   }
@@ -317,8 +317,10 @@ function floatVersion(rubyVersion) {
   const match = rubyVersion.match(/^\d+\.\d+/)
   if (match) {
     return parseFloat(match[0])
+  } else if (isHeadVersion(rubyVersion)) {
+    return 999.999
   } else {
-    return 0.0
+    throw new Error(`Could not convert version ${rubyVersion} to a float`)
   }
 }
 
@@ -58761,6 +58763,7 @@ __nccwpck_require__.r(__webpack_exports__);
 function getVersions(platform) {
   const versions = {
     "ruby": [
+      "1.9.3-p551",
       "2.0.0-p648",
       "2.1.9",
       "2.2.10",
@@ -59043,7 +59046,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
-  if (version.match(/^2\.[0123]/)) {
+  if (common.floatVersion(version) <= 2.3) {
     core.exportVariable('SSL_CERT_FILE', certFile)
     await common.measure('Installing MSYS', async () => installMSYS(version))
     return msysPathEntries
@@ -59425,7 +59428,7 @@ async function setupRuby(options = {}) {
   const engineVersions = installer.getAvailableVersions(platform, engine)
   const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
 
-  createGemRC()
+  createGemRC(engine, version)
   envPreInstall()
 
   const rubyPrefix = await installer.install(platform, engine, version)
@@ -59515,10 +59518,14 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   return version
 }
 
-function createGemRC() {
+function createGemRC(engine, version) {
   const gemrc = path.join(os.homedir(), '.gemrc')
   if (!fs.existsSync(gemrc)) {
-    fs.writeFileSync(gemrc, `gem: --no-document${os.EOL}`)
+    if (engine === 'ruby' && common.floatVersion(version) < 2.0) {
+      fs.writeFileSync(gemrc, `install: --no-rdoc --no-ri${os.EOL}update: --no-rdoc --no-ri${os.EOL}`)
+    } else {
+      fs.writeFileSync(gemrc, `gem: --no-document${os.EOL}`)
+    }
   }
 }
 
