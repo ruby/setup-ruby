@@ -48,7 +48,7 @@ export async function setupRuby(options = {}) {
   const engineVersions = installer.getAvailableVersions(platform, engine)
   const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
 
-  createGemRC()
+  createGemRC(engine, version)
   envPreInstall()
 
   const rubyPrefix = await installer.install(platform, engine, version)
@@ -138,10 +138,14 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   return version
 }
 
-function createGemRC() {
+function createGemRC(engine, version) {
   const gemrc = path.join(os.homedir(), '.gemrc')
   if (!fs.existsSync(gemrc)) {
-    fs.writeFileSync(gemrc, `gem: --no-document${os.EOL}`)
+    if (engine === 'ruby' && common.floatVersion(version) < 2.0) {
+      fs.writeFileSync(gemrc, `install: --no-rdoc --no-ri${os.EOL}update: --no-rdoc --no-ri${os.EOL}`)
+    } else {
+      fs.writeFileSync(gemrc, `gem: --no-document${os.EOL}`)
+    }
   }
 }
 

@@ -61,11 +61,11 @@ export function isBundler1Default(engine, rubyVersion) {
 
 export function isBundler2Default(engine, rubyVersion) {
   if (engine === 'ruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 2.7
+    return floatVersion(rubyVersion) >= 2.7
   } else if (engine === 'truffleruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 21.0
+    return floatVersion(rubyVersion) >= 21.0
   } else if (engine === 'jruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 9.3
+    return floatVersion(rubyVersion) >= 9.3
   } else {
     return false
   }
@@ -75,8 +75,10 @@ export function floatVersion(rubyVersion) {
   const match = rubyVersion.match(/^\d+\.\d+/)
   if (match) {
     return parseFloat(match[0])
+  } else if (isHeadVersion(rubyVersion)) {
+    return 999.999
   } else {
-    return 0.0
+    throw new Error(`Could not convert version ${rubyVersion} to a float`)
   }
 }
 

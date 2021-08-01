@@ -82,7 +82,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
-  if (version.match(/^2\.[0123]/)) {
+  if (common.floatVersion(version) <= 2.3) {
     core.exportVariable('SSL_CERT_FILE', certFile)
     await common.measure('Installing MSYS', async () => installMSYS(version))
     return msysPathEntries
