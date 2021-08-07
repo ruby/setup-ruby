@@ -64,11 +64,11 @@ export async function setupRuby(options = {}) {
     const [gemfile, lockFile] = bundler.detectGemfiles()
 
     const bundlerVersion = await common.measure('Installing Bundler', async () =>
-        bundler.installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
+      bundler.installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
 
     if (inputs['bundler-cache'] === 'true') {
       await common.measure('bundle install', async () =>
-          bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+        bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
     }
   }
 

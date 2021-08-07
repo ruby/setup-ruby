@@ -54,12 +54,12 @@ function readBundledWithFromGemfileLock(lockFile) {
   return null
 }
 
-async function afterLockFile(lockFile, platform, engine) {
-  if (engine.startsWith('truffleruby') && platform.startsWith('ubuntu-')) {
+async function afterLockFile(lockFile, platform, engine, rubyVersion) {
+  if (engine.startsWith('truffleruby') && common.floatVersion(rubyVersion) < 21.1 && platform.startsWith('ubuntu-')) {
     const contents = fs.readFileSync(lockFile, 'utf8')
     if (contents.includes('nokogiri')) {
-      await common.measure('Installing libxml2-dev libxslt-dev, required to install nokogiri on TruffleRuby', async () =>
-          exec.exec('sudo', ['apt-get', '-yqq', 'install', 'libxml2-dev', 'libxslt-dev'], { silent: true }))
+      await common.measure('Installing libxml2-dev libxslt-dev, required to install nokogiri on TruffleRuby < 21.1', async () =>
+        exec.exec('sudo', ['apt-get', '-yqq', 'install', 'libxml2-dev', 'libxslt-dev'], { silent: true }))
     }
   }
 }
@@ -140,7 +140,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
     await exec.exec('bundle', ['lock'], envOptions)
   }
 
-  await afterLockFile(lockFile, platform, engine)
+  await afterLockFile(lockFile, platform, engine, rubyVersion)
 
   // cache key
   const paths = [cachePath]
@@ -59472,11 +59472,11 @@ async function setupRuby(options = {}) {
     const [gemfile, lockFile] = bundler.detectGemfiles()
 
     const bundlerVersion = await common.measure('Installing Bundler', async () =>
-        bundler.installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
+      bundler.installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
 
     if (inputs['bundler-cache'] === 'true') {
       await common.measure('bundle install', async () =>
-          bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+        bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
     }
   }
 

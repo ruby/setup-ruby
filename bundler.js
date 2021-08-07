@@ -40,12 +40,12 @@ function readBundledWithFromGemfileLock(lockFile) {
   return null
 }
 
-async function afterLockFile(lockFile, platform, engine) {
-  if (engine.startsWith('truffleruby') && platform.startsWith('ubuntu-')) {
+async function afterLockFile(lockFile, platform, engine, rubyVersion) {
+  if (engine.startsWith('truffleruby') && common.floatVersion(rubyVersion) < 21.1 && platform.startsWith('ubuntu-')) {
     const contents = fs.readFileSync(lockFile, 'utf8')
     if (contents.includes('nokogiri')) {
-      await common.measure('Installing libxml2-dev libxslt-dev, required to install nokogiri on TruffleRuby', async () =>
-          exec.exec('sudo', ['apt-get', '-yqq', 'install', 'libxml2-dev', 'libxslt-dev'], { silent: true }))
+      await common.measure('Installing libxml2-dev libxslt-dev, required to install nokogiri on TruffleRuby < 21.1', async () =>
+        exec.exec('sudo', ['apt-get', '-yqq', 'install', 'libxml2-dev', 'libxslt-dev'], { silent: true }))
     }
   }
 }
@@ -126,7 +126,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
     await exec.exec('bundle', ['lock'], envOptions)
   }
 
-  await afterLockFile(lockFile, platform, engine)
+  await afterLockFile(lockFile, platform, engine, rubyVersion)
 
   // cache key
   const paths = [cachePath]
