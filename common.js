@@ -62,7 +62,7 @@ export function isBundler1Default(engine, rubyVersion) {
 export function isBundler2Default(engine, rubyVersion) {
   if (engine === 'ruby') {
     return floatVersion(rubyVersion) >= 2.7
-  } else if (engine === 'truffleruby') {
+  } else if (engine.startsWith('truffleruby')) {
     return floatVersion(rubyVersion) >= 21.0
   } else if (engine === 'jruby') {
     return floatVersion(rubyVersion) >= 9.3

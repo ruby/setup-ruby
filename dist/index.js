@@ -55,7 +55,7 @@ function readBundledWithFromGemfileLock(lockFile) {
 }
 
 async function afterLockFile(lockFile, platform, engine) {
-  if (engine === 'truffleruby' && platform.startsWith('ubuntu-')) {
+  if (engine.startsWith('truffleruby') && platform.startsWith('ubuntu-')) {
     const contents = fs.readFileSync(lockFile, 'utf8')
     if (contents.includes('nokogiri')) {
       await common.measure('Installing libxml2-dev libxslt-dev, required to install nokogiri on TruffleRuby', async () =>
@@ -100,7 +100,7 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     // Avoid installing a newer Bundler version for head versions as it might not work.
     // For releases, even if they ship with Bundler 2 we install the latest Bundler.
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
-  } else if (engine === 'truffleruby' && common.isBundler1Default(engine, rubyVersion) && bundlerVersion.startsWith('1')) {
+  } else if (engine.startsWith('truffleruby') && common.isBundler1Default(engine, rubyVersion) && bundlerVersion.startsWith('1')) {
     console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
@@ -304,7 +304,7 @@ function isBundler1Default(engine, rubyVersion) {
 function isBundler2Default(engine, rubyVersion) {
   if (engine === 'ruby') {
     return floatVersion(rubyVersion) >= 2.7
-  } else if (engine === 'truffleruby') {
+  } else if (engine.startsWith('truffleruby')) {
     return floatVersion(rubyVersion) >= 21.0
   } else if (engine === 'jruby') {
     return floatVersion(rubyVersion) >= 9.3
@@ -58773,7 +58773,7 @@ function getVersions(platform) {
       "2.6.0", "2.6.1", "2.6.2", "2.6.3", "2.6.4", "2.6.5", "2.6.6", "2.6.7", "2.6.8",
       "2.7.0", "2.7.1", "2.7.2", "2.7.3", "2.7.4",
       "3.0.0-preview1", "3.0.0-preview2", "3.0.0-rc1", "3.0.0", "3.0.1", "3.0.2",
-      "head", "debug",
+      "head", "debug"
     ],
     "jruby": [
       "9.1.17.0",
@@ -58784,6 +58784,10 @@ function getVersions(platform) {
       "19.3.0", "19.3.1",
       "20.0.0", "20.1.0", "20.2.0", "20.3.0",
       "21.0.0", "21.1.0", "21.2.0", "21.2.0.1",
+      "head"
+    ],
+    "truffleruby+graalvm": [
+      "21.2.0",
       "head"
     ]
   }
@@ -58840,19 +58844,43 @@ async function install(platform, engine, version) {
   common.setupPath([path.join(rubyPrefix, 'bin')])
 
   if (!inToolCache) {
-    await downloadAndExtract(platform, engine, version, rubyPrefix);
+    await preparePrefix(rubyPrefix)
+    if (engine === 'truffleruby+graalvm') {
+      await installWithRubyBuild(engine, version, rubyPrefix)
+    } else {
+      await downloadAndExtract(platform, engine, version, rubyPrefix)
+    }
   }
 
   return rubyPrefix
 }
 
-async function downloadAndExtract(platform, engine, version, rubyPrefix) {
+async function preparePrefix(rubyPrefix) {
   const parentDir = path.dirname(rubyPrefix)
 
   await io.rmRF(rubyPrefix)
   if (!(fs.existsSync(parentDir) && fs.statSync(parentDir).isDirectory())) {
     await io.mkdirP(parentDir)
   }
+}
+
+async function installWithRubyBuild(engine, version, rubyPrefix) {
+  const tmp = process.env['RUNNER_TEMP'] || os.tmpdir()
+  const rubyBuildDir = path.join(tmp, 'ruby-build-for-setup-ruby')
+  await common.measure('Cloning ruby-build', async () => {
+    await exec.exec('git', ['clone', 'https://github.com/rbenv/ruby-build.git', rubyBuildDir])
+  })
+
+  const rubyName = `${engine}-${version === 'head' ? 'dev' : version}`
+  await common.measure(`Installing ${engine}-${version} with ruby-build`, async () => {
+    await exec.exec(`${rubyBuildDir}/bin/ruby-build`, [rubyName, rubyPrefix])
+  })
+
+  await io.rmRF(rubyBuildDir)
+}
+
+async function downloadAndExtract(platform, engine, version, rubyPrefix) {
+  const parentDir = path.dirname(rubyPrefix)
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     const url = getDownloadURL(platform, engine, version)

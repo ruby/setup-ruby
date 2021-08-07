@@ -35,19 +35,43 @@ export async function install(platform, engine, version) {
   common.setupPath([path.join(rubyPrefix, 'bin')])
 
   if (!inToolCache) {
-    await downloadAndExtract(platform, engine, version, rubyPrefix);
+    await preparePrefix(rubyPrefix)
+    if (engine === 'truffleruby+graalvm') {
+      await installWithRubyBuild(engine, version, rubyPrefix)
+    } else {
+      await downloadAndExtract(platform, engine, version, rubyPrefix)
+    }
   }
 
   return rubyPrefix
 }
 
-async function downloadAndExtract(platform, engine, version, rubyPrefix) {
+async function preparePrefix(rubyPrefix) {
   const parentDir = path.dirname(rubyPrefix)
 
   await io.rmRF(rubyPrefix)
   if (!(fs.existsSync(parentDir) && fs.statSync(parentDir).isDirectory())) {
     await io.mkdirP(parentDir)
   }
+}
+
+async function installWithRubyBuild(engine, version, rubyPrefix) {
+  const tmp = process.env['RUNNER_TEMP'] || os.tmpdir()
+  const rubyBuildDir = path.join(tmp, 'ruby-build-for-setup-ruby')
+  await common.measure('Cloning ruby-build', async () => {
+    await exec.exec('git', ['clone', 'https://github.com/rbenv/ruby-build.git', rubyBuildDir])
+  })
+
+  const rubyName = `${engine}-${version === 'head' ? 'dev' : version}`
+  await common.measure(`Installing ${engine}-${version} with ruby-build`, async () => {
+    await exec.exec(`${rubyBuildDir}/bin/ruby-build`, [rubyName, rubyPrefix])
+  })
+
+  await io.rmRF(rubyBuildDir)
+}
+
+async function downloadAndExtract(platform, engine, version, rubyPrefix) {
+  const parentDir = path.dirname(rubyPrefix)
 
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     const url = getDownloadURL(platform, engine, version)
