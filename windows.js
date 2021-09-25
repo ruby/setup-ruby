@@ -134,7 +134,7 @@ export function addVCVARSEnv() {
   let newEnv = new Map()
   let cmd = `cmd.exe /c "${vcVars} && set"`
   let newSet = cp.execSync(cmd).toString().trim().split(/\r?\n/)
-  newSet = newSet.filter(line => line.match(/\S=\S/))
+  newSet = newSet.filter(line => /\S=\S/.test(line))
   newSet.forEach(s => {
     let [k,v] = common.partition(s, '=')
     newEnv.set(k,v)

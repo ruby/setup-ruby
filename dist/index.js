@@ -88,7 +88,7 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
   if (engine === 'ruby' && common.floatVersion(rubyVersion) <= 2.2) {
     console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
     bundlerVersion = '1'
-  } else if (engine === 'ruby' && rubyVersion.match(/^2\.3\.[01]/)) {
+  } else if (engine === 'ruby' && /^2\.3\.[01]/.test(rubyVersion)) {
     console.log('Ruby 2.3.0 and 2.3.1 have shipped with an old rubygems that only works with Bundler 1')
     bundlerVersion = '1'
   } else if (engine === 'jruby' && rubyVersion.startsWith('9.1')) { // JRuby 9.1 targets Ruby 2.3, treat it the same
@@ -104,7 +104,7 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
-    const bundlerVersionConstraint = bundlerVersion.match(/^\d+\.\d+\.\d+/) ? bundlerVersion : `~> ${bundlerVersion}`
+    const bundlerVersionConstraint = /^\d+\.\d+\.\d+/.test(bundlerVersion) ? bundlerVersion : `~> ${bundlerVersion}`
     await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint])
   }
 
@@ -59127,7 +59127,7 @@ function addVCVARSEnv() {
   let newEnv = new Map()
   let cmd = `cmd.exe /c "${vcVars} && set"`
   let newSet = cp.execSync(cmd).toString().trim().split(/\r?\n/)
-  newSet = newSet.filter(line => line.match(/\S=\S/))
+  newSet = newSet.filter(line => /\S=\S/.test(line))
   newSet.forEach(s => {
     let [k,v] = common.partition(s, '=')
     newEnv.set(k,v)
@@ -59500,13 +59500,13 @@ function parseRubyEngineAndVersion(rubyVersion) {
     console.log(`Using ${rubyVersion} as input from file .ruby-version`)
   } else if (rubyVersion === '.tool-versions') { // Read from .tool-versions
     const toolVersions = fs.readFileSync('.tool-versions', 'utf8').trim()
-    const rubyLine = toolVersions.split(/\r?\n/).filter(e => e.match(/^ruby\s/))[0]
+    const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s/.test(e))[0]
     rubyVersion = rubyLine.match(/^ruby\s+(.+)$/)[1]
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
   }
 
   let engine, version
-  if (rubyVersion.match(/^(\d+)/) || common.isHeadVersion(rubyVersion)) { // X.Y.Z => ruby-X.Y.Z
+  if (/^(\d+)/.test(rubyVersion) || common.isHeadVersion(rubyVersion)) { // X.Y.Z => ruby-X.Y.Z
     engine = 'ruby'
     version = rubyVersion
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
