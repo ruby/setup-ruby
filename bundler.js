@@ -183,7 +183,8 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
   const cacheVersionSuffix = DEFAULT_CACHE_VERSION === cacheVersion ? '' : `-cachever:${cacheVersion}`
   let key = `setup-ruby-bundler-cache-v3-${platform}-${engine}-${version}${cacheVersionSuffix}`
 
-  if (engine !== 'jruby' && common.isHeadVersion(version)) {
+  if (engine === 'ruby' && common.isHeadVersion(version)) {
+    // CRuby dev versions do not change the ABI version when the ABI changes, so append the commit to the ABI version
     let revision = '';
     await exec.exec('ruby', ['-e', 'print RUBY_REVISION'], {
       silent: true,
