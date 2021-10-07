@@ -21,6 +21,8 @@ jobs:
         - { os: windows-2016, ruby: mingw }
         - { os: windows-2019, ruby: mingw }
         - { os: windows-2019, ruby: mswin }
+        - { os: windows-2022, ruby: mingw }
+        - { os: windows-2022, ruby: head }
         exclude:
         - { os: windows-2016, ruby: 1.9 }
         - { os: windows-2016, ruby: debug }
