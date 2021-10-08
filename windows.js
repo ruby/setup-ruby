@@ -66,6 +66,11 @@ export async function install(platform, engine, version) {
     }
   }
 
+  const ridk = `${rubyPrefix}\\bin\\ridk.cmd`
+  if (fs.existsSync(ridk)) {
+    await common.measure('Adding ridk env variables', async () => addRidkEnv(ridk))
+  }
+
   return rubyPrefix
 }
 
@@ -190,4 +195,26 @@ export function addVCVARSEnv() {
     }
   }
   return newPathEntries
+}
+
+// Sets MSYS2 ENV variables set from running `ridk enable`
+//
+function addRidkEnv(ridk) {
+  let newEnv = new Map()
+  let cmd = `cmd.exe /c "${ridk} enable && set"`
+  let newSet = cp.execSync(cmd).toString().trim().split(/\r?\n/)
+  newSet = newSet.filter(line => /^\S+=\S+/.test(line))
+  newSet.forEach(s => {
+    let [k,v] = common.partition(s, '=')
+    newEnv.set(k,v)
+  })
+
+  for (let [k, v] of newEnv) {
+    if (process.env[k] !== v) {
+      if (!/^Path$/i.test(k)) {
+        console.log(`${k}=${v}`)
+        core.exportVariable(k, v)
+      }
+    }
+  }
 }
