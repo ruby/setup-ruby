@@ -48,7 +48,7 @@ export async function measure(name, block) {
 }
 
 export function isHeadVersion(rubyVersion) {
-  return rubyVersion === 'head' || rubyVersion === 'debug' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
+  return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
 }
 
 export function isStableVersion(rubyVersion) {
