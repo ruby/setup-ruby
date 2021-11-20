@@ -79,7 +79,7 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
     return await tc.downloadTool(url)
   })
 
-  await common.measure('Extracting Ruby', async () => {
+  await common.measure('Extracting  Ruby', async () => {
     if (windows) {
       // Windows 2016 doesn't have system tar, use MSYS2's, it needs unix style paths
       await exec.exec('tar', ['-xz', '-C', common.win2nix(parentDir), '-f', common.win2nix(downloadPath)])
