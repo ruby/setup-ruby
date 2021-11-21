@@ -13,6 +13,8 @@ const rubyInstallerVersions = require('./windows-versions').versions
 
 const drive = common.drive
 
+const msys2BasePath = 'C:\\msys64'
+
 // needed for 2.0-2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
@@ -58,12 +60,12 @@ export async function install(platform, engine, version) {
 
   const virtualEnv = common.getVirtualEnvironmentName()
 
+  if (!['windows-2019', 'windows-2016'].includes(virtualEnv)) {
+    await installMSY2Tools()
+  }
+
   if (( winMSYS2Type === 'ucrt64') || !['windows-2019', 'windows-2016'].includes(virtualEnv)) {
     await installGCCTools(winMSYS2Type)
-
-    if (!['windows-2019', 'windows-2016'].includes(virtualEnv)) {
-      await installMSY2Tools()
-    }
   }
 
   const ridk = `${rubyPrefix}\\bin\\ridk.cmd`
@@ -85,7 +87,7 @@ async function installGCCTools(type) {
 
   await common.measure(`Extracting  ${type} build tools`, async () =>
     // -aoa overwrite existing, -bd disable progress indicator
-    exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', '-oC:\\msys64'], { silent: true }))
+    exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${msys2BasePath}`], { silent: true }))
 }
 
 // Actions windows-2022 image does not contain any MSYS2 build tools.  Install tools for it.
@@ -97,9 +99,13 @@ async function installMSY2Tools() {
     return await tc.downloadTool(url)
   })
 
+  // need to remove all directories, since they may indicate old packages are installed,
+  // otherwise, error of "error: duplicated database entry"
+  fs.rmdirSync(`${msys2BasePath}\\var\\lib\\pacman\\local`, { recursive: true, force: true })
+
   await common.measure(`Extracting  msys2 build tools`, async () =>
     // -aoa overwrite existing, -bd disable progress indicator
-    exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', '-oC:\\msys64'], { silent: true }))
+    exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${msys2BasePath}`], { silent: true }))
 }
 
 async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
