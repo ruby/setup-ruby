@@ -60,11 +60,14 @@ export async function install(platform, engine, version) {
 
   const winMSYS2Type = common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
+  // install msys2 tools for all versions, only install mingw or ucrt for Rubies >= 2.4
+
   if (!['windows-2019', 'windows-2016'].includes(virtualEnv)) {
     await installMSY2Tools()
   }
 
-  if (( winMSYS2Type === 'ucrt64') || !['windows-2019', 'windows-2016'].includes(virtualEnv)) {
+  if ((( winMSYS2Type === 'ucrt64') || !['windows-2019', 'windows-2016'].includes(virtualEnv)) &&
+    (common.floatVersion(version) >= 2.4)) {
     await installGCCTools(winMSYS2Type)
   }
 
