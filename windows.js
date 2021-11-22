@@ -22,6 +22,8 @@ const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 const msys = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys}\\mingw\\bin`, `${msys}\\bin`]
 
+const virtualEnv = common.getVirtualEnvironmentName()
+
 export function getAvailableVersions(platform, engine) {
   if (engine === 'ruby') {
     return Object.keys(rubyInstallerVersions)
@@ -57,8 +59,6 @@ export async function install(platform, engine, version) {
   }
 
   const winMSYS2Type = common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
-
-  const virtualEnv = common.getVirtualEnvironmentName()
 
   if (!['windows-2019', 'windows-2016'].includes(virtualEnv)) {
     await installMSY2Tools()
@@ -175,9 +175,22 @@ async function setupMSWin() {
 /* Sets MSVC environment for use in Actions
  *   allows steps to run without running vcvars*.bat, also for PowerShell
  *   adds a convenience VCVARS environment variable
- *   this assumes a single Visual Studio version being available in the windows-latest image */
+ *   this assumes a single Visual Studio version being available in the window images */
 export function addVCVARSEnv() {
-  const vcVars = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
+  let vcVars = ''
+  switch (virtualEnv) {
+    case 'windows-2016':
+      vcVars = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
+      break
+    case 'windows-2019':
+      vcVars = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
+      break
+    case 'windows-2022':
+      vcVars = '"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
+      break
+    default:
+      throw new Error(`Unknown Windows Image: ${virtualEnv}`)
+  }
   core.exportVariable('VCVARS', vcVars)
 
   let newEnv = new Map()
