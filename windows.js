@@ -134,6 +134,11 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
+  // rename these to avoid confusion when Ruby is using OpenSSL 1.0.2
+  // most current extconf files look for 1.1.x dll files first, which is the
+  // version of the renamed files
+  if (common.floatVersion(version) <= 2.4) { renameSystem32Dlls() }
+
   if (common.floatVersion(version) <= 2.3) {
     core.exportVariable('SSL_CERT_FILE', certFile)
     await common.measure('Installing MSYS', async () => installMSYS(version))
@@ -217,6 +222,17 @@ export function addVCVARSEnv() {
     }
   }
   return newPathEntries
+}
+
+// ssl files cause issues with non RI2 Rubies (<2.4) and ruby/ruby's CI from
+// build folder due to dll resolution
+function renameSystem32Dlls() {
+  const sys32 = 'C:\\Windows\\System32\\'
+  const badFiles = ['libcrypto-1_1-x64.dll', 'libssl-1_1-x64.dll']
+  badFiles.forEach( (bad) => {
+    let fn = `${sys32}${bad}`
+    if (fs.existsSync(fn)) { fs.renameSync(fn, `${fn}_`) }
+  })
 }
 
 // Sets MSYS2 ENV variables set from running `ridk enable`
