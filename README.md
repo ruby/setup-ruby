@@ -243,6 +243,8 @@ if the [virtual environment](https://github.com/actions/virtual-environments) is
 
 In other cases, please use a system Ruby or [install Ruby manually](https://github.com/postmodern/chruby/wiki#installing-rubies) instead.
 
+On a self-hosted runner you need to define the `ImageOs` as an evironment variable on the host, you can do this in the `~/actions-runner/.env` file (See [#230](https://github.com/ruby/setup-ruby/issues/230)).
+
 ## History
 
 This action used to be at `eregon/use-ruby-action` and was moved to the `ruby` organization.
