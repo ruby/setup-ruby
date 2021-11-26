@@ -22,4 +22,4 @@ $ cp pre-commit .git/hooks/pre-commit
 
 ## Adding a new Ruby version
 
-Add the new version in `ruby-builder-versions.js` and update the README.
+Add the new version in `ruby-builder-versions.js`, then follow the steps above in [Regenerating dist/index.js](#regenerating-distindexjs) to update `dist/index.js`. Finally, update the "Supported Versions" section of the README if needed.
