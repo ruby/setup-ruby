@@ -30,6 +30,11 @@ inputs:
       to invalidate the cache.
     required: false
     default: '0'
+  post-ruby-install:
+    description: |
+      Execute a shell command after installing Ruby but before installing non-default Bundler gem.
+      Ignored if `input.bundler` is set to 'none'.
+    required: false
 outputs:
   ruby-prefix:
     description: 'The prefix of the installed ruby'
