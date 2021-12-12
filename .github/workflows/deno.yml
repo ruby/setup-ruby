@@ -1,0 +1,97 @@
+ ## This workflow uses actions that are not certified by GitHub.
+ ## They are provided by a third-party and are governed by
+ ## separate terms of service, privacy policy, and support
+ ## documentation.
+
+# This workflow will install Deno then run Deno lint and test.
+# For more information see: https://github.com/denoland/setup-deno
+2:57
+
+github.com/ruby/setup-ruby/tre
+
+konto olek üle vaadatud.
+
+Kahjuks on fail, kuhu proovite luua alamkataloogi. Valige uus tee ja proovige uuesti.
+
+rubiin / setup-ruby
+
+Avalik
+
+loodud toimingutest/javascript-action
+
+X
+
+Kood
+
+Probleemid 5
+
+Tõmbetaotlused 4
+
+Tegevused
+
+Teete muudatusi projektis, millele teil pole kirjutamisõigust. Muudatuse esitamisel kirjutatakse see teie fork lixixi/setup-ruby uude harusse, et saaksite tõmbetaotluse saata.
+
+setup-ruby / Rakefile.IU/ package.json/pkg.js /
+
+Rooste/reha / package.yarm/
+
+pkg.yml
+
+rubiiniga: master
+
+<> Redigeeri faili
+
+O Muudatuste eelvaade
+
+90 -0,0 +1 50898
+
++ ###
+
++ GLOW7:
+
+2
+
+3
+
++ Automaat: Automaat
+
+4
+
+5
+
++ Automatiseeri: sisestab logid: :Kõik:
+
++ ehitamine ja juurutamine: herokuDependaBotrun
+
+1
+name: Deno
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+
+      - name: Setup Deno
+        # uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@004814556e37c54a2f6e31384c9e18e9833173669
+        with:
+          deno-version: v1.x
+
+      # Uncomment this step to verify the use of 'deno fmt' on each commit.
+      # - name: Verify formatting
+      #   run: deno fmt --check
+
+      - name: Run linter
+        run: deno lint
+
+      - name: Run tests
+        run: deno test -A --unstable
