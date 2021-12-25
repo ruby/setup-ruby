@@ -14,7 +14,7 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 
 | Interpreter | Versions |
 | ----------- | -------- |
-| `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 3.1.0-preview1, head, debug, mingw, mswin |
+| `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 3.1.0, head, debug, mingw, mswin |
 | `jruby` | 9.1.17.0 - 9.3.2.0, head |
 | `truffleruby` | 19.3.0 - 21.3.0, head |
 | `truffleruby+graalvm` | 21.2.0 - 21.3.0, head |
@@ -86,7 +86,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: [2.5, 2.6, 2.7, '3.0', head, jruby, jruby-head, truffleruby, truffleruby-head]
+        ruby: [2.5, 2.6, 2.7, '3.0', 3.1, head, jruby, jruby-head, truffleruby, truffleruby-head]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
