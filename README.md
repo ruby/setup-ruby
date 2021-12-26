@@ -86,7 +86,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: [2.5, 2.6, 2.7, '3.0', 3.1, head, jruby, jruby-head, truffleruby, truffleruby-head]
+        ruby: [2.6, 2.7, '3.0', 3.1, head, jruby, jruby-head, truffleruby, truffleruby-head]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
