@@ -23,14 +23,12 @@ jobs:
         - { os: windows-2019, ruby: mswin }
         exclude:
         - { os: windows-2016, ruby: 1.9 }
-        - { os: windows-2016, ruby: 3.1 }
         - { os: windows-2016, ruby: debug }
         - { os: windows-2016, ruby: truffleruby }
         - { os: windows-2016, ruby: truffleruby-head }
         - { os: windows-2016, ruby: truffleruby+graalvm }
         - { os: windows-2016, ruby: truffleruby+graalvm-head }
         - { os: windows-2019, ruby: 1.9 }
-        - { os: windows-2019, ruby: 3.1 }
         - { os: windows-2019, ruby: debug }
         - { os: windows-2019, ruby: truffleruby }
         - { os: windows-2019, ruby: truffleruby-head }
