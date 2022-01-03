@@ -63,7 +63,7 @@ export async function install(platform, engine, version) {
   // install msys2 tools for all Ruby versions, only install mingw or ucrt for Rubies >= 2.4
 
   if (!['windows-2019', 'windows-2016'].includes(virtualEnv)) {
-    await installMSY2Tools()
+    await installMSYS2Tools()
   }
 
   if ((( winMSYS2Type === 'ucrt64') || !['windows-2019', 'windows-2016'].includes(virtualEnv)) &&
@@ -95,7 +95,7 @@ async function installGCCTools(type) {
 
 // Actions windows-2022 image does not contain any MSYS2 build tools.  Install tools for it.
 // A subset of the MSYS2 base-devel group
-async function installMSY2Tools() {
+async function installMSYS2Tools() {
   const downloadPath = await common.measure(`Downloading msys2 build tools`, async () => {
     let url = `https://github.com/MSP-Greg/setup-msys2-gcc/releases/download/msys2-gcc-pkgs/msys2.7z`
     console.log(url)
@@ -109,6 +109,13 @@ async function installMSY2Tools() {
   await common.measure(`Extracting  msys2 build tools`, async () =>
     // -aoa overwrite existing, -bd disable progress indicator
     exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${msys2BasePath}`], { silent: true }))
+}
+
+// Windows JRuby can install gems that require compile tools, only needed for
+// windows-2022 image
+export async function installJRubyTools() {
+  await installMSYS2Tools()
+  await installGCCTools('mingw64')
 }
 
 async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
