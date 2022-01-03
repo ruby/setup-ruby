@@ -60,7 +60,7 @@ export async function install(platform, engine, version) {
 
   const winMSYS2Type = common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
-  // install msys2 tools for all versions, only install mingw or ucrt for Rubies >= 2.4
+  // install msys2 tools for all Ruby versions, only install mingw or ucrt for Rubies >= 2.4
 
   if (!['windows-2019', 'windows-2016'].includes(virtualEnv)) {
     await installMSY2Tools()
@@ -183,7 +183,7 @@ async function setupMSWin() {
 /* Sets MSVC environment for use in Actions
  *   allows steps to run without running vcvars*.bat, also for PowerShell
  *   adds a convenience VCVARS environment variable
- *   this assumes a single Visual Studio version being available in the window images */
+ *   this assumes a single Visual Studio version being available in the Windows images */
 export function addVCVARSEnv() {
   let vcVars = ''
   switch (virtualEnv) {
