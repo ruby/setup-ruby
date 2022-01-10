@@ -105,7 +105,9 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     const bundlerVersionConstraint = /^\d+\.\d+\.\d+/.test(bundlerVersion) ? bundlerVersion : `~> ${bundlerVersion}`
-    await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint])
+    // Workaround for https://github.com/rubygems/rubygems/issues/5245
+    const force = (platform.startsWith('windows-') && engine === 'ruby' && common.floatVersion(rubyVersion) >= 3.1) ? ['--force'] : []
+    await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
   }
 
   return bundlerVersion
