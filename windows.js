@@ -35,6 +35,10 @@ export function getAvailableVersions(platform, engine) {
 export async function install(platform, engine, version) {
   const url = rubyInstallerVersions[version]
 
+  // The windows-2016 and windows-2019 images have MSYS2 build tools (C:/msys64/usr)
+  // and MinGW build tools installed.  The windows-2022 image has neither.
+  const hasMSYS2PreInstalled = ['windows-2019', 'windows-2016'].includes(virtualEnv)
+
   if (!url.endsWith('.7z')) {
     throw new Error(`URL should end in .7z: ${url}`)
   }
@@ -62,11 +66,13 @@ export async function install(platform, engine, version) {
 
   // install msys2 tools for all Ruby versions, only install mingw or ucrt for Rubies >= 2.4
 
-  if (!['windows-2019', 'windows-2016'].includes(virtualEnv)) {
+  if (!hasMSYS2PreInstalled) {
     await installMSYS2Tools()
   }
 
-  if ((( winMSYS2Type === 'ucrt64') || !['windows-2019', 'windows-2016'].includes(virtualEnv)) &&
+  // windows 2016 and 2019 need ucrt64 installed, 2022 and future images need
+  // ucrt64 or mingw64 installed, depending on Ruby version
+  if (((winMSYS2Type === 'ucrt64') || !hasMSYS2PreInstalled) &&
     (common.floatVersion(version) >= 2.4)) {
     await installGCCTools(winMSYS2Type)
   }
@@ -112,7 +118,7 @@ async function installMSYS2Tools() {
 }
 
 // Windows JRuby can install gems that require compile tools, only needed for
-// windows-2022 image
+// windows-2022 and later images
 export async function installJRubyTools() {
   await installMSYS2Tools()
   await installGCCTools('mingw64')
@@ -127,6 +133,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   })
 
   await common.measure('Extracting  Ruby', async () =>
+    // -bd disable progress indicator, -xr extract but exclude share\doc files
     exec.exec('7z', ['x', downloadPath, '-bd', `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
 
   if (base !== path.basename(rubyPrefix)) {
