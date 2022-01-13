@@ -242,7 +242,7 @@ export function addVCVARSEnv() {
 function renameSystem32Dlls() {
   const sys32 = 'C:\\Windows\\System32\\'
   const badFiles = [`${sys32}libcrypto-1_1-x64.dll`, `${sys32}libssl-1_1-x64.dll`]
-  const existing = badFiles.map((dll) => fs.existsSync(dll))
+  const existing = badFiles.filter((dll) => fs.existsSync(dll))
   console.log(`Renaming ${existing.join(' and ')} to avoid dll resolution conflicts on Ruby <= 2.4`)
   existing.forEach(dll => fs.renameSync(dll, `${dll}_`))
 }
