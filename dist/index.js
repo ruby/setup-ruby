@@ -411,7 +411,7 @@ function rubyIsUCRT(path) {
 }
 
 function setupPath(newPathEntries) {
-  let win_build_sys = null
+  let msys2Type = null
   const envPath = windows ? 'Path' : 'PATH'
   const originalPath = process.env[envPath].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
@@ -433,10 +433,10 @@ function setupPath(newPathEntries) {
   let newPath
   if (windows) {
     // main Ruby dll determines whether mingw or ucrt build
-    win_build_sys = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+    msys2Type = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
 
     // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
-    const msys2 = [`C:\\msys64\\${win_build_sys}\\bin`, 'C:\\msys64\\usr\\bin']
+    const msys2 = [`C:\\msys64\\${msys2Type}\\bin`, 'C:\\msys64\\usr\\bin']
     newPath = [...newPathEntries, ...msys2]
   } else {
     newPath = newPathEntries
@@ -448,7 +448,7 @@ function setupPath(newPathEntries) {
   core.endGroup()
 
   core.addPath(newPath.join(path.delimiter))
-  return win_build_sys
+  return msys2Type
 }
 
 
@@ -59047,9 +59047,9 @@ const msys2BasePath = 'C:\\msys64'
 // needed for 2.0-2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
-// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.0-2.3
-const msys = `${drive}:\\DevKit64`
-const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys}\\mingw\\bin`, `${msys}\\bin`]
+// location & path for old RubyInstaller DevKit (MSYS1), Ruby 2.0-2.3
+const msys1 = `${drive}:\\DevKit64`
+const msysPathEntries = [`${msys1}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys1}\\mingw\\bin`, `${msys1}\\bin`]
 
 const virtualEnv = common.getVirtualEnvironmentName()
 
@@ -59091,7 +59091,7 @@ async function install(platform, engine, version) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
-  const winMSYS2Type = common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
+  const msys2Type = common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
   // install msys2 tools for all Ruby versions, only install mingw or ucrt for Rubies >= 2.4
 
@@ -59101,9 +59101,8 @@ async function install(platform, engine, version) {
 
   // windows 2016 and 2019 need ucrt64 installed, 2022 and future images need
   // ucrt64 or mingw64 installed, depending on Ruby version
-  if (((winMSYS2Type === 'ucrt64') || !hasMSYS2PreInstalled) &&
-    (common.floatVersion(version) >= 2.4)) {
-    await installGCCTools(winMSYS2Type)
+  if (((msys2Type === 'ucrt64') || !hasMSYS2PreInstalled) && common.floatVersion(version) >= 2.4) {
+    await installGCCTools(msys2Type)
   }
 
   const ridk = `${rubyPrefix}\\bin\\ridk.cmd`
@@ -59177,28 +59176,29 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
-  // rename these to avoid confusion when Ruby is using OpenSSL 1.0.2
-  // most current extconf files look for 1.1.x dll files first, which is the
-  // version of the renamed files
-  if (common.floatVersion(version) <= 2.4) { renameSystem32Dlls() }
+  // rename these to avoid confusion when Ruby is using OpenSSL 1.0.2.
+  // most current extconf files look for 1.1.x dll files first, which is the version of the renamed files
+  if (common.floatVersion(version) <= 2.4) {
+    renameSystem32Dlls()
+  }
 
   if (common.floatVersion(version) <= 2.3) {
     core.exportVariable('SSL_CERT_FILE', certFile)
-    await common.measure('Installing MSYS', async () => installMSYS(version))
+    await common.measure('Installing MSYS1', async () => installMSYS1(version))
     return msysPathEntries
   } else {
     return []
   }
 }
 
-// Ruby 2.0, 2.1, 2.2 and 2.3
-async function installMSYS(version) {
+// Ruby 2.0-2.3
+async function installMSYS1(version) {
   const url = 'https://github.com/oneclick/rubyinstaller/releases/download/devkit-4.7.2/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
   const downloadPath = await tc.downloadTool(url)
-  await exec.exec('7z', ['x', downloadPath, `-o${msys}`], { silent: true })
+  await exec.exec('7z', ['x', downloadPath, `-o${msys1}`], { silent: true })
 
   // below are set in the old devkit.rb file ?
-  core.exportVariable('RI_DEVKIT', msys)
+  core.exportVariable('RI_DEVKIT', msys1)
   core.exportVariable('CC' , 'gcc')
   core.exportVariable('CXX', 'g++')
   core.exportVariable('CPP', 'cpp')
@@ -59267,27 +59267,24 @@ function addVCVARSEnv() {
   return newPathEntries
 }
 
-// ssl files cause issues with non RI2 Rubies (<2.4) and ruby/ruby's CI from
-// build folder due to dll resolution
+// ssl files cause issues with non RI2 Rubies (<2.4) and ruby/ruby's CI from build folder due to dll resolution
 function renameSystem32Dlls() {
   const sys32 = 'C:\\Windows\\System32\\'
-  const badFiles = ['libcrypto-1_1-x64.dll', 'libssl-1_1-x64.dll']
-  badFiles.forEach( (bad) => {
-    let fn = `${sys32}${bad}`
-    if (fs.existsSync(fn)) { fs.renameSync(fn, `${fn}_`) }
-  })
+  const badFiles = [`${sys32}libcrypto-1_1-x64.dll`, `${sys32}libssl-1_1-x64.dll`]
+  const existing = badFiles.map((dll) => fs.existsSync(dll))
+  console.log(`Renaming ${existing.join(' and ')} to avoid dll resolution conflicts on Ruby <= 2.4`)
+  existing.forEach(dll => fs.renameSync(dll, `${dll}_`))
 }
 
 // Sets MSYS2 ENV variables set from running `ridk enable`
-//
 function addRidkEnv(ridk) {
   let newEnv = new Map()
   let cmd = `cmd.exe /c "${ridk} enable && set"`
   let newSet = cp.execSync(cmd).toString().trim().split(/\r?\n/)
   newSet = newSet.filter(line => /^\S+=\S+/.test(line))
   newSet.forEach(s => {
-    let [k,v] = common.partition(s, '=')
-    newEnv.set(k,v)
+    let [k, v] = common.partition(s, '=')
+    newEnv.set(k, v)
   })
 
   for (let [k, v] of newEnv) {
