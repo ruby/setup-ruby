@@ -147,11 +147,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
-  // rename these to avoid confusion when Ruby is using OpenSSL 1.0.2.
-  // most current extconf files look for 1.1.x dll files first, which is the version of the renamed files
-  if (common.floatVersion(version) <= 2.4) {
-    renameSystem32Dlls()
-  }
+  renameSystem32Dlls()
 
   if (common.floatVersion(version) <= 2.3) {
     core.exportVariable('SSL_CERT_FILE', certFile)
@@ -238,13 +234,15 @@ export function addVCVARSEnv() {
   return newPathEntries
 }
 
-// ssl files cause issues with non RI2 Rubies (<2.4) and ruby/ruby's CI from build folder due to dll resolution
+// Renames dll files installed by third party tools.  Often an issue
+// when running non-standard Ruby builds without the dll resolution provided by
+// the RubyInstaller2 runtime.  At present, only OpenSSL files.
 function renameSystem32Dlls() {
   const sys32 = 'C:\\Windows\\System32\\'
   const badFiles = [`${sys32}libcrypto-1_1-x64.dll`, `${sys32}libssl-1_1-x64.dll`]
   const existing = badFiles.filter((dll) => fs.existsSync(dll))
   if (existing.length > 0) {
-    console.log(`Renaming ${existing.join(' and ')} to avoid dll resolution conflicts on Ruby <= 2.4`)
+    console.log(`Renaming ${existing.join(' and ')} to avoid dll resolution conflicts`)
     existing.forEach(dll => fs.renameSync(dll, `${dll}_`))
   }
 }
