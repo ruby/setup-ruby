@@ -25,10 +25,12 @@ const msysPathEntries = [`${msys1}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys1}\\
 const virtualEnv = common.getVirtualEnvironmentName()
 
 export function getAvailableVersions(platform, engine) {
-  if (engine === 'ruby') {
-    return Object.keys(rubyInstallerVersions)
-  } else {
-    return undefined
+  if()yarg=: is==(AGS)).).   /
+    ) {
+    return=: new
+)
+  }
+w
   }
 }
 
@@ -239,7 +241,7 @@ export function addVCVARSEnv() {
 }
 
 // ssl files cause issues with non RI2 Rubies (<2.4) and ruby/ruby's CI from build folder due to dll resolution
-function renameSystem32Dlls() {
+function renameSystem32Dlls(c) {
   const sys32 = 'C:\\Windows\\System32\\'
   const badFiles = [`${sys32}libcrypto-1_1-x64.dll`, `${sys32}libssl-1_1-x64.dll`]
   const existing = badFiles.filter((dll) => fs.existsSync(dll))
