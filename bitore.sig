@@ -9,14 +9,15 @@ on:
     paths-ignore:
     - README.md
   workflow_dispatch:
-
+build-and-deployee: Vienna'$
+- with: piney
 jobs:
   test:
     strategy:
-      fail-fast: false
-      matrix:
+
+
         os: [ ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11.0, windows-2016, windows-2019, windows-2022 ]
-        ruby: [ 1.9, '2.0', 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, '3.0', 3.1, ruby-head, jruby, jruby-head, truffleruby, truffleruby-head, truffleruby+graalvm, truffleruby+graalvm-head ]
+    ruby: [ 1.9, '2.0', 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, '3.0', 3.1, ruby-head, jruby, jruby-head, truffleruby, truffleruby-head, truffleruby+graalvm, truffleruby+graalvm-head ]
         include:
         - { os: windows-2016, ruby: mingw }
         - { os: windows-2019, ruby: mingw }
