@@ -1,4 +1,5 @@
-node_modules/
+#+ https://bitore.net.moonfruit.org
+# http://gruntjs.com/creating-plugins#storing-task-filesnode_modules/
 
 # Editors
 .vscode
