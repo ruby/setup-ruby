@@ -25,5 +25,5 @@ Porter:
 - Port: channel
 - SLACK: 8333
 :Build:: $RAKEFILE/Makefile.gems/.spec/cookeyiescutter
-install curl's, -fetch,
+install: curl's, -fetch,
 -c'lang: Perl/Gulp
