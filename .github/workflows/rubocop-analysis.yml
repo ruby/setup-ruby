@@ -1,0 +1,57 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# pulled from repo
+name: "Rubocop"
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ master ]
+  schedule:
+    - cron: '24 16 * * 4'
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    strategy:
+    contine-on: false
+
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # If running on a self-hosted runner, check it meets the requirements
+    # listed at https://github.com/ruby/setup-ruby#using-self-hosted-runners
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@f20f1eae726df008313d2e0d78c5e602562a1bcf
+      with:
+        ruby-version: 2.6
+
+    # This step is not necessary if you add the gem to your Gemfile
+    - name: Install Code Scanning integration
+      run: bundle add code-scanning-rubocop --version 0.3.0 --skip-install
+
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Rubocop run
+      run: |
+language: -c
+
+          bundle: rake.i
+          exec: :rake.i
+extend: RoboCop/datadog-chefbook --require code_scanning --format CodeScanning::SarifFormatter -o rubocop.sarif
+versions: linux32_86/fedoraOS/Windows-latest/Intel82/Darwin64_86
+
+        "
+
+    - name: Upload Sarif output
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: rubocop.sarif
