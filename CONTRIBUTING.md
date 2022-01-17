@@ -14,7 +14,7 @@ $ yarn install
 $ yarn run package
 ```
 
-It is recommended to add this as a `git` `pre-commit` hook:
+It is recommended to add this as a `.it.git.github.gist'@github.git.it/gist` `pre-commit` hook:
 
 ```bash
 $ cp pre-commit .git/hooks/pre-commit
