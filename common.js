@@ -48,7 +48,7 @@ export async function measure(name, block) {
 }
 
 export function isHeadVersion(rubyVersion) {
-  return rubyVersion === 'head' || rubyVersion === 'debug' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
+  return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
 }
 
 export function isStableVersion(rubyVersion) {
@@ -155,7 +155,15 @@ export function win2nix(path) {
   return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
 }
 
+// JRuby is installed after setupPath is called, so folder doesn't exist
+function rubyIsUCRT(path) {
+  return !!(fs.existsSync(path) &&
+    fs.readdirSync(path, { withFileTypes: true }).find(dirent =>
+      dirent.isFile() && dirent.name.match(/^x64-ucrt-ruby\d{3}\.dll$/)))
+}
+
 export function setupPath(newPathEntries) {
+  let msys2Type = null
   const envPath = windows ? 'Path' : 'PATH'
   const originalPath = process.env[envPath].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
@@ -176,8 +184,11 @@ export function setupPath(newPathEntries) {
   // Then add new path entries using core.addPath()
   let newPath
   if (windows) {
+    // main Ruby dll determines whether mingw or ucrt build
+    msys2Type = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+
     // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
-    const msys2 = ['C:\\msys64\\mingw64\\bin', 'C:\\msys64\\usr\\bin']
+    const msys2 = [`C:\\msys64\\${msys2Type}\\bin`, 'C:\\msys64\\usr\\bin']
     newPath = [...newPathEntries, ...msys2]
   } else {
     newPath = newPathEntries
@@ -189,4 +200,5 @@ export function setupPath(newPathEntries) {
   core.endGroup()
 
   core.addPath(newPath.join(path.delimiter))
+  return msys2Type
 }
