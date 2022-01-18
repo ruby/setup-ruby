@@ -1,0 +1,237 @@
+Name: CI
+title: Update the v1 branch when a release is published
+on:
+  release:
+    types: [published]
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - run: git push origin HEAD:v1
+diff --git a/.github/workflows/bitore.sig b/.github/workflows/bitore.sig
+new file mode 100644
+index 000000000000..8990bce828c1
+--- /dev/null
++++ b/.github/workflows/bitore.sig
+@@ -0,0 +1,55 @@
++'##:run:'uses:'actions:'user:'triggers:'keys:'control:'+'spacebar'to'Automate'run:'trigger:'
++'starts::/':Run::/':on::'::-on:'"''
++'Runs::' runs-on:on:' Runs:on: ''
++'Job:' '"use' '-'"''
++'Steps:'
++'Command:'
++'Build:' '"((c)(r))'"''
++'Type:' '"gemfile'"''
++'name:' '"bitcoin
++'Runs-on:' '"Nodepackage.js
++'Request:' '"
++'Launch:' '"release'"''  
++'bundle-with:' '"python.js'"''
++'::Pushs:' '"'@iixixi/ZachryTylerWood'@Administrator'@.git.it.github/gist/.github/workflows/doc/javascript/pyper/usr/bin/bash/ci/travis.yml
++'name:' '"bitore.sig"
++'Branch:' '"'[mainbranch']"
++'pull_request:
++'branches: '"'[trunk']"
++'jobs: '"Automate"''
++'Automate: '"steps'"''
++'Automate: '"test"''
++'test: '"name"''
++'name: '"build-and-deployee-HerokuRunwizardDependabotPro:to::-::Fix::-:All::'@heroku*log::All:*logs::'::All:-inputs::'::Automate:':Automates::'::All:'::Automatically::'"''
++'returns: '"if',' returns'true'.'continue'.''
++'result: '"returns''"_'?'_"',''"''
++'if:' '"true"
++'runs-on:' '"iixixi/bitore/bitcoin©®™✓original/✓latest.json"''
++'steps:' '"uses:actions:checkout@bitore.sig/paradice'@mojojojojo'"''
++'use:' '"actions/checkout@v2"''
++'name:' '"Zachrytylerwood'@administrator'@.git.it.gist/git.github.com/gist: '"'@✨ Engineering'"''
++' ## To automatically get bug fixes and new Ruby versions for ruby/setup-ruby.qm'@https://github.com/ruby/setup-ruby#versioning):
++'- with:' '"fedora/os/WindowsXP88_89/linux32_86.tr.gs.WinRawr.Zip/sun.java.com/sdk.S.E/ENVIROMENT/RUNTIME/lolipop'@v6.12.8'"''
++'name:' '"install inputs(dependencies)'"''
++'bundler:' '"deno.yml'"''
++'name:' '"Publish'"''
++'run:' '"bundle'"''
++'env: '"rake.i'"''
++'name:' '"autoupdate: Ever 3 sec'"''
++'on:'"''
++'::Pushs: '"Branch'"''
++'Branch: '"'[Masterbranch']'"''
++'job:
++'::Automate:' '"update: Autoupdates'"''
++'::name:' '"Autoupdate:'"''
++'runs-on: https://.git.it.chinhakagodawita/autoupdate-action:v1'"''
++'Env:' '"Python.js'"''
++'GITHUB.secrets_TOKEN:' '"{{' '"${{' '"secrets'.OCTOMERGER'_PAT'_WITH'_REPO'_AND'_WORKFLOW'_SCOPE'}}}'"''
++'PR_FILTER: '"labels'"''
++'PR_LABELS: '"autoupdate'"''
++'Pull: '"iixixi/✨Engineering'"''
++'MERGE_MSG:' '"iixixi/✨Engineering'"''
++'Runs:' '"dependiencies(jest)'"''
++'Updated package.json: `{ ... "scripts": { "test": "jest" } ... }
++'List: "the-Written a number of tests.Construct:terraform:build:Repo-sync:Bundle:container:rakrfileadk.api.json.yaml/API/adk/sdk.S.E,/jdk.J.C./package.json.jpng/xvlmnsv"
++'Return: 'Run ''
+diff --git a/.github/workflows/ruby.yml b/.github/workflows/ruby.yml
+deleted file mode 100644
+index 3230b5c162a7..000000000000
+--- a/.github/workflows/ruby.yml
++++ /dev/null
+@@ -1,55 +0,0 @@
+-On:
+-Run:
+-Jobs:
+-Steps:
+-Command:
+-Build: ((c))
+-Type: gemfile
+-
+-name: bitcoin
+-
+-Runs-on: Nodepackage.js
+-Request:
+-Launch: 
+-Bundler: python.js
+-  push: iixixi/ZachryTylerWood/.github/workflows/
+-    branches: [ main ]
+-  pull_request:
+-    branches: [ trunk ]
+-
+-jobs:
+-  test:
+-
+-    runs-on: ubuntu-latest
+-
+-    steps:
+-    uses: actions/checkout@v2
+-    name: iixixii/✨ Engineering
+-    To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
+-    https://github.com/ruby/setup-ruby#versioning):
+-    uses: ruby/setup-ruby@v1
+-      uses: ruby/setup-ruby@21351ecc0a7c196081abca5dc55b08f085efe09a
+-      with:
+-        ruby-version: 2.6
+-    name: Install dependencies
+-      run: bundle install
+-    name: Run tests
+-      run: bundle exec rake
+-name: autoupdate branch
+-
+-on:
+-  push:
+-    branches:
+-      - main
+-jobs:
+-  autoupdate:
+-    name: autoupdate
+-    runs-on: ubuntu-18.04
+-    steps:
+-      - uses: docker://chinthakagodawita/autoupdate-action:v1
+-        env:
+-          GITHUB_TOKEN: ${{ secrets.OCTOMERGER_PAT_WITH_REPO_AND_WORKFLOW_SCOPE }}
+-          PR_FILTER: labelled
+-          PR_LABELS: autoupdate
+-          Pull: iixixi/✨Engineering
+-          MERGE_MSG: "iixixi/✨Engineering
+diff --git a/.github/workflows/pa11y.yml b/action.js/Rakefile
+
+-    - cron: "25 17 * * *" # once a day at 17:25 UTC / 11:50 PST
+-jobs:
+-  test:
+-    runs-on: ubuntu-latest
+-    steps:
+-      - name: Check out repo
+-        uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675
++workflows_call:run-on:toggle-Events-causing-the-workflows-to_Run_Automatically-on:on:: Automate
++Automate:Automates:
++Run:starts::\Automate:Automates:
++::Runs::Run::/:on:
++Automate:Update:
++Update:autopdates:
++autoupdates:Every_-0_sec-at-17:00:00:00:
++job:Runs_Tests'@ci:
++run-on:unicorn/meta_charset=Utf-8/Ubuntu-latest:
++Name: actions
++actions: checksout/pkg.js/checksout'@'-'"0.0.0'"''
+ 
+       - name: Get npm cache directory
+         id: npm-cache
+diff --git a/ownership.yaml b/ownership.yaml
+deleted file mode 100644
+index 8b0e45296de3..000000000000
+--- a/ownership.yaml
++++ /dev/null
+@@ -1,23 +0,0 @@
+----
+-version: 1
+-ownership: Zachry T WooD III
+-- name: docs-internal
+-  long_name: GitHub Help Docs
+-  kind: heroku
+-  repo: https://github.com/github/docs-internal
+-  team: github/docs-engineering
+-  maintainer: zeke
+-  exec_sponsor: danaiszuul
+-  product_manager: jwargo
+-  mention: github/docs-engineering
+-  qos: critical
+-  dependencies: [script(list]
+-  sev1:
+-    pagerduty: https://github.pagerduty.com/escalation_policies#PN57VQ1
+-    tta: 30 min
+-  sev2:
+-    issue: https://github.com/github/docs-internal/issues
+-    tta: 5 business days
+-  sev3:
+-    slack: docs-engineering
+-    tta: 30 min
+#+- <🔗>zachryiixixiiwood@gmail.com<🔗>
+#+- language: 
+#+- LISTING OF PATENTS RELATED TO PAYPAL PRODUCTS, SERVICES, PLATFORMS, AND/OR FEATURES
+PayPal Advertising
+PayPal Content and User Interface
+PayPal e-Commerce
+PayPal Merchant
+PayPal Mobile
+PayPal Payment
+PayPal Search
+PayPal Social
+PayPal Software and Infrastructure
+LISTING OF PATENTS RELATED TO PAYPAL PRODUCTS, SERVICES, PLATFORMS, AND/OR FEATURES
+Last updated on August 12, 2020.
+
+#+- The following PayPal products, services, platforms and/or features may be protected by some of the following PayPal patents in the U.S. and/or around the globe. This website is provided to satisfy the patent marking provisions of various jurisdictions, including the patent marking provisions of the America Invents Act (AIA), as codified by 35 U.S.C. § 287(a). The following list is not comprehensive and other PayPal products, services, platforms, and/or features not listed here may also be protected by one or more of these and/or other patents.
+
+#+- PayPal Advertising:
+#+- U.S. Patents 5970470, 6018718, 6119099, 6119100, 6223163, 6324520, 6334109, 6405174, 6415262, 6434534, 6507822, 6598024, 6687679, 7099832, 7251617, 7376580, 7415425, 7430521, 7451892, 7496523, 7613631, 7664705, 7774240, 7778871, 7827057, 7841514, 7885726, 7899710, 7908168, 7980466, 8015059, 8036943, 8078492, 8121899, 8131588, 8175963, 8234160, 8401894, 8452710, 8459551, 8473341, 8548850, 8571943, 8595048, 8630896, 8645202, 8700456, 8706632, 8712860, 8725583, 8751297, 8781894, 8818869, 8863175, 9009064, 9148685, 9218615, 9218618, 9443256, 9454774, 9648371, 9697553, 9727877, 9792621, 9866907, 10089648, 10104052, 10116608, and 10185966. Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- PayPal Content and User Interface:
+#+- U.S. Patents 6107932, 6308327, 6341268, 6374240, 6615238, 6865565, 6917961, 6970931, 7233973, 7693937, 7801949, 7814147, 7853577, 7895268, 8176119, 8180800, 8359237, 8516000, 8538821, 8579731, 8621001, 8621002, 8629849, 8661025, 8671029, 8676886, 8707048, 8707167, 8756099, 8756657, 8832060, 9009096, 9053514, 9069745, 9082153, 9094692, 9141267, 9146665, 9177054, 9196002, 9218620, 9262392, 9269106, 9288321, 9324002, 9330364, 9336541, 9357268, 9360998, 9361393, 9411899, 9443209, 9454292, 9460464, 9477776, 9495069, 9508098, 9547854, 9547917, 9576315, 9576611, 9639174, 9639873, 9734135, 9767448, 9785241, 9804861, 9886786, 9928372, 9947036, 9953275, 9953350, 9990624, 9996861, 9996866, 10031976, 10057358, 10067637, 10074119, 10078415, 10084738, 10088676, 10121184, 10127576, 10127594, 10134368, 10147083, 10163075, 10180781, 10229448, 10235132, 10235718, D704729, D705250, D705800, D781343, D803256, D803257, D803258, D803861, D807910, D822689, and D822690. Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- PayPal e-Commerce:
+#+- U.S. Patents  6138105, 6601036, 6611814, 6701303, 6873967, 6925446, 7130814, 7146341, 7171387, 7197476, 7251620, 7251628, 7359872, 7401033, 7428505, 7447781, 7475043, 7480638, 7490056, 7536336, 7536337, 7552081, 7562043, 7580863, 7587359, 7689488, 7693796, 7707083, 7716079, 7716347, 7761341, 7783555, 7818753, 7835978, 7873546, 7945437, 7983984, 8015077, 8015103, 8024267, 8036944, 8046265, 8050979, 8068933, 8095482, 8103574, 8112314, 8229849, 8244641, 8249949, 8255324, 8260687, 8290809, 8315917, 8335723, 8396753, 8402068, 8423474, 8429020, 8433643, 8433653, 8452666, 8548869, 8595085, 8597126, 8612297, 8615444, 8631005, 8635098, 8700483, 8706567, 8713017, 8738455, 8768937, 8825660, 8825677, 8972189, 8977973, 9053091, 9083756, 9171056, 9218433, 9256878, 9262739, 9292498, 9299096, 9390165, 9412128, 9449114, 9449208, 9459782, 9489700, 9495715, 9501800, 9552608, 9558516, 9582817, 9588650, 9600497, 9613030, 9613373, 9613375, 9614934, 9619833, 9659300,9679316, 9727908, 9734520, 9881006, 9965704, 10037563, 10055749, 10089667, 10095782, 10102565, 10127501, 10134079, 10134082, 10169786, 10169787, 10200394, 10210544, 10217124, 10218751, and 10229450.  Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- PayPal Merchant:
+U.S. Patents 6687677, 6738746, 7124095, 7143053, 7197480, 7403903, 7437304, 7664666, 7668742, 7689435, 7844497, 7870127, 7895095, 7895129, 7933792, 7957995, 8010395, 8500010, 8763900, 9033228, 9070153, 9355533, 9389094, 9436855, 9460411, 9631939, 9704070, 9846870, 10024670, 10074064, 10096048, 10134032, 10134202, 10147080, 10181066, D717309, D723566, D725655, D728568, D740287, D749589, D752131, D767670, D780183, and D809589.  Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- PayPal Mobile:
+U.S. Patents 6519627, 7175073, 7263367, 7324959, 7447642, 7797170, 7848765, 7890376, 8326315, 8424057, 8600883, 8656459, 8762224, 8781393, 8856038, 8862150, 8862513, 8862767, 8909248, 9037082, 9152971, 9154555, 9160729, 9183551, 9215570, 9225710, 9230272, 9251333, 9354065, 9356819, 9363323, 9378494, 9407705, 9411572, 9420418, 9424504, 9424570, 9424702, 9432838, 9445220, 9448689, 9456309, 9483937, 9503845, 9536407, 9560503, 9569196, 9569766, 9571957, 9585079, 9586596, 9621213, 9633549, 9639834, 9639868, 9639907, 9642173, 9648652, 9654923, 9668096, 9691062, 9721283, 9729915, 9754276, 9754310, 9760927, 9769272, 9769593, 9794243, 9798385, 9799053, 9811772, 9818119, 9852467, 9866998, 9875472, 9881261, 9883319, 9892354, 9894495, 9900774, 9904946, 9916619, 9922325, 9942691, 9961490, 9974000, 9980302, 9996701, 10009847, 10032159, 10037080, 10037082, 10043206, 10046235, 10049388, 10050457, 10055707, 10061954, 10062132, 10075533, 10078700, 10078863, 10083446, 10091836, 10102465, 10103767, 10104452, 10108262, 10117082, 10122813, 10127540, 10127542, 10140645, 10160412, 10162620, 10165060, 10176474, 10179591, 10191785, 10198887, 10217038, 10217133, 10228893, 10242366, 10242376, 10243944, 10244566, 10667080, 10721587, 10728698, and 10728699.  Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- PayPal Payment:
+U.S. Patents 5978780, 6163771, 6219651, 6327578, 6438528, 6450403, 6535997, 6540135, 6729549, 6748296, 6817521, 6839683, 6977998, 7089208, 7099652, 7128273, 7191151, 7233912, 7328839, 7426263, 7533064, 7533804, 7546275, 7552088, 7555462, 7562050, 7621443, 7640432, 7734544, 7739197, 7742985, 7805366, 7814014, 7818245, 7827103, 7831520, 7837121, 7853529, 7860772, 7860784, 7917434, 7945512, 7979705, 7991693, 8050997, 8055582, 8086526, 8108318, 8139736, 8185443, 8214288, 8214289, 8233841, 8249986, 8249990, 8255303, 8285640, 8296235, 8301510, 8332311, 8332314, 8380177, 8380624, 8417643, 8423461, 8429022, 8473371, 8489507, 8538819, 8538877, 8538882, 8566242, 8588384, 8589287, 8595108, 8626648, 8626650, 8632000, 8645213, 8655763, 8655780, 8688580, 8694422, 8712913, 8719154, 8719156, 8724931, 8732076, 8738526, 8762241, 8768853, 8775306, 8775312, 8776132, 8788411, 8805326, 8813182, 8831986, 8849710, 8886569, 8898082, 8903063, 8930272, 8972296, 8997139, 9009746, 9015066, 9105021, 9123039, 9123065, 9135424, 9135622, 9171316, 9172693, 9208482, 9218601, 9218624, 9224140, 9269104, 9270832, 9275389, 9292838, 9305295, 9330384, 9330387, 9400978, 9401077, 9412106, 9430730, 9430759, 9449318, 9471917, 9477952, 9495674, 9501767, 9514452, 9536142, 9536240, 9542671, 9547853, 9547857, 9552579, 9552580, 9558478, 9558485, 9569759, 9582787, 9589263, 9633345, 9639829, 9639837, 9639852, 9659294, 9659443, 9679294, 9704149, 9710805, 9721237, 9747627, 9760879, 9769324, 9785932, 9785947, 9805362, 9811813, 9818089, 9830649, 9846877, 9852418, 9858555, 9858564, 9865015, 9875493, 9881331, 9898717, 9898719, 9911120, 9928507, 9947011, 9971998, 9996826, 10002354, 10015324, 10037562, 10043184, 10049315, 10068265, 10074086, 10096021, 10102514, 10102558, 10115088, 10120993, 10127546, 10134031, 10140637, 10152699, 10152705, 10181123, 10210501, 10235659, 10235836, 10242350, D675618, and RE40444. Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- PayPal Search:
+U.S. Patents 6349295, 6728706, 7219072, 7958141, 8032515, 8065199, 8131722, 8145662, 8195683, 8200687, 8290932, 8332383, 8370333, 8370336, 8504582, 8549407, 8583633, 8589398, 8630920, 8676829, 8712996, 8751332, 8819052, 8949265, 9063986, 9081821, 9092810, 9104728, 9105029, 9158768, 9165065, 9183280, 9183309, 9298785, 9336297, 9384286, 9405835, 9460151, 9460212, 9529919, 9535998, 9552144, 9613161, 9633392, 9697283, 9697628, 9727638, 9792375, 9836481, 9852228, 9892156, 9904953, 9916349, 9940658, 9972038, 10140339, and 10191983. Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- PayPal Social:
+U.S. Patents 7343335, 7401039, 8346622, 8364566, 8401948, 8438069, 8463295, 8484127, 8504433, 8560397, 8589266, 8612351, 8738543, 9092819, 9251536, 9407709, 9454753, 9552605, 9576284, 9589535, 9633383, 9633398, 9684912, 9710812, 9734489, 9818146, 9872140, 9934505, 9965796, 9978052, 9990620, 10037564, 10049400, 10108732, 10147102, 10185959, 10212549, and 10218710. Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- PayPal Software and Infrastructure:
+U.S. Patents 5579481, 5740364, 6092053, 6684191, 6910216, 6964053, 7110957, 7139916, 7275079, 7305469, 7350192, 7369505, 7398222, 7406464, 7454496, 7526810, 7559066, 7617125, 7617486, 7650338, 7659905, 7685027, 7702533, 7725352, 7725403, 7725460, 7752185, 7770209, 7779386, 7844639, 7884827, 7890537, 7941469, 7948889, 7948898, 7966283, 8046376, 8104020, 8108518, 8169443, 8176040, 8190564, 8200684, 8201193, 8239533, 8249950, 8291000, 8291376, 8296187, 8301590, 8316305, 8341699, 8364635, 8387119, 8413156, 8429598, 8515949, 8516437, 8547383, 8566439, 8572554, 8606824, 8621490, 8645972, 8683498, 8689175, 8712919, 8713146, 8732719, 8738592, 8763008, 8775618, 8793368, 8793375, 8799409, 8803660, 8806506, 8856724, 8856732, 8898147, 8913147, 8918505, 8924943, 8930632, 8938683, 8954439, 8977560, 8996534, 9009521, 9015532, 9043401, 9058210, 9058343, 9065810, 9104803, 9122770, 9167136, 9170917, 9195527, 9197514, 9201632, 9218227, 9219792, 9268664, 9329951, 9329985, 9350603, 9350741, 9367371, 9372909, 9378293, 9386117, 9430581, 9442720, 9442810, 9448944, 9459860, 9460405, 9477584, 9477771, 9508094, 9519478, 9524277, 9535689, 9542736, 9547601, 9552438, 9553781, 9589289, 9606903, 9626705, 9633204, 9633321, 9635121, 9641745, 9674050, 9679323, 9697233, 9705891, 9710643, 9727397, 9729468, 9734652, 9747085, 9794334, 9804837, 9805007, 9805413, 9817694, 9838499, 9852116, 9852162, 9928480, 9935819, 9952909, 9965332, 9971672, 9996453, 10013333, 10015240, 10019256, 10025692, 10031929, 10049306, 10050852, 10061620, 10061687, 10078556, 10114942, 10116769, 10120707, 10122822, 10129176, 10147075, 10193855, 10198309, 10198342, 10225274, 10237783, and 10243812. Additional patents may be pending in the U.S. and/or around the globe.
+
+#+- HelpContactFeesSecurityAppsShopEnterprisePartners
+#+- AboutNewsroomJobsInvestor RelationsValues in ActionPublic PolicySitemap
+#+- © 1999–2022AccessibilityPrivacyCookiesLegal
+
+
+
