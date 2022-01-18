@@ -1,4 +1,5 @@
 export const versions = {
+  "2.0.0": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.0.0-p648/ruby-2.0.0-p648-x64-mingw32.7z",
   "2.1.9": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.1.9/ruby-2.1.9-x64-mingw32.7z",
   "2.2.6": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.2.6/ruby-2.2.6-x64-mingw32.7z",
   "2.3.0": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.0/ruby-2.3.0-x64-mingw32.7z",

@@ -27753,10 +27753,10 @@ const rubyInstallerVersions = __webpack_require__(223).versions
 
 const drive = common.drive
 
-// needed for 2.1, 2.2, 2.3, and mswin, cert file used by Git for Windows
+// needed for 2.0-2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
-// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.1, 2.2 and 2.3
+// location & path for old RubyInstaller DevKit (MSYS), Ruby 2.0-2.3
 const msys = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys}\\mingw\\bin`, `${msys}\\bin`]
 
@@ -27822,7 +27822,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
 async function setupMingw(version) {
   core.exportVariable('MAKE', 'make.exe')
 
-  if (version.match(/^2\.[123]/)) {
+  if (version.match(/^2\.[0123]/)) {
     core.exportVariable('SSL_CERT_FILE', certFile)
     await common.measure('Installing MSYS', async () => installMSYS(version))
     return msysPathEntries
@@ -27831,7 +27831,7 @@ async function setupMingw(version) {
   }
 }
 
-// Ruby 2.1, 2.2 and 2.3
+// Ruby 2.0, 2.1, 2.2 and 2.3
 async function installMSYS(version) {
   const url = 'https://github.com/oneclick/rubyinstaller/releases/download/devkit-4.7.2/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'
   const downloadPath = await tc.downloadTool(url)
@@ -28202,6 +28202,7 @@ exports.debug = debug; // for test
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "versions", function() { return versions; });
 const versions = {
+  "2.0.0": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.0.0-p648/ruby-2.0.0-p648-x64-mingw32.7z",
   "2.1.9": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.1.9/ruby-2.1.9-x64-mingw32.7z",
   "2.2.6": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.2.6/ruby-2.2.6-x64-mingw32.7z",
   "2.3.0": "https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.0/ruby-2.3.0-x64-mingw32.7z",
@@ -45354,6 +45355,7 @@ __webpack_require__.r(__webpack_exports__);
 function getVersions(platform) {
   const versions = {
     "ruby": [
+      "2.0.0-p648",
       "2.1.9",
       "2.2.10",
       "2.3.0", "2.3.1", "2.3.2", "2.3.3", "2.3.4", "2.3.5", "2.3.6", "2.3.7", "2.3.8",
