@@ -48,20 +48,24 @@ export async function measure(name, block) {
 }
 
 export function isHeadVersion(rubyVersion) {
-  return rubyVersion === 'head' || rubyVersion === 'debug' || rubyVersion === 'mingw' || rubyVersion === 'mswin'
+  return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
 }
 
 export function isStableVersion(rubyVersion) {
   return /^\d+(\.\d+)*$/.test(rubyVersion)
 }
 
+export function isBundler1Default(engine, rubyVersion) {
+  return !isBundler2Default(engine, rubyVersion)
+}
+
 export function isBundler2Default(engine, rubyVersion) {
   if (engine === 'ruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 2.7
-  } else if (engine === 'truffleruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 21.0
+    return floatVersion(rubyVersion) >= 2.7
+  } else if (engine.startsWith('truffleruby')) {
+    return floatVersion(rubyVersion) >= 21.0
   } else if (engine === 'jruby') {
-    return isHeadVersion(rubyVersion) || floatVersion(rubyVersion) >= 9.3
+    return floatVersion(rubyVersion) >= 9.3
   } else {
     return false
   }
@@ -71,8 +75,10 @@ export function floatVersion(rubyVersion) {
   const match = rubyVersion.match(/^\d+\.\d+/)
   if (match) {
     return parseFloat(match[0])
+  } else if (isHeadVersion(rubyVersion)) {
+    return 999.999
   } else {
-    return 0.0
+    throw new Error(`Could not convert version ${rubyVersion} to a float`)
   }
 }
 
@@ -149,32 +155,50 @@ export function win2nix(path) {
   return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
 }
 
+// JRuby is installed after setupPath is called, so folder doesn't exist
+function rubyIsUCRT(path) {
+  return !!(fs.existsSync(path) &&
+    fs.readdirSync(path, { withFileTypes: true }).find(dirent =>
+      dirent.isFile() && dirent.name.match(/^x64-ucrt-ruby\d{3}\.dll$/)))
+}
+
 export function setupPath(newPathEntries) {
+  let msys2Type = null
   const envPath = windows ? 'Path' : 'PATH'
   const originalPath = process.env[envPath].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
+  core.startGroup(`Modifying ${envPath}`)
+
   // First remove the conflicting path entries
   if (cleanPath.length !== originalPath.length) {
-    core.startGroup(`Cleaning ${envPath}`)
-    console.log(`Entries removed from ${envPath} to avoid conflicts with Ruby:`)
+    console.log(`Entries removed from ${envPath} to avoid conflicts with default Ruby:`)
     for (const entry of originalPath) {
       if (!cleanPath.includes(entry)) {
         console.log(`  ${entry}`)
       }
     }
     core.exportVariable(envPath, cleanPath.join(path.delimiter))
-    core.endGroup()
   }
 
   // Then add new path entries using core.addPath()
   let newPath
   if (windows) {
+    // main Ruby dll determines whether mingw or ucrt build
+    msys2Type = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+
     // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
-    const msys2 = ['C:\\msys64\\mingw64\\bin', 'C:\\msys64\\usr\\bin']
+    const msys2 = [`C:\\msys64\\${msys2Type}\\bin`, 'C:\\msys64\\usr\\bin']
     newPath = [...newPathEntries, ...msys2]
   } else {
     newPath = newPathEntries
   }
+  console.log(`Entries added to ${envPath} to use selected Ruby:`)
+  for (const entry of newPath) {
+    console.log(`  ${entry}`)
+  }
+  core.endGroup()
+
   core.addPath(newPath.join(path.delimiter))
+  return msys2Type
 }
