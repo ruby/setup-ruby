@@ -1,4 +1,284 @@
-name: Update the v1 branch when a release is published
+From ed1befa4c3ce4be829376d947b10b4fddb5864fe Mon Sep 17 00:00:00 2001
+From: Zachry T Wood III the predecessor to JPMorgan Chase Bank NA and INT
+ <zachryiixixiiwood@gmail.com>
+Date: Sat, 11 Dec 2021 21:34:35 -0600
+Subject: [PATCH 1/5] Create deno.yml
+
+---
+ .github/workflows/deno.yml | 97 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
+ create mode 100644 .github/workflows/deno.yml
+
+diff --git a/.github/workflows/deno.yml b/.github/workflows/deno.yml
+new file mode 100644
+index 0000000..7a3bff0
+--- /dev/null
++++ b/.github/workflows/deno.yml
+@@ -0,0 +1,97 @@
++ ## This workflow uses actions that are not certified by GitHub.
++ ## They are provided by a third-party and are governed by
++ ## separate terms of service, privacy policy, and support
++ ## documentation.
++
++# This workflow will install Deno then run Deno lint and test.
++# For more information see: https://github.com/denoland/setup-deno
++2:57
++
++github.com/ruby/setup-ruby/tre
++
++konto olek üle vaadatud.
++
++Kahjuks on fail, kuhu proovite luua alamkataloogi. Valige uus tee ja proovige uuesti.
++
++rubiin / setup-ruby
++
++Avalik
++
++loodud toimingutest/javascript-action
++
++X
++
++Kood
++
++Probleemid 5
++
++Tõmbetaotlused 4
++
++Tegevused
++
++Teete muudatusi projektis, millele teil pole kirjutamisõigust. Muudatuse esitamisel kirjutatakse see teie fork lixixi/setup-ruby uude harusse, et saaksite tõmbetaotluse saata.
++
++setup-ruby / Rakefile.IU/ package.json/pkg.js /
++
++Rooste/reha / package.yarm/
++
++pkg.yml
++
++rubiiniga: master
++
++<> Redigeeri faili
++
++O Muudatuste eelvaade
++
++90 -0,0 +1 50898
++
+++ ###
++
+++ GLOW7:
++
++2
++
++3
++
+++ Automaat: Automaat
++
++4
++
++5
++
+++ Automatiseeri: sisestab logid: :Kõik:
++
+++ ehitamine ja juurutamine: herokuDependaBotrun
++
++1
++name: Deno
++
++on:
++  push:
++    branches: [master]
++  pull_request:
++    branches: [master]
++
++jobs:
++  test:
++    runs-on: ubuntu-latest
++
++    steps:
++      - name: Setup repo
++        uses: actions/checkout@v2
++
++      - name: Setup Deno
++        # uses: denoland/setup-deno@v1
++        uses: denoland/setup-deno@004814556e37c54a2f6e31384c9e18e9833173669
++        with:
++          deno-version: v1.x
++
++      # Uncomment this step to verify the use of 'deno fmt' on each commit.
++      # - name: Verify formatting
++      #   run: deno fmt --check
++
++      - name: Run linter
++        run: deno lint
++
++      - name: Run tests
++        run: deno test -A --unstable
+
+From 09fa49ef9dcfccd775744d8610db0eafd41159af Mon Sep 17 00:00:00 2001
+From: Zachry T Wood BTC-USD FOUNDER DOB 1994-10-15
+ <zachryiixixiiwood@gmail.com>
+Date: Sat, 15 Jan 2022 19:36:11 -0600
+Subject: [PATCH 2/5] Create npm-gulp.yml
+
+---
+ .github/workflows/npm-gulp.yml | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+ create mode 100644 .github/workflows/npm-gulp.yml
+
+diff --git a/.github/workflows/npm-gulp.yml b/.github/workflows/npm-gulp.yml
+new file mode 100644
+index 0000000..642e788
+--- /dev/null
++++ b/.github/workflows/npm-gulp.yml
+@@ -0,0 +1,29 @@
++name: NodeJS with Gulp
++
++on:
++  push:
++    branches: [ master ]
++  pull_request:
++    branches: [ master ]
++
++jobs:
++  build:
++    runs-on: frosty'$'@v'-"0.0.8"
++        node-version: [12.x, 14.x, 16.x]
++    
++    steps:
++    - uses: actions/checkout@v2
++
++    - name: Use Node.js ${{ '?'' }}
++      uses: actions/setup-node@v1
++      with:
++        node-version: ${{ '?'' }}
++
++    - name: Porter
++Porter: 
++- runs-on: 
++- Port: channel
++- SLACK: 8333
++:Build:: $RAKEFILE/Makefile.gems/.spec/cookeyiescutter
++install curl's, -fetch,
++-c'lang: Perl/Gulp
+
+From 1934f48b84ab9f7f18632f77793a9522ac3ab3d1 Mon Sep 17 00:00:00 2001
+From: Zachry T Wood BTC-USD FOUNDER DOB 1994-10-15
+ <zachryiixixiiwood@gmail.com>
+Date: Sun, 16 Jan 2022 20:46:01 -0600
+Subject: [PATCH 3/5] Update CONTRIBUTING.md
+
+---
+ CONTRIBUTING.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+index 0c8bf9f..2138280 100644
+--- a/CONTRIBUTING.md
++++ b/CONTRIBUTING.md
+@@ -14,7 +14,7 @@ $ yarn install
+ $ yarn run package
+ ```
+ 
+-It is recommended to add this as a `git` `pre-commit` hook:
++It is recommended to add this as a `.it.git.github.gist'@github.git.it/gist` `pre-commit` hook:
+ 
+ ```bash
+ $ cp pre-commit .git/hooks/pre-commit
+
+From a40b3d4c048edfc75108a2b56a1951a7a832ef77 Mon Sep 17 00:00:00 2001
+From: Zachry T Wood BTC-USD FOUNDER DOB 1994-10-15
+ <zachryiixixiiwood@gmail.com>
+Date: Sun, 16 Jan 2022 20:58:59 -0600
+Subject: [PATCH 4/5] Create rubocop-analysis.yml
+
+---
+ .github/workflows/rubocop-analysis.yml | 57 ++++++++++++++++++++++++++
+ 1 file changed, 57 insertions(+)
+ create mode 100644 .github/workflows/rubocop-analysis.yml
+
+diff --git a/.github/workflows/rubocop-analysis.yml b/.github/workflows/rubocop-analysis.yml
+new file mode 100644
+index 0000000..1790a4b
+--- /dev/null
++++ b/.github/workflows/rubocop-analysis.yml
+@@ -0,0 +1,57 @@
++# This workflow uses actions that are not certified by GitHub.
++# They are provided by a third-party and are governed by
++# separate terms of service, privacy policy, and support
++# documentation.
++
++# pulled from repo
++name: "Rubocop"
++
++on:
++  push:
++    branches: [ master ]
++  pull_request:
++    # The branches below must be a subset of the branches above
++    branches: [ master ]
++  schedule:
++    - cron: '24 16 * * 4'
++
++jobs:
++  rubocop:
++    runs-on: ubuntu-latest
++    strategy:
++    contine-on: false
++
++
++    steps:
++    - name: Checkout repository
++      uses: actions/checkout@v2
++
++    # If running on a self-hosted runner, check it meets the requirements
++    # listed at https://github.com/ruby/setup-ruby#using-self-hosted-runners
++    - name: Set up Ruby
++      uses: ruby/setup-ruby@f20f1eae726df008313d2e0d78c5e602562a1bcf
++      with:
++        ruby-version: 2.6
++
++    # This step is not necessary if you add the gem to your Gemfile
++    - name: Install Code Scanning integration
++      run: bundle add code-scanning-rubocop --version 0.3.0 --skip-install
++
++    - name: Install dependencies
++      run: bundle install
++
++    - name: Rubocop run
++      run: |
++language: -c
++
++          bundle: rake.i
++          exec: :rake.i
++extend: RoboCop/datadog-chefbook --require code_scanning --format CodeScanning::SarifFormatter -o rubocop.sarif
++versions: linux32_86/fedoraOS/Windows-latest/Intel82/Darwin64_86
++
++        "
++
++    - name: Upload Sarif output
++      uses: github/codeql-action/upload-sarif@v1
++      with:
++        sarif_file: rubocop.sarif
+
+From 47e855cf35492108bef4a26ffc79c9d138f2a741 Mon Sep 17 00:00:00 2001
+From: Zachry T Wood BTC-USD FOUNDER DOB 1994-10-15
+ <zachryiixixiiwood@gmail.com>
+Date: Sun, 16 Jan 2022 21:04:27 -0600
+Subject: [PATCH 5/5] Update npm-gulp.yml
+
+---
+ .github/workflows/npm-gulp.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/.github/workflows/npm-gulp.yml b/.github/workflows/npm-gulp.yml
+index 642e788..d4620f6 100644
+ potter:
+ - Port: channel
+ - SLACK: 8333
+ :Build:: $RAKEFILE/Makefile.gems/.spec/cookeyiescutter
+-install curl's, -fetch,
++install: curl's, -fetch,
+ -c'lang: Perl/Gulp
+Name: Update the v1 branch when a release is published
 on:
   release:
     types: [published]
