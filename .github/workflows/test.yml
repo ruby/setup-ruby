@@ -112,6 +112,28 @@ jobs:
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
       run: gem install sassc
 
+  testLatestRubygemsVersion:
+    name: "Test rubygems input set to latest upgrades the default RubyGems version"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./
+      with:
+        ruby-version: 2.6
+        rubygems: latest
+    - run: ruby -e "exit(Gem.rubygems_version > Gem::Version.new('3.0.3'))"
+
+  testFixedRubygemsVersion:
+    name: "Test rubygems input set to a fixed version upgrades RubyGems to that versoin"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./
+      with:
+        ruby-version: 2.6
+        rubygems: 3.3.5
+    - run: gem --version | grep -F "3.3.5"
+
   testExactBundlerVersion:
     name: "Test with an exact Bundler version"
     runs-on: ubuntu-latest

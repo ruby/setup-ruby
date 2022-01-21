@@ -58955,6 +58955,29 @@ function getLatestHeadBuildURL(platform, engine, version) {
 
 /***/ }),
 
+/***/ 160:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "rubygemsUpdate": () => (/* binding */ rubygemsUpdate)
+/* harmony export */ });
+const path = __nccwpck_require__(5622)
+const exec = __nccwpck_require__(1514)
+
+async function rubygemsUpdate(rubygemsVersionInput, rubyPrefix) {
+  const gem = path.join(rubyPrefix, 'bin', 'gem')
+  const rubygemsVersion = (rubygemsVersionInput === 'latest') ? [] : [rubygemsVersionInput]
+
+  await exec.exec(gem, ['update', '--system', ...rubygemsVersion])
+
+  return true
+}
+
+
+/***/ }),
+
 /***/ 7223:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
@@ -59566,12 +59589,14 @@ const fs = __nccwpck_require__(5747)
 const path = __nccwpck_require__(5622)
 const core = __nccwpck_require__(2186)
 const common = __nccwpck_require__(4717)
+const rubygems = __nccwpck_require__(160)
 const bundler = __nccwpck_require__(1641)
 
 const windows = common.windows
 
 const inputDefaults = {
   'ruby-version': 'default',
+  'rubygems': 'default',
   'bundler': 'default',
   'bundler-cache': 'true',
   'working-directory': '.',
@@ -59622,6 +59647,11 @@ async function setupRuby(options = {}) {
   }
 
   const rubyPrefix = await installer.install(platform, engine, version)
+
+  if (inputs['rubygems'] !== 'default') {
+    await common.measure('Updating RubyGems', async () =>
+      rubygems.rubygemsUpdate(inputs['rubygems'], rubyPrefix))
+  }
 
   // When setup-ruby is used by other actions, this allows code in them to run
   // before 'bundle install'.  Installed dependencies may require additional
