@@ -9,6 +9,13 @@ inputs:
     description: 'Engine and version to use, see the syntax in the README. Reads from .ruby-version or .tool-versions if unset.'
     required: false
     default: 'default'
+  rubygems:
+    description: |
+      The version of RubyGems to use. Either 'default', 'latest', or a version number (e.g., 3.3.5).
+      For 'default', no action is taken and the version of RubyGems that comes with Ruby by default is used.
+      For 'latest', `gem update --system` is run to update to the latest RubyGems version.
+      Similarly, if a version number is given, `gem update --system <version>` is run to update to that version of RubyGems.
+      Defaults to 'default'.
   bundler:
     description: |
       The version of Bundler to install. Either 'none', 'latest', 'Gemfile.lock', or a version number (e.g., 1, 2, 2.1.4).
