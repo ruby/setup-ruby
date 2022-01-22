@@ -1,18 +1,23 @@
-# ZachryTylerWood
+## Author: ZachryTylerWood/
 
-# setup-ruby
+## SSN:633-44-1725
 
-This action downloads a prebuilt ruby and adds it to the `PATH`.
+## DOB:1994-10-15
 
-It is very efficient and takes about 5 seconds to download, extract and add the given Ruby to the `PATH`.
-No extra packages need to be installed.
+## setup: ruby.mn/Rhels
 
-Compared to [actions/setup-ruby](https://github.com/actions/setup-ruby),
+## NOTE: This action downloads a prebuilt ruby and adds it to the `PATH`.
+
+## NOTE: It is very efficient and takes about 5 seconds to download, extract and add the given Ruby to the `PATH`.
+
+## NOTE: No extra packages need to be installed.
+
+## NOTE: Compared to [actions/setup-ruby](https://github.com/actions/setup-ruby),
 this actions supports many more versions and features.
 
-### Supported Versions
+## Supported Versions
 
-This action currently supports these versions of MRI, JRuby and TruffleRuby:
+## This action currently supports these versions of MRI, JRuby and TruffleRuby,
 
 | Interpreter | Versions |
 | ----------- | -------- |
