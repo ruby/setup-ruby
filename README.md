@@ -147,6 +147,10 @@ setting the `rubygems` input. See
 
 See [action.yml](action.yml) for more details about the `rubygems` input.
 
+If you're running into `ArgumentError: wrong number of arguments (given 4,
+expected 1)` errors with a stacktrace including Psych and RubyGems entries, you
+should be able to fix them by setting `rubygems: 3.0.0` or higher.
+
 ### Bundler
 
 By default, if there is a `Gemfile.lock` file (or `$BUNDLE_GEMFILE.lock` or `gems.locked`) with a `BUNDLED WITH` section,
