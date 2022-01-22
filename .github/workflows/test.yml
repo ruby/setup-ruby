@@ -123,16 +123,27 @@ jobs:
         rubygems: latest
     - run: ruby -e "exit(Gem.rubygems_version > Gem::Version.new('3.0.3'))"
 
-  testFixedRubygemsVersion:
-    name: "Test rubygems input set to a fixed version upgrades RubyGems to that versoin"
+  testFixedRubygemsVersionUpgrades:
+    name: "Test rubygems input set to a fixed version upgrades RubyGems to that version if the default is older"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: ./
       with:
         ruby-version: 2.6
-        rubygems: 3.3.5
-    - run: gem --version | grep -F "3.3.5"
+        rubygems: 3.2.3
+    - run: gem --version | grep -F "3.2.3"
+
+  testFixedRubygemsVersionNoop:
+    name: "Test rubygems input set to a fixed version noops if the default is newer"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./
+      with:
+        ruby-version: 3.1
+        rubygems: 3.2.3
+    - run: gem --version | grep -F "3.3.3"
 
   testExactBundlerVersion:
     name: "Test with an exact Bundler version"
