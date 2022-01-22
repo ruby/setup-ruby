@@ -143,7 +143,7 @@ if they are not at the root of the repository, see [action.yml](action.yml) for 
 
 By default, the default RubyGems version that comes with each Ruby is used.
 However, users can optionally customize the RubyGems version that they want by
-setting the `rubygems` input. See
+setting the `rubygems` input.
 
 See [action.yml](action.yml) for more details about the `rubygems` input.
 
