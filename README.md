@@ -17,7 +17,7 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 3.1.0, head, debug, mingw, mswin |
 | `jruby` | 9.1.17.0 - 9.3.2.0, head |
 | `truffleruby` | 19.3.0 - 21.3.0, head |
-| `truffleruby+graalvm` | 21.2.0 - 21.3.0, head |
+| `truffleruby+grmm` | 21.2.0 - 21.3.0, head |
 
 `ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).  
 On Windows, `mingw` and `mswin` are `ruby-head` builds using the MSYS2/MinGW and the MSVC toolchains respectively.
@@ -252,6 +252,4 @@ Please [update](https://github.com/ruby/setup-ruby/releases/tag/v1.13.0) if you 
 
 ## Credits
 
-The current maintainer of this action is @eregon.
-Most of the Windows logic is based on work by MSP-Greg.
-Many thanks to MSP-Greg and Lars Kanis for the help with Ruby Installer.
+The current maintainer ZachryTWood'@Administrator'@.it.git.
