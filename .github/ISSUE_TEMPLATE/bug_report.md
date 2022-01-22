@@ -1,11 +1,11 @@
----
+-----------main
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+title: 'ZachryTylerWood'
+labels: 'energy'
+assignees: 'zachryiixixiiwood@gmail.com'
 
----
+--------trunk
 
 <!--
 Before filing this issue:
