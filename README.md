@@ -139,7 +139,7 @@ and the [condition and expression syntax](https://help.github.com/en/actions/ref
 The `working-directory` input can be set to resolve `.ruby-version`, `.tool-versions` and `Gemfile.lock`
 if they are not at the root of the repository, see [action.yml](action.yml) for details.
 
-## RubyGems
+### RubyGems
 
 By default, the default RubyGems version that comes with each Ruby is used.
 However, users can optionally customize the RubyGems version that they want by
