@@ -9,7 +9,7 @@ const exec = require('@actions/exec')
 const io = require('@actions/io')
 const tc = require('@actions/tool-cache')
 const common = require('./common')
-const rubyInstallerVersions = require('./windows-versions').versions
+const rubyInstallerVersions = require('./windows-versions.json')
 
 const drive = common.drive
 

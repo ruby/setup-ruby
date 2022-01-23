@@ -1,5 +1,6 @@
-hash = File.read('ruby-builder-versions.js')[/\bversions = {[^}]+}/]
-versions = eval hash
+require 'json'
+hash = File.read('ruby-builder-versions.json')
+versions = JSON.load(hash).transform_keys(&:to_sym)
 
 by_minor = versions[:ruby].group_by { |v| v[/^\d\.\d/] }
 
