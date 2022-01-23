@@ -59514,6 +59514,7 @@ const os = __nccwpck_require__(2087)
 const fs = __nccwpck_require__(5747)
 const path = __nccwpck_require__(5622)
 const core = __nccwpck_require__(2186)
+const exec = __nccwpck_require__(1514)
 const common = __nccwpck_require__(4717)
 const rubygems = __nccwpck_require__(160)
 const bundler = __nccwpck_require__(1641)
@@ -59573,6 +59574,9 @@ async function setupRuby(options = {}) {
   }
 
   const rubyPrefix = await installer.install(platform, engine, version)
+
+  await common.measure('Print Ruby version', async () =>
+    await exec.exec('ruby', ['--version']))
 
   if (inputs['rubygems'] !== 'default') {
     await common.measure('Updating RubyGems', async () =>

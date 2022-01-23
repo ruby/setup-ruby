@@ -2,6 +2,7 @@ const os = require('os')
 const fs = require('fs')
 const path = require('path')
 const core = require('@actions/core')
+const exec = require('@actions/exec')
 const common = require('./common')
 const rubygems = require('./rubygems')
 const bundler = require('./bundler')
@@ -61,6 +62,9 @@ export async function setupRuby(options = {}) {
   }
 
   const rubyPrefix = await installer.install(platform, engine, version)
+
+  await common.measure('Print Ruby version', async () =>
+    await exec.exec('ruby', ['--version']))
 
   if (inputs['rubygems'] !== 'default') {
     await common.measure('Updating RubyGems', async () =>
