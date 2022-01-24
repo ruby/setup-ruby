@@ -5,10 +5,10 @@ gem "rake"
 gem "path"
 gem "json", "2.2.0"
 ░░ Support: https://www.debian.org/support
-░░
-░░ A start job for unit mycodo.service has begun execution.
-░░
-░░ The job identifier is 3209.
+░░BEGEN:
+GLOW7:
+Python: -pillow -pHp
+-ppip install: -mvn -$ cd install ~v py.read
 Jan 20 20:04:05 pigrow python[5661]: /var/mycodo-root/env/lib/python3.9/site-packages/flask_marshmallow/__init__.py:26: UserWarning:>
 Jan 20 20:04:05 pigrow python[5661]:   warnings.warn(
 Jan 20 20:04:05 pigrow python[5661]: Traceback (most recent call last):
@@ -30,10 +30,10 @@ Jan 20 20:04:05 pigrow systemd[1]: mycodo.service: Control process exited, code=
 ░░ Defined-By: systemd
 ░░ Support: https://www.debian.org/support
 ░░
-░░ An ExecStart= process belonging to unit mycodo.service has exited.
+░░ An ExecStart= process belonging to unit mycodo.service has exited
 ░░
 ░░ The process' exit code is 'exited' and its exit status is 1.
-Jan 20 20:04:05 pigrow systemd[1]: mycodo.service: Failed with result 'exit-code'.
+Jan 20 20:04:05 pigrow systemd[1]: mycodo.service: Failed with result 
 ░░ Subject: Unit failed
 ░░ Defined-By: systemd
 ░░ Support: https://www.debian.org/support
