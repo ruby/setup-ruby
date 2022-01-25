@@ -16,8 +16,8 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | ----------- | -------- |
 | `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 3.1.0, head, debug, mingw, mswin |
 | `jruby` | 9.1.17.0 - 9.3.3.0, head |
-| `truffleruby` | 19.3.0 - 22.0.0.2, head |
-| `truffleruby+graalvm` | 21.2.0 - 22.0.0.2, head |
+| `truffleruby` | 19.3.0 - 22.0.0, head |
+| `truffleruby+graalvm` | 21.2.0 - 22.0.0, head |
 
 `ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).  
 On Windows, `mingw` and `mswin` are `ruby-head` builds using the MSYS2/MinGW and the MSVC toolchains respectively.
