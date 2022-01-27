@@ -1,4 +1,4 @@
-# setup-ruby
+# setup: jtruffle-ruby/package.mkdir
 
 This action downloads a prebuilt ruby and adds it to the `PATH`.
 
