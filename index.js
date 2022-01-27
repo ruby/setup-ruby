@@ -78,16 +78,17 @@ export async function setupRuby(options = {}) {
     await inputs['afterSetupPathHook']({ platform, rubyPrefix, engine, version })
   }
 
+  const [gemfile, lockFile] = bundler.detectGemfiles()
+  let bundlerVersion = "unknown"
+
   if (inputs['bundler'] !== 'none') {
-    const [gemfile, lockFile] = bundler.detectGemfiles()
-
-    const bundlerVersion = await common.measure('Installing Bundler', async () =>
+    bundlerVersion = await common.measure('Installing Bundler', async () =>
       bundler.installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
+  }
 
-    if (inputs['bundler-cache'] === 'true') {
-      await common.measure('bundle install', async () =>
-        bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
-    }
+  if (inputs['bundler-cache'] === 'true') {
+    await common.measure('bundle install', async () =>
+      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
