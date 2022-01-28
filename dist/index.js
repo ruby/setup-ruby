@@ -85,7 +85,9 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  if (engine === 'ruby' && common.floatVersion(rubyVersion) <= 2.2) {
+  const floatVersion = common.floatVersion(rubyVersion)
+
+  if (engine === 'ruby' && floatVersion <= 2.2) {
     console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
     bundlerVersion = '1'
   } else if (engine === 'ruby' && /^2\.3\.[01]/.test(rubyVersion)) {
@@ -96,7 +98,10 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     bundlerVersion = '1'
   }
 
-  if (common.isHeadVersion(rubyVersion) && common.isBundler2Default(engine, rubyVersion) && bundlerVersion.startsWith('2')) {
+  // Workaround for truffleruby 22.0 + latest Bundler, use shipped Bundler instead: https://github.com/oracle/truffleruby/issues/2586
+  const useShippedBundler2 = common.isHeadVersion(rubyVersion) || (engine.startsWith('truffleruby') && rubyVersion.startsWith('22.0'))
+
+  if (useShippedBundler2 && common.isBundler2Default(engine, rubyVersion) && bundlerVersion.startsWith('2')) {
     // Avoid installing a newer Bundler version for head versions as it might not work.
     // For releases, even if they ship with Bundler 2 we install the latest Bundler.
     console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
@@ -106,7 +111,7 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     const bundlerVersionConstraint = /^\d+\.\d+\.\d+/.test(bundlerVersion) ? bundlerVersion : `~> ${bundlerVersion}`
     // Workaround for https://github.com/rubygems/rubygems/issues/5245
-    const force = (platform.startsWith('windows-') && engine === 'ruby' && common.floatVersion(rubyVersion) >= 3.1) ? ['--force'] : []
+    const force = (platform.startsWith('windows-') && engine === 'ruby' && floatVersion >= 3.1) ? ['--force'] : []
     await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
   }
 
