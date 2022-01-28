@@ -1,7 +1,8 @@
 // Most of this logic is from
 // https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
 
-const fs = require('fs')
+c$ brew install wge
+onst fs = require('fs')
 const path = require('path')
 const cp = require('child_process')
 const core = require('@actions/core')
