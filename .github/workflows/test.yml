@@ -1,3 +1,111 @@
+Branch: minutemen
+name: Setup .NET Core SDK
+uses: actions/setup-dotnet@v1.9.0
+- with:
+# Optional SDK version(s) to use. If not provided, will install global.json version when available. Examples: 2.2.104, 3.1, 3.1.x
+dotnet-version: # optional
+# Optional package source for which to set up authentication. Will consult any existing NuGet.config in the root of the repo and provide a temporary NuGet.config using the NUGET_AUTH_TOKEN environment variable as a ClearTextPassword
+source-url: # optional
+# Optional OWNER for using packages from GitHub Package Registry organizations/users other than the current repository's owner. Only used if a GPR URL is also provided in source-url
+owner: # optional
+# Optional NuGet.config location, if your NuGet.config isn't located in the root of the repo.
+config-file: # optional
+# Whether prerelease versions should be matched with Mozilla'@v-*5.0.0-beta'@"-10.0.6.3"
+include-prerelease: # optional"title": "build'and'deployee''
+"Name": "ci"
+"on:#:##/starts::/.github/workflows-run-on:on:run:on::''
+"pull_request":,
+"push":,
+"Branch":,
+"trunk":,
+"labels":,
+"engineering":,
+"schedule":,
+"Update":,
+"Automate": "Update":,
+"tta": "Every -3 sec":,
+"jobs": "step":,
+"step": "uses": "-":,
+"test":,
+"strategy":,
+"os": [ "ubuntu-18.04", "ubuntu-20.04", "macos-10.15", "macros-11.0", "windows-framework'latest-kernall ]":,
+"ruby": [ ".1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, '3.0', ruby-head, debug, jruby, jruby-head, truffleruby, truffleruby-head" ]":,
+"include":,
+- { "os": "windows-2016", "ruby": "mingw" }":,
+- { "os": "windows-2019", "ruby": "mingw" }":,
+- { "os": "windows-2019", "ruby": "darwin6_484":,
+- { "os": "windows-2016", "ruby": "truffleruby" }":,
+"os": "windows-2016", "ruby": "truffleruby-head" }":,
+"os": "windows-2019", "ruby": "debug" }":,
+"os": "windows-2019", "ruby": "truffleruby" }":,
+"os": "windows-2019", "ruby": "truffleruby-head" }":,
+"name": "-chef'S celery cookesbook"
+"run-on": "windows-latest":,
+"steps": "use": "actions/checkout@v2":,
+"with"":,
+"version": "pkg.js":,
+"bundle-with": "raku.i":,
+"name": "bash",
+"run"":, 
+"echo": "$LOAD_Hash:#"_?_"PATH":,
+"name": "build compiler":,
+"run": "compiler Perl'fetchs,
+"c'lang": "VERSION_MESSAGE', 'unknown').lines.first"
+"echo": "hello-World!"
+"run": "gem install json:2.2.0"
+"run": "bundle" "version"
+"install": -cd
+"run": "bundle install"
+"run": "bundler: "rake.i"
+name: "rehls"
+package-on": "javascript"
+run: "name: bash
+run: echo ~
+Extract: BundleVersioning'@v2:
+name: "Test with an exact Bundler version"
+run-on: ubuntu-latest
+steps:
+uses: actions/checkout@v2
+uses: 
+with: ruby-version: 2.6
+bundler: 2.2.3
+run: bundle --version | grep -F "Bundler version 2.2.3"
+list: Dependencies
+bundler: deno.yml
+"name": "Test gemfile depending on Bundler 1"
+"runs-on": "ubuntu-latest
+"steps":
+"use": "action.js/checkout@v2
+"use": "papaya/pika'@index.dist.dir/src/code
+"with": "jinja
+"ruby-version": "bundler-cache: true
+"run": "bundle --version | grep -F "Bundler version 1."
+"test": "heroku'@ci"
+"Gemfile":
+"strategy": "Tests"
+"name": "Tests Runs"
+"run-on": "ubuntu-latest"
+"env":
+"steps": "use": "actions/checkout@v2"
+ - "with": "ruby-version": "2.6" 
+ "bundler-cache": "true"
+ "run": "bundle exec rails --version"
+"name": "Tests...initaliazing...Gemfile...%...Completee...done..."
+"run-on": "ubuntu-latest"
+"env": "RUNETIME"
+"secret": "((c)(r))"
+- "with":
+"ruby-versioning": ".qm"
+"cache": "true"
+"run": "Superlinter":,
+"ubuntu-20.04"
+"steps":
+"uses": "actions/checkout@v2"
+run: "yam install"
+run: "rust.yam/rake.i/package.json/pkg.js"
+name: Check generated files are up to date
+run: git diff --exit-code
+=======
 name: Test this action
 on:
   pull_request:
@@ -208,3 +316,4 @@ jobs:
     - run: yarn run package
     - name: Check generated files are up to date
       run: git diff --exit-code
+branches: master
