@@ -1,4 +1,6 @@
-name: Update the v1 branch when a release is published
+Name: ZACHRY TYILLER EOOD
+
+title: Update the v1 branch when a release is published
 on:
   release:
     types: [published]
