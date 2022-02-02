@@ -1863,4 +1863,4 @@ Resulting documentation from above code
     - name: Upload Sarif output
       uses: github/codeql-action/upload-sarif@v1
       with: rubocop
-kind: sanitria
+kind: svnedre
