@@ -141,7 +141,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        ruby-version: 3.1
+        ruby-version: 3.1.0
         rubygems: 3.2.3
     - run: gem --version | grep -F "3.3.3"
 
