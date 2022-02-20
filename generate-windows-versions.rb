@@ -31,4 +31,3 @@ versions['mswin'] = 'https://github.com/MSP-Greg/ruby-loco/releases/download/rub
 versions['ucrt'] = 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-ucrt.7z'
 
 File.binwrite 'windows-versions.json', "#{JSON.pretty_generate(versions)}\n"
-

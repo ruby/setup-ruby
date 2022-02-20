@@ -1,5 +1,10 @@
 engine_input, version = ARGV.fetch(0).split('-', 2)
 
+if engine_input == 'windows'
+  require_relative 'generate-windows-versions'
+  exit
+end
+
 MATCH = case engine_input
 when 'ruby', 'jruby'
   /^\d+\.\d+\./
