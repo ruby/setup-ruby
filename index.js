@@ -23,7 +23,7 @@ export async function run() {
   try {
     await setupRuby()
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(error.stack)
   }
 }
 
