@@ -206,8 +206,7 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
 
   if (common.isHeadVersion(version)) {
     if (engine !== 'jruby') {
-      // CRuby dev versions do not change the ABI version when the ABI changes, so use the commit as the ABI version
-      let print_abi = engine === 'ruby' ? 'print RUBY_REVISION' : "print RbConfig::CONFIG['ruby_version']"
+      let print_abi = "print RbConfig::CONFIG['ruby_version']"
       let abi = ''
       await exec.exec('ruby', ['-e', print_abi], {
         silent: true,
