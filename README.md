@@ -39,7 +39,7 @@ The action works for all [GitHub-hosted runners](https://help.github.com/en/acti
 
 | Operating System | Recommended | Other Supported Versions |
 | ----------- | -------- | -------- |
-| Ubuntu  | `ubuntu-latest`  (= `ubuntu-20.04`) | `ubuntu-18.04`, `ubuntu-16.04` |
+| Ubuntu  | `ubuntu-latest`  (= `ubuntu-20.04`) | `ubuntu-18.04` |
 | macOS   | `macos-latest`   (= `macos-10.15`)  | `macos-11.0` |
 | Windows | `windows-latest` (= `windows-2019`) | `windows-2022` |
 
