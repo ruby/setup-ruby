@@ -65,8 +65,8 @@ export async function installBundler(bundlerVersionInput, lockFile, platform, ru
     bundlerVersion = '2'
   }
 
-  if (/^\d+/.test(bundlerVersion)) {
-    // OK
+  if (/^\d+(?:\.\d+){0,2}$/.test(bundlerVersion)) {
+    // OK - input is a 1, 2, or 3 part version number
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
@@ -95,9 +95,12 @@ export async function installBundler(bundlerVersionInput, lockFile, platform, ru
     console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
-    const bundlerVersionConstraint = /^\d+\.\d+\.\d+/.test(bundlerVersion) ? bundlerVersion : `~> ${bundlerVersion}`
     // Workaround for https://github.com/rubygems/rubygems/issues/5245
     const force = (platform.startsWith('windows-') && engine === 'ruby' && floatVersion >= 3.1) ? ['--force'] : []
+
+    const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
+    const bundlerVersionConstraint = versionParts === 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
+
     await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
   }
 
