@@ -145,6 +145,28 @@ jobs:
         rubygems: 3.2.3
     - run: gem --version | grep -F "3.3.3"
 
+  testMajorBundlerVersion:
+    name: "Test with a major Bundler version"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./
+      with:
+        ruby-version: 2.6
+        bundler: 2
+    - run: bundle --version | grep -P "Bundler version 2\.\d+\.\d+"
+
+  testMinorBundlerVersion:
+    name: "Test with a minor Bundler version"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./
+      with:
+        ruby-version: 2.6
+        bundler: 2.2
+    - run: bundle --version | grep -P "Bundler version 2\.2\.\d+"
+
   testExactBundlerVersion:
     name: "Test with an exact Bundler version"
     runs-on: ubuntu-latest
