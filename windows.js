@@ -1,5 +1,5 @@
-// Most of this logic is from
-// https://github.com/MSP-Greg/actions-ruby/blob/master/lib/main.js
+// 7z arguments
+//   -aoa overwrite existing, -bd disable progress indicator
 
 const fs = require('fs')
 const path = require('path')
@@ -13,8 +13,10 @@ const rubyInstallerVersions = require('./windows-versions.json')
 
 const drive = common.drive
 
-const msys2BasePath = 'C:\\msys64'
 const msys2GCCReleaseURI  = 'https://github.com/ruby/setup-msys2-gcc/releases/download'
+
+const msys2BasePath = process.env['GHCUP_MSYS2']
+const vcPkgBasePath = process.env['VCPKG_INSTALLATION_ROOT']
 
 // needed for Ruby 2.0-2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
@@ -81,6 +83,8 @@ export async function install(platform, engine, version) {
     await installGCCTools(msys2Type)
   }
 
+  if (version === 'mswin') { await installVCPkg() }
+
   const ridk = `${rubyPrefix}\\bin\\ridk.cmd`
   if (fs.existsSync(ridk)) {
     await common.measure('Adding ridk env variables', async () => addRidkEnv(ridk))
@@ -99,7 +103,6 @@ async function installGCCTools(type) {
   })
 
   await common.measure(`Extracting  ${type} build tools`, async () =>
-    // -aoa overwrite existing, -bd disable progress indicator
     exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${msys2BasePath}`], { silent: true }))
 }
 
@@ -117,7 +120,6 @@ async function installMSYS2Tools() {
   fs.rmSync(`${msys2BasePath}\\var\\lib\\pacman\\local`, { recursive: true, force: true })
 
   await common.measure(`Extracting  msys2 build tools`, async () =>
-    // -aoa overwrite existing, -bd disable progress indicator
     exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${msys2BasePath}`], { silent: true }))
 }
 
@@ -126,6 +128,18 @@ async function installMSYS2Tools() {
 export async function installJRubyTools() {
   await installMSYS2Tools()
   await installGCCTools('mingw64')
+}
+
+// Install vcpkg files needed to build mswin Ruby
+async function installVCPkg() {
+  const downloadPath = await common.measure(`Downloading mswin vcpkg packages`, async () => {
+    let url = `${msys2GCCReleaseURI}/msys2-gcc-pkgs/mswin.7z`
+    console.log(url)
+    return await tc.downloadTool(url)
+  })
+
+  await common.measure(`Extracting  mswin vcpkg packages`, async () =>
+    exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${vcPkgBasePath}`], { silent: true }))
 }
 
 async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
@@ -137,7 +151,7 @@ async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   })
 
   await common.measure('Extracting  Ruby', async () =>
-    // -bd disable progress indicator, -xr extract but exclude share\doc files
+    // -xr extract but exclude share\doc files
     exec.exec('7z', ['x', downloadPath, '-bd', `-xr!${base}\\share\\doc`, `-o${parentDir}`], { silent: true }))
 
   if (base !== path.basename(rubyPrefix)) {
@@ -184,17 +198,27 @@ async function installMSYS1(version) {
 async function setupMSWin() {
   core.exportVariable('MAKE', 'nmake.exe')
 
-  // All standard MSVC OpenSSL builds use C:\Program Files\Common Files\SSL
-  const certsDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
+  // Pre-installed OpenSSL use C:\Program Files\Common Files\SSL
+  let certsDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
   if (!fs.existsSync(certsDir)) {
-    fs.mkdirSync(certsDir)
+    fs.mkdirSync(certsDir, { recursive: true })
   }
 
   // cert.pem location is hard-coded by OpenSSL msvc builds
-  const cert = 'C:\\Program Files\\Common Files\\SSL\\cert.pem'
+  let cert = 'C:\\Program Files\\Common Files\\SSL\\cert.pem'
   if (!fs.existsSync(cert)) {
     fs.copyFileSync(certFile, cert)
   }
+
+  // vcpkg openssl uses packages\openssl_x64-windows\certs
+  certsDir = `${vcPkgBasePath}\\packages\\openssl_x64-windows\\certs`
+  if (!fs.existsSync(certsDir)) {
+    fs.mkdirSync(certsDir, { recursive: true })
+  }
+
+  // vcpkg openssl uses packages\openssl_x64-windows\cert.pem
+  cert = `${vcPkgBasePath}\\packages\\openssl_x64-windows\\cert.pem`
+  fs.copyFileSync(certFile, cert)
 
   return await common.measure('Setting up MSVC environment', async () => addVCVARSEnv())
 }
