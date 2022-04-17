@@ -414,7 +414,7 @@ function win2nix(path) {
 function rubyIsUCRT(path) {
   return !!(fs.existsSync(path) &&
     fs.readdirSync(path, { withFileTypes: true }).find(dirent =>
-      dirent.isFile() && dirent.name.match(/^x64-ucrt-ruby\d{3}\.dll$/)))
+      dirent.isFile() && dirent.name.match(/^x64-(ucrt|vcruntime\d{3})-ruby\d{3}\.dll$/)))
 }
 
 function setupPath(newPathEntries) {
