@@ -199,24 +199,17 @@ async function setupMSWin() {
  *   adds a convenience VCVARS environment variable
  *   this assumes a single Visual Studio version being available in the Windows images */
 export function addVCVARSEnv() {
-  let vcVars = ''
-  switch (virtualEnv) {
-    case 'windows-2016':
-      vcVars = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
-      break
-    case 'windows-2019':
-      vcVars = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
-      break
-    case 'windows-2022':
-      vcVars = '"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"'
-      break
-    default:
-      throw new Error(`Unknown Windows Image: ${virtualEnv}`)
+  let cmd = `pwsh.exe -command "Get-VSSetupInstance -All | Select-VSSetupInstance -Latest | Select-Object -ExpandProperty InstallationPath"`
+  let vcVars = `${cp.execSync(cmd).toString().trim()}\\VC\\Auxiliary\\Build\\vcvars64.bat`
+
+  if (!fs.existsSync(vcVars)) {
+    throw new Error(`Missing vcVars file: ${vcVars}`)
   }
   core.exportVariable('VCVARS', vcVars)
 
+  cmd = `cmd.exe /c ""${vcVars}" && set"`
+
   let newEnv = new Map()
-  let cmd = `cmd.exe /c "${vcVars} && set"`
   let newSet = cp.execSync(cmd).toString().trim().split(/\r?\n/)
   newSet = newSet.filter(line => /\S=\S/.test(line))
   newSet.forEach(s => {
