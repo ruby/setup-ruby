@@ -59921,7 +59921,7 @@ async function setupMSWin() {
  *   adds a convenience VCVARS environment variable
  *   this assumes a single Visual Studio version being available in the Windows images */
 function addVCVARSEnv() {
-  let cmd = `pwsh.exe -command "Get-VSSetupInstance -All | Select-VSSetupInstance -Latest | Select-Object -ExpandProperty InstallationPath"`
+  let cmd = 'vswhere -latest -property installationPath'
   let vcVars = `${cp.execSync(cmd).toString().trim()}\\VC\\Auxiliary\\Build\\vcvars64.bat`
 
   if (!fs.existsSync(vcVars)) {
