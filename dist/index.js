@@ -99,14 +99,19 @@ async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefi
   }
 
   // Workaround for truffleruby 22.0 + latest Bundler, use shipped Bundler instead: https://github.com/oracle/truffleruby/issues/2586
-  const useShippedBundler2 = common.isHeadVersion(rubyVersion) || (engine.startsWith('truffleruby') && rubyVersion.startsWith('22.0'))
+  const truffleruby22workaround = engine.startsWith('truffleruby') && rubyVersion.startsWith('22.0')
+  const useShippedBundler2 = common.isHeadVersion(rubyVersion) || truffleruby22workaround
 
   if (useShippedBundler2 && common.isBundler2Default(engine, rubyVersion) && bundlerVersion.startsWith('2')) {
     // Avoid installing a newer Bundler version for head versions as it might not work.
     // For releases, even if they ship with Bundler 2 we install the latest Bundler.
-    console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
+    if (truffleruby22workaround) {
+      console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion} (workaround for https://github.com/oracle/truffleruby/issues/2586 on truffleruby 22.0)`)
+    } else {
+      console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion} (head versions do not always support the latest Bundler release)`)
+    }
   } else if (engine.startsWith('truffleruby') && common.isBundler1Default(engine, rubyVersion) && bundlerVersion.startsWith('1')) {
-    console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
+    console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion} (required for truffleruby < 21.0)`)
   } else {
     const gem = path.join(rubyPrefix, 'bin', 'gem')
     // Workaround for https://github.com/rubygems/rubygems/issues/5245
