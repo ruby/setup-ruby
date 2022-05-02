@@ -113,7 +113,7 @@ jobs:
       run: gem install sassc
 
   testLatestRubygemsVersion:
-    name: "Test rubygems input set to latest upgrades the default RubyGems version"
+    name: "Test rubygems: latest upgrades the default RubyGems version"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -124,7 +124,7 @@ jobs:
     - run: ruby -e "exit(Gem.rubygems_version > Gem::Version.new('3.0.3'))"
 
   testFixedRubygemsVersionUpgrades:
-    name: "Test rubygems input set to a fixed version upgrades RubyGems to that version if the default is older"
+    name: "Test rubygems: version upgrades RubyGems to that version if the default is older"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -135,7 +135,7 @@ jobs:
     - run: gem --version | grep -F "3.2.3"
 
   testFixedRubygemsVersionNoop:
-    name: "Test rubygems input set to a fixed version noops if the default is newer"
+    name: "Test rubygems: version noops if the default is newer"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
