@@ -145,6 +145,29 @@ jobs:
         rubygems: 3.2.3
     - run: gem --version | grep -F "3.3.3"
 
+  testUseBundlerFromRubyGemsUpdate:
+    name: "Test rubygems: version uses the Bundler installed by the rubygems update"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          ruby-version: 2.2
+          rubygems: 2.7.11
+      - run: gem --version | grep -F "2.7.11"
+      - run: bundle --version | grep -F "1.16.6"
+
+  testFixedBundlerVersionForOldRuby:
+    name: "Test bundler: 1.x for old Ruby"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          ruby-version: 2.2
+          bundler: 1.16.6
+      - run: bundle --version | grep -F "1.16.6" # And not 1.17.x from ~> 1
+
   testMajorBundlerVersion:
     name: "Test with a major Bundler version"
     runs-on: ubuntu-latest
