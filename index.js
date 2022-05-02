@@ -13,7 +13,7 @@ const inputDefaults = {
   'ruby-version': 'default',
   'rubygems': 'default',
   'bundler': 'default',
-  'bundler-cache': 'true',
+  'bundler-cache': 'false',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
 }
