@@ -64,8 +64,13 @@ async function afterLockFile(lockFile, platform, engine, rubyVersion) {
   }
 }
 
-async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefix, engine, rubyVersion) {
+async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, platform, rubyPrefix, engine, rubyVersion) {
   let bundlerVersion = bundlerVersionInput
+
+  if (rubygemsInputSet && bundlerVersion === 'default') {
+    console.log('Using the Bundler installed by updating RubyGems')
+    return 'unknown'
+  }
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
     bundlerVersion = readBundledWithFromGemfileLock(lockFile)
@@ -60882,7 +60887,8 @@ async function setupRuby(options = {}) {
   await common.measure('Print Ruby version', async () =>
     await exec.exec('ruby', ['--version']))
 
-  if (inputs['rubygems'] !== 'default') {
+  const rubygemsInputSet = inputs['rubygems'] !== 'default'
+  if (rubygemsInputSet) {
     await common.measure('Updating RubyGems', async () =>
       rubygems.rubygemsUpdate(inputs['rubygems'], rubyPrefix))
   }
@@ -60895,11 +60901,11 @@ async function setupRuby(options = {}) {
   }
 
   const [gemfile, lockFile] = bundler.detectGemfiles()
-  let bundlerVersion = "unknown"
+  let bundlerVersion = 'unknown'
 
   if (inputs['bundler'] !== 'none') {
     bundlerVersion = await common.measure('Installing Bundler', async () =>
-      bundler.installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
+      bundler.installBundler(inputs['bundler'], rubygemsInputSet, lockFile, platform, rubyPrefix, engine, version))
   }
 
   if (inputs['bundler-cache'] === 'true') {

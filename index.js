@@ -66,7 +66,8 @@ export async function setupRuby(options = {}) {
   await common.measure('Print Ruby version', async () =>
     await exec.exec('ruby', ['--version']))
 
-  if (inputs['rubygems'] !== 'default') {
+  const rubygemsInputSet = inputs['rubygems'] !== 'default'
+  if (rubygemsInputSet) {
     await common.measure('Updating RubyGems', async () =>
       rubygems.rubygemsUpdate(inputs['rubygems'], rubyPrefix))
   }
@@ -79,11 +80,11 @@ export async function setupRuby(options = {}) {
   }
 
   const [gemfile, lockFile] = bundler.detectGemfiles()
-  let bundlerVersion = "unknown"
+  let bundlerVersion = 'unknown'
 
   if (inputs['bundler'] !== 'none') {
     bundlerVersion = await common.measure('Installing Bundler', async () =>
-      bundler.installBundler(inputs['bundler'], lockFile, platform, rubyPrefix, engine, version))
+      bundler.installBundler(inputs['bundler'], rubygemsInputSet, lockFile, platform, rubyPrefix, engine, version))
   }
 
   if (inputs['bundler-cache'] === 'true') {

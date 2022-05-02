@@ -50,8 +50,13 @@ async function afterLockFile(lockFile, platform, engine, rubyVersion) {
   }
 }
 
-export async function installBundler(bundlerVersionInput, lockFile, platform, rubyPrefix, engine, rubyVersion) {
+export async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, platform, rubyPrefix, engine, rubyVersion) {
   let bundlerVersion = bundlerVersionInput
+
+  if (rubygemsInputSet && bundlerVersion === 'default') {
+    console.log('Using the Bundler installed by updating RubyGems')
+    return 'unknown'
+  }
 
   if (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock') {
     bundlerVersion = readBundledWithFromGemfileLock(lockFile)
