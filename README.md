@@ -35,7 +35,7 @@ which means Ruby ≤ 2.4 is unmaintained and considered insecure.
 
 ### Supported Platforms
 
-The action works for all [GitHub-hosted runners](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners).
+The action works on these [GitHub-hosted runners](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners) virtual environments. Virtual environments not listed below are unsupported.
 
 | Operating System | Recommended | Other Supported Versions |
 | ----------- | -------- | -------- |
