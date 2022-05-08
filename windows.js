@@ -14,11 +14,12 @@ const rubyInstallerVersions = require('./windows-versions.json')
 const drive = common.drive
 
 const msys2BasePath = 'C:\\msys64'
+const msys2GCCReleaseURI  = 'https://github.com/ruby/setup-msys2-gcc/releases/download'
 
-// needed for 2.0-2.3, and mswin, cert file used by Git for Windows
+// needed for Ruby 2.0-2.3, and mswin, cert file used by Git for Windows
 const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 
-// location & path for old RubyInstaller DevKit (MSYS1), Ruby 2.0-2.3
+// location & path for old RubyInstaller DevKit (MSYS1), used with Ruby 2.0-2.3
 const msys1 = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys1}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys1}\\mingw\\bin`, `${msys1}\\bin`]
 
@@ -88,7 +89,7 @@ export async function install(platform, engine, version) {
 // and also install ucrt tools on earlier versions, which have msys2 and mingw tools preinstalled.
 async function installGCCTools(type) {
   const downloadPath = await common.measure(`Downloading ${type} build tools`, async () => {
-    let url = `https://github.com/MSP-Greg/setup-msys2-gcc/releases/download/msys2-gcc-pkgs/${type}.7z`
+    let url = `${msys2GCCReleaseURI}/msys2-gcc-pkgs/${type}.7z`
     console.log(url)
     return await tc.downloadTool(url)
   })
@@ -102,14 +103,14 @@ async function installGCCTools(type) {
 // A subset of the MSYS2 base-devel group
 async function installMSYS2Tools() {
   const downloadPath = await common.measure(`Downloading msys2 build tools`, async () => {
-    let url = `https://github.com/MSP-Greg/setup-msys2-gcc/releases/download/msys2-gcc-pkgs/msys2.7z`
+    let url = `${msys2GCCReleaseURI}/msys2-gcc-pkgs/msys2.7z`
     console.log(url)
     return await tc.downloadTool(url)
   })
 
   // need to remove all directories, since they may indicate old packages are installed,
   // otherwise, error of "error: duplicated database entry"
-  fs.rmdirSync(`${msys2BasePath}\\var\\lib\\pacman\\local`, { recursive: true, force: true })
+  fs.rmSync(`${msys2BasePath}\\var\\lib\\pacman\\local`, { recursive: true, force: true })
 
   await common.measure(`Extracting  msys2 build tools`, async () =>
     // -aoa overwrite existing, -bd disable progress indicator
