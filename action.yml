@@ -32,5 +32,5 @@ outputs:
   ruby-prefix:
     description: 'The prefix of the installed ruby'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
