@@ -69,7 +69,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6 # Not needed with a .ruby-version file
+        ruby-version: '3.0' # Not needed with a .ruby-version file
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bundle exec rake
 ```
@@ -88,7 +88,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: [2.6, 2.7, '3.0', 3.1, head, jruby, jruby-head, truffleruby, truffleruby-head]
+        ruby: ['2.7', '3.0', '3.1', head, jruby, jruby-head, truffleruby, truffleruby-head]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6
+          ruby-version: '3.0'
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - run: bundle exec rake
 ```
@@ -129,8 +129,8 @@ and the [condition and expression syntax](https://help.github.com/en/actions/ref
 ### Supported Version Syntax
 
 * engine-version like `ruby-2.6.5` and `truffleruby-19.3.0`
-* short version like `2.6`, automatically using the latest release matching that version (`2.6.5`)
-* version only like `2.6.5`, assumes MRI for the engine
+* short version like `'2.6'`, automatically using the latest release matching that version (`2.6.10`)
+* version only like `'2.6.5'`, assumes MRI for the engine
 * engine only like `truffleruby`, uses the latest stable release of that implementation
 * `.ruby-version` reads from the project's `.ruby-version` file
 * `.tool-versions` reads from the project's `.tool-versions` file

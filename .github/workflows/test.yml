@@ -16,11 +16,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11.0, windows-2019, windows-2022 ]
-        ruby: [ 1.9, '2.0', 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, '3.0', 3.1, ruby-head, jruby, jruby-head, truffleruby, truffleruby-head, truffleruby+graalvm, truffleruby+graalvm-head ]
+        ruby: [ '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', ruby-head, jruby, jruby-head, truffleruby, truffleruby-head, truffleruby+graalvm, truffleruby+graalvm-head ]
         include:
-        - { os: ubuntu-22.04, ruby: 3.1.0 }
-        - { os: ubuntu-22.04, ruby: 3.1 }
-        - { os: ubuntu-22.04, ruby: 3.2.0-preview1 }
+        - { os: ubuntu-22.04, ruby: '3.1.0' }
+        - { os: ubuntu-22.04, ruby: '3.1' }
+        - { os: ubuntu-22.04, ruby: '3.2.0-preview1' }
         - { os: ubuntu-22.04, ruby: ruby-head }
         - { os: windows-2019, ruby: mingw }
         - { os: windows-2019, ruby: mswin }
@@ -28,13 +28,13 @@ jobs:
         - { os: windows-2022, ruby: mswin }
         - { os: windows-2022, ruby: ucrt  }
         exclude:
-        - { os: windows-2019, ruby: 1.9 }
+        - { os: windows-2019, ruby: '1.9' }
         - { os: windows-2019, ruby: debug }
         - { os: windows-2019, ruby: truffleruby }
         - { os: windows-2019, ruby: truffleruby-head }
         - { os: windows-2019, ruby: truffleruby+graalvm }
         - { os: windows-2019, ruby: truffleruby+graalvm-head }
-        - { os: windows-2022, ruby: 1.9 }
+        - { os: windows-2022, ruby: '1.9' }
         - { os: windows-2022, ruby: debug }
         - { os: windows-2022, ruby: truffleruby }
         - { os: windows-2022, ruby: truffleruby-head }
@@ -124,7 +124,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        ruby-version: 2.6
+        ruby-version: '2.6'
         rubygems: latest
     - run: ruby -e "exit(Gem.rubygems_version > Gem::Version.new('3.0.3'))"
 
@@ -135,7 +135,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        ruby-version: 2.6
+        ruby-version: '2.6'
         rubygems: 3.2.3
     - run: gem --version | grep -F "3.2.3"
 
@@ -146,7 +146,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        ruby-version: 3.1.0
+        ruby-version: '3.1.0'
         rubygems: 3.2.3
     - run: gem --version | grep -F "3.3.3"
 
@@ -157,7 +157,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          ruby-version: 2.2
+          ruby-version: '2.2'
           rubygems: 2.7.11
       - run: gem --version | grep -F "2.7.11"
       - run: bundle --version | grep -F "1.16.6"
@@ -169,7 +169,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          ruby-version: 2.2
+          ruby-version: '2.2'
           bundler: 1.16.6
       - run: bundle --version | grep -F "1.16.6" # And not 1.17.x from ~> 1
 
@@ -180,7 +180,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        ruby-version: 2.6
+        ruby-version: '2.6'
         bundler: 2
     - run: bundle --version | grep -P "Bundler version 2\.\d+\.\d+"
 
@@ -191,7 +191,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        ruby-version: 2.6
+        ruby-version: '2.6'
         bundler: 2.2
     - run: bundle --version | grep -P "Bundler version 2\.2\.\d+"
 
@@ -202,7 +202,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        ruby-version: 2.6
+        ruby-version: '2.6'
         bundler: 2.2.3
     - run: bundle --version | grep -F "Bundler version 2.2.3"
 
@@ -215,7 +215,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          ruby-version: 2.7
+          ruby-version: '2.7'
           bundler: 1
           bundler-cache: true
       - run: bundle --version | grep -F "Bundler version 1."
@@ -233,7 +233,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          ruby-version: 2.6
+          ruby-version: '2.6'
           bundler-cache: true
       - run: bundle exec rails --version
 
