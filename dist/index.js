@@ -370,6 +370,7 @@ function getImageOS() {
 const supportedPlatforms = [
   'ubuntu-18.04',
   'ubuntu-20.04',
+  'ubuntu-22.04',
   'macos-10.15',
   'macos-11.0',
   'windows-2019',
@@ -59579,6 +59580,13 @@ function getAvailableVersions(platform, engine) {
     throw new Error(`Unsupported platform ${platform}`)
   }
 
+  if (platform === 'ubuntu-22.04') {
+    const rubyVersions = rubyBuilderVersions['ruby']
+    return {
+      ruby: rubyVersions.slice(rubyVersions.indexOf('3.1.0')),
+    }[engine]
+  }
+
   return rubyBuilderVersions[engine]
 }
 
@@ -60442,7 +60450,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
       throw new Error(`Unknown version ${parsedVersion} for ${engine} on ${platform}
         available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
         Make sure you use the latest version of the action with - uses: ruby/setup-ruby@v1
-        File an issue at https://github.com/ruby/setup-ruby/issues if would like support for a new version`)
+        File an issue at https://github.com/ruby/setup-ruby/issues if you would like support for a new version`)
     }
   }
 
