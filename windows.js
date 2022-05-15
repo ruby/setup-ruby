@@ -25,6 +25,10 @@ const msysPathEntries = [`${msys1}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys1}\\
 const virtualEnv = common.getVirtualEnvironmentName()
 
 export function getAvailableVersions(platform, engine) {
+  if (!common.supportedPlatforms.includes(platform)) {
+    throw new Error(`Unsupported platform ${platform}`)
+  }
+
   if (engine === 'ruby') {
     return Object.keys(rubyInstallerVersions)
   } else {

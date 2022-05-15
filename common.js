@@ -98,6 +98,15 @@ function getImageOS() {
   return imageOS
 }
 
+export const supportedPlatforms = [
+  'ubuntu-18.04',
+  'ubuntu-20.04',
+  'macos-10.15',
+  'macos-11.0',
+  'windows-2019',
+  'windows-2022',
+]
+
 export function getVirtualEnvironmentName() {
   const imageOS = getImageOS()
 

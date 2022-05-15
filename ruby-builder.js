@@ -13,6 +13,10 @@ const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 const windows = common.windows
 
 export function getAvailableVersions(platform, engine) {
+  if (!common.supportedPlatforms.includes(platform)) {
+    throw new Error(`Unsupported platform ${platform}`)
+  }
+
   return rubyBuilderVersions[engine]
 }
 

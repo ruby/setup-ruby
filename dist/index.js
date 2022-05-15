@@ -259,6 +259,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "isBundler2Default": () => (/* binding */ isBundler2Default),
 /* harmony export */   "floatVersion": () => (/* binding */ floatVersion),
 /* harmony export */   "hashFile": () => (/* binding */ hashFile),
+/* harmony export */   "supportedPlatforms": () => (/* binding */ supportedPlatforms),
 /* harmony export */   "getVirtualEnvironmentName": () => (/* binding */ getVirtualEnvironmentName),
 /* harmony export */   "shouldUseToolCache": () => (/* binding */ shouldUseToolCache),
 /* harmony export */   "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
@@ -365,6 +366,15 @@ function getImageOS() {
   }
   return imageOS
 }
+
+const supportedPlatforms = [
+  'ubuntu-18.04',
+  'ubuntu-20.04',
+  'macos-10.15',
+  'macos-11.0',
+  'windows-2019',
+  'windows-2022',
+]
 
 function getVirtualEnvironmentName() {
   const imageOS = getImageOS()
@@ -59565,6 +59575,10 @@ const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 const windows = common.windows
 
 function getAvailableVersions(platform, engine) {
+  if (!common.supportedPlatforms.includes(platform)) {
+    throw new Error(`Unsupported platform ${platform}`)
+  }
+
   return rubyBuilderVersions[engine]
 }
 
@@ -59747,6 +59761,10 @@ const msysPathEntries = [`${msys1}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys1}\\
 const virtualEnv = common.getVirtualEnvironmentName()
 
 function getAvailableVersions(platform, engine) {
+  if (!common.supportedPlatforms.includes(platform)) {
+    throw new Error(`Unsupported platform ${platform}`)
+  }
+
   if (engine === 'ruby') {
     return Object.keys(rubyInstallerVersions)
   } else {
@@ -60315,7 +60333,7 @@ async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
-  if (platform.startsWith('windows-') && engine !== 'jruby') {
+  if (platform.startsWith('windows-') && engine === 'ruby') {
     installer = __nccwpck_require__(3216)
   } else {
     installer = __nccwpck_require__(9974)
