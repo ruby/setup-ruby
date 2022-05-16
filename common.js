@@ -103,7 +103,8 @@ export const supportedPlatforms = [
   'ubuntu-20.04',
   'ubuntu-22.04',
   'macos-10.15',
-  'macos-11.0',
+  'macos-11',
+  'macos-12',
   'windows-2019',
   'windows-2022',
 ]
@@ -118,7 +119,11 @@ export function getVirtualEnvironmentName() {
 
   match = imageOS.match(/^macos(\d{2})(\d+)?/) // e.g. macos1015, macos11
   if (match) {
-    return `macos-${match[1]}.${match[2] || '0'}`
+    if (match[2]) {
+      return `macos-${match[1]}.${match[2]}`
+    } else {
+      return `macos-${match[1]}`
+    }
   }
 
   match = imageOS.match(/^win(\d+)/) // e.g. win19

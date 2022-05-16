@@ -39,8 +39,8 @@ The action works on these [GitHub-hosted runners](https://help.github.com/en/act
 
 | Operating System | Recommended | Other Supported Versions |
 | ----------- | -------- | -------- |
-| Ubuntu  | `ubuntu-latest`  (= `ubuntu-20.04`) | `ubuntu-18.04` |
-| macOS   | `macos-latest`   (= `macos-10.15`)  | `macos-11.0` |
+| Ubuntu  | `ubuntu-latest`  (= `ubuntu-20.04`) | `ubuntu-18.04`, `ubuntu-22.04` (beta, only `ruby: 3.1 - head`) |
+| macOS   | `macos-latest`   (= `macos-11`)  | `macos-10.15`, `macos-12` (beta) |
 | Windows | `windows-latest` (= `windows-2022`) | `windows-2019` |
 
 On `ubuntu-22.04` (beta), only `ruby: 3.1 - head` are supported, due to Ubuntu 22.04 only supporting OpenSSL 3.
