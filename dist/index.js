@@ -373,6 +373,7 @@ const supportedPlatforms = [
   'ubuntu-22.04',
   'macos-10.15',
   'macos-11.0',
+  'macos-12.0',
   'windows-2019',
   'windows-2022',
 ]
