@@ -83,7 +83,9 @@ export async function install(platform, engine, version) {
     await installGCCTools(msys2Type)
   }
 
-  if (version === 'mswin') { await installVCPkg() }
+  if (version === 'mswin') {
+    await installVCPkg()
+  }
 
   const ridk = `${rubyPrefix}\\bin\\ridk.cmd`
   if (fs.existsSync(ridk)) {
