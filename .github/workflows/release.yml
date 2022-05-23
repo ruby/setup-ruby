@@ -1,7 +1,12 @@
 name: Update the v1 branch when a release is published
 on:
   release:
+    permissions:
+      contents: write  # for Git to git push
     types: [published]
+permissions:
+  contents: read
+
 jobs:
   release:
     runs-on: ubuntu-latest
