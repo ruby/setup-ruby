@@ -228,6 +228,7 @@ It is recommended to first get your build working on Ubuntu and macOS before try
 * For Ruby ≥ 2.4, MSYS2 is prepended to the `Path`, similar to what RubyInstaller2 does.
 * For Ruby < 2.4, the DevKit MSYS tools are installed and prepended to the `Path`.
 * Use JRuby 9.2.20+ on Windows (older versions have [bugs](https://github.com/ruby/setup-ruby/issues/18#issuecomment-889072695)).
+* JRuby on Windows has multiple issues ([jruby/jruby#7106](https://github.com/jruby/jruby/issues/7106), [jruby/jruby#7182](https://github.com/jruby/jruby/issues/7182)).
 
 ## Versioning
 
