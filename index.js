@@ -12,7 +12,7 @@ const windows = common.windows
 const inputDefaults = {
   'ruby-version': 'default',
   'rubygems': 'default',
-  'bundler': 'default',
+  'bundler': 'Gemfile.lock',
   'bundler-cache': 'false',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
