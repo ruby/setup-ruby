@@ -82,11 +82,19 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
     }
   }
 
+  const floatVersion = common.floatVersion(rubyVersion)
+
   if (bundlerVersion === 'default') {
-    if (common.isBundler2Default(engine, rubyVersion)) {
+    if (engine === 'ruby' && floatVersion < 3.0 && common.hasBundlerDefaultGem(engine, rubyVersion)) {
+      // Ruby 2.6 and 2.7 have a old Bundler default gem which does not work well for `gem 'foo', github: 'foo/foo'`:
+      // https://github.com/ruby/setup-ruby/issues/358#issuecomment-1195899304
+      // Also, Ruby 2.6 would get Bundler 1 yet Ruby 2.3 - 2.5 get latest Bundler 2 which might be unexpected.
+      console.log(`Using latest Bundler for ${engine}-${rubyVersion} because the default Bundler gem is too old for that Ruby version`)
+      bundlerVersion = 'latest'
+    } else if (common.isBundler2Default(engine, rubyVersion)) {
       console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
       return '2'
-    } else if (common.isBundler1Default(engine, rubyVersion)) {
+    } else if (common.isBundler1Default(engine, rubyVersion) && engine !== 'ruby') {
       console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
       return '1'
     } else {
@@ -103,8 +111,6 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
-
-  const floatVersion = common.floatVersion(rubyVersion)
 
   // Use Bundler 1 when we know Bundler 2 does not work
   if (bundlerVersion.startsWith('2')) {
@@ -253,6 +259,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "measure": () => (/* binding */ measure),
 /* harmony export */   "isHeadVersion": () => (/* binding */ isHeadVersion),
 /* harmony export */   "isStableVersion": () => (/* binding */ isStableVersion),
+/* harmony export */   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
 /* harmony export */   "isBundler1Default": () => (/* binding */ isBundler1Default),
 /* harmony export */   "isBundler2Default": () => (/* binding */ isBundler2Default),
 /* harmony export */   "floatVersion": () => (/* binding */ floatVersion),
@@ -320,6 +327,10 @@ function isHeadVersion(rubyVersion) {
 
 function isStableVersion(rubyVersion) {
   return /^\d+(\.\d+)*$/.test(rubyVersion)
+}
+
+function hasBundlerDefaultGem(engine, rubyVersion) {
+  return isBundler1Default(engine, rubyVersion) || isBundler2Default(engine, rubyVersion)
 }
 
 function isBundler1Default(engine, rubyVersion) {
