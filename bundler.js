@@ -68,11 +68,19 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
     }
   }
 
+  const floatVersion = common.floatVersion(rubyVersion)
+
   if (bundlerVersion === 'default') {
-    if (common.isBundler2Default(engine, rubyVersion)) {
+    if (engine === 'ruby' && floatVersion < 3.0 && common.hasBundlerDefaultGem(engine, rubyVersion)) {
+      // Ruby 2.6 and 2.7 have a old Bundler default gem which does not work well for `gem 'foo', github: 'foo/foo'`:
+      // https://github.com/ruby/setup-ruby/issues/358#issuecomment-1195899304
+      // Also, Ruby 2.6 would get Bundler 1 yet Ruby 2.3 - 2.5 get latest Bundler 2 which might be unexpected.
+      console.log(`Using latest Bundler for ${engine}-${rubyVersion} because the default Bundler gem is too old for that Ruby version`)
+      bundlerVersion = 'latest'
+    } else if (common.isBundler2Default(engine, rubyVersion)) {
       console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
       return '2'
-    } else if (common.isBundler1Default(engine, rubyVersion)) {
+    } else if (common.isBundler1Default(engine, rubyVersion) && engine !== 'ruby') {
       console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
       return '1'
     } else {
@@ -89,8 +97,6 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
-
-  const floatVersion = common.floatVersion(rubyVersion)
 
   // Use Bundler 1 when we know Bundler 2 does not work
   if (bundlerVersion.startsWith('2')) {
