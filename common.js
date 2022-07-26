@@ -56,7 +56,15 @@ export function isStableVersion(rubyVersion) {
 }
 
 export function isBundler1Default(engine, rubyVersion) {
-  return !isBundler2Default(engine, rubyVersion)
+  if (engine === 'ruby') {
+    return floatVersion(rubyVersion) >= 2.6 && floatVersion(rubyVersion) < 2.7
+  } else if (engine.startsWith('truffleruby')) {
+    return floatVersion(rubyVersion) < 21.0
+  } else if (engine === 'jruby') {
+    return false
+  } else {
+    return false
+  }
 }
 
 export function isBundler2Default(engine, rubyVersion) {
