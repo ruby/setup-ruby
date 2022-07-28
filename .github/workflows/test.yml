@@ -100,6 +100,11 @@ jobs:
     - run: bundle exec rake --version
     - run: bundle exec rake
 
+    - name: Test `gem github:` in a Gemfile
+      run: bundle install
+      env:
+        BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/gem_from_github.gemfile
+
     - name: which ruby, rake
       if: "!startsWith(matrix.os, 'windows')"
       run: which -a ruby rake
