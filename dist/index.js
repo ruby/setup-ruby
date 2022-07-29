@@ -94,7 +94,7 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
     } else if (common.isBundler2Default(engine, rubyVersion)) {
       console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
       return '2'
-    } else if (common.isBundler1Default(engine, rubyVersion) && engine !== 'ruby') {
+    } else if (common.isBundler1Default(engine, rubyVersion)) {
       console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
       return '1'
     } else {
