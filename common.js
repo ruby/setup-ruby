@@ -83,6 +83,18 @@ export function isBundler2Default(engine, rubyVersion) {
   }
 }
 
+export function isBundler2dot2Default(engine, rubyVersion) {
+  if (engine === 'ruby') {
+    return floatVersion(rubyVersion) >= 3.0
+  } else if (engine.startsWith('truffleruby')) {
+    return floatVersion(rubyVersion) >= 22.0
+  } else if (engine === 'jruby') {
+    return floatVersion(rubyVersion) >= 9.3
+  } else {
+    return false
+  }
+}
+
 export function floatVersion(rubyVersion) {
   const match = rubyVersion.match(/^\d+\.\d+/)
   if (match) {

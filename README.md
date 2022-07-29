@@ -159,8 +159,8 @@ By default, Bundler is installed as follows:
 
 * If there is a `Gemfile.lock` file (or `$BUNDLE_GEMFILE.lock` or `gems.locked`) with a `BUNDLED WITH` section,
   that version of Bundler will be installed and used.
-* If the Ruby ships with Bundler (as a default gem), that version is used.
-* Otherwise, the latest compatible Bundler version is installed (Bundler 2 on Ruby >= 2.4, Bundler 1 on Ruby < 2.4).
+* If the Ruby ships with Bundler 2.2+ (as a default gem), that version is used.
+* Otherwise, the latest compatible Bundler version is installed (Bundler 2 on Ruby >= 2.3, Bundler 1 on Ruby < 2.3).
 
 This behavior can be customized, see [action.yml](action.yml) for more details about the `bundler` input.
 

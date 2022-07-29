@@ -85,18 +85,15 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   const floatVersion = common.floatVersion(rubyVersion)
 
   if (bundlerVersion === 'default') {
-    if (engine === 'ruby' && floatVersion < 3.0 && common.hasBundlerDefaultGem(engine, rubyVersion)) {
-      // Ruby 2.6 and 2.7 have a old Bundler default gem which does not work well for `gem 'foo', github: 'foo/foo'`:
+    if (common.isBundler2dot2Default(engine, rubyVersion)) {
+      console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
+      return '2'
+    } else if (common.hasBundlerDefaultGem(engine, rubyVersion)) {
+      // Those Rubies have a old Bundler default gem < 2.2 which does not work well for `gem 'foo', github: 'foo/foo'`:
       // https://github.com/ruby/setup-ruby/issues/358#issuecomment-1195899304
       // Also, Ruby 2.6 would get Bundler 1 yet Ruby 2.3 - 2.5 get latest Bundler 2 which might be unexpected.
       console.log(`Using latest Bundler for ${engine}-${rubyVersion} because the default Bundler gem is too old for that Ruby version`)
       bundlerVersion = 'latest'
-    } else if (common.isBundler2Default(engine, rubyVersion)) {
-      console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
-      return '2'
-    } else if (common.isBundler1Default(engine, rubyVersion)) {
-      console.log(`Using Bundler 1 shipped with ${engine}-${rubyVersion}`)
-      return '1'
     } else {
       bundlerVersion = 'latest'
     }
@@ -262,6 +259,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
 /* harmony export */   "isBundler1Default": () => (/* binding */ isBundler1Default),
 /* harmony export */   "isBundler2Default": () => (/* binding */ isBundler2Default),
+/* harmony export */   "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
 /* harmony export */   "floatVersion": () => (/* binding */ floatVersion),
 /* harmony export */   "hashFile": () => (/* binding */ hashFile),
 /* harmony export */   "supportedPlatforms": () => (/* binding */ supportedPlatforms),
@@ -350,6 +348,18 @@ function isBundler2Default(engine, rubyVersion) {
     return floatVersion(rubyVersion) >= 2.7
   } else if (engine.startsWith('truffleruby')) {
     return floatVersion(rubyVersion) >= 21.0
+  } else if (engine === 'jruby') {
+    return floatVersion(rubyVersion) >= 9.3
+  } else {
+    return false
+  }
+}
+
+function isBundler2dot2Default(engine, rubyVersion) {
+  if (engine === 'ruby') {
+    return floatVersion(rubyVersion) >= 3.0
+  } else if (engine.startsWith('truffleruby')) {
+    return floatVersion(rubyVersion) >= 22.0
   } else if (engine === 'jruby') {
     return floatVersion(rubyVersion) >= 9.3
   } else {
