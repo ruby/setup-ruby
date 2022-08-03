@@ -142,8 +142,8 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
 
   await exec.exec('bundle', ['config', '--local', 'path', bundleCachePath], envOptions)
 
-  if (fs.existsSync(lockFile) && core.getInput('deployment') === 'true') {
-    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'], envOptions)
+  if (fs.existsSync(lockFile)) {
+    await exec.exec('bundle', ['config', '--local', 'deployment', core.getInput('deployment')], envOptions)
   } else {
     // Generate the lockfile so we can use it to compute the cache key.
     // This will also automatically pick up the latest gem versions compatible with the Gemfile.
