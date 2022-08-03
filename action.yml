@@ -24,6 +24,9 @@ inputs:
   bundler-cache:
     description: 'Run "bundle install", and cache the result automatically. Either true or false.'
     default: 'false'
+  deployment:
+    description: 'Use deployment mode when running "bundle install". Either true or false'
+    default: 'default'
   working-directory:
     description: 'The working directory to use for resolving paths for .ruby-version, .tool-versions and Gemfile.lock.'
   cache-version:
