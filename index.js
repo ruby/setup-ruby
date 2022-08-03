@@ -14,6 +14,7 @@ const inputDefaults = {
   'rubygems': 'default',
   'bundler': 'Gemfile.lock',
   'bundler-cache': 'false',
+  'deployment': 'true',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
 }
@@ -89,7 +90,7 @@ export async function setupRuby(options = {}) {
 
   if (inputs['bundler-cache'] === 'true') {
     await common.measure('bundle install', async () =>
-      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version'], inputs['deployment']))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
