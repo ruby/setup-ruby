@@ -26,7 +26,7 @@ inputs:
     default: 'false'
   deployment:
     description: 'Use deployment mode when running "bundle install". Either true or false'
-    default: 'default'
+    default: 'true'
   working-directory:
     description: 'The working directory to use for resolving paths for .ruby-version, .tool-versions and Gemfile.lock.'
   cache-version:
