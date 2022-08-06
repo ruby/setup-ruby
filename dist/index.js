@@ -64893,13 +64893,6 @@ function getAvailableVersions(platform, engine) {
     throw new Error(`Unsupported platform ${platform}`)
   }
 
-  if (platform === 'ubuntu-22.04') {
-    const rubyVersions = rubyBuilderVersions['ruby']
-    return {
-      ruby: rubyVersions.slice(rubyVersions.indexOf('3.1.0')),
-    }[engine]
-  }
-
   return rubyBuilderVersions[engine]
 }
 
