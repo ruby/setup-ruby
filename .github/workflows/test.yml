@@ -117,7 +117,7 @@ jobs:
         }
     - name: bash test
       shell: bash
-      run: echo ~
+      run: echo ~ && which -a bundle
     - name: Windows JRuby
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
       run: gem install sassc
