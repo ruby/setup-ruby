@@ -96,19 +96,33 @@ jobs:
     - run: bundle exec rake --version
     - run: bundle exec rake
 
+    # Ensure the same bundle commands work in bash on Windows
+    - name: bundle install (bash)
+      run: bundle install
+      shell: bash
+      if: startsWith(matrix.os, 'windows')
+    - name: bundle exec rake --version (bash)
+      run: bundle exec rake --version
+      shell: bash
+      if: startsWith(matrix.os, 'windows')
+    - name: bundle exec rake (bash)
+      run: bundle exec rake
+      shell: bash
+      if: startsWith(matrix.os, 'windows')
+
     - name: Test `gem github:` in a Gemfile
       run: bundle install
       env:
         BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/gem_from_github.gemfile
 
-    - name: which ruby, rake
+    - name: which ruby, rake bundle
       if: "!startsWith(matrix.os, 'windows')"
-      run: which -a ruby rake
-    - name: where ruby, rake
+      run: which -a ruby rake bundle
+    - name: where ruby, rake, bundle
       if: startsWith(matrix.os, 'windows')
       run: |
         $ErrorActionPreference = 'Continue'
-        $where = 'ruby', 'rake'
+        $where = 'ruby', 'rake', 'bundle'
         foreach ($e in $where) {
           $rslt = where.exe $e 2>&1 | Out-String
           if ($rslt.contains($e)) { echo $rslt.Trim() }
@@ -117,7 +131,7 @@ jobs:
         }
     - name: bash test
       shell: bash
-      run: echo ~ && which -a bundle
+      run: echo ~ && bundle install
     - name: Windows JRuby
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
       run: gem install sassc

@@ -72,8 +72,14 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
 
   if (bundlerVersion === 'default') {
     if (common.isBundler2dot2Default(engine, rubyVersion)) {
-      console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
-      return '2'
+      if (common.windows && engine === 'ruby') {
+        // https://github.com/ruby/setup-ruby/issues/371
+        console.log(`Installing latest Bundler for ${engine}-${rubyVersion} on Windows because bin/bundle does not work in bash otherwise`)
+        bundlerVersion = 'latest'
+      } else {
+        console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
+        return '2'
+      }
     } else if (common.hasBundlerDefaultGem(engine, rubyVersion)) {
       // Those Rubies have a old Bundler default gem < 2.2 which does not work well for `gem 'foo', github: 'foo/foo'`:
       // https://github.com/ruby/setup-ruby/issues/358#issuecomment-1195899304
