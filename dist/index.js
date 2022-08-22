@@ -66588,14 +66588,14 @@ const bundler = __nccwpck_require__(1641)
 
 const windows = common.windows
 
-const inputDefaults = {
-  'ruby-version': 'default',
-  'rubygems': 'default',
-  'bundler': 'Gemfile.lock',
-  'bundler-cache': 'false',
-  'working-directory': '.',
-  'cache-version': bundler.DEFAULT_CACHE_VERSION,
-}
+const inputKeys = [
+  'ruby-version',
+  'rubygems',
+  'bundler',
+  'bundler-cache',
+  'working-directory',
+  'cache-version',
+]
 
 // entry point when this action is run on its own
 async function run() {
@@ -66609,10 +66609,8 @@ async function run() {
 // entry point when this action is run from other actions
 async function setupRuby(options = {}) {
   const inputs = { ...options }
-  for (const key in inputDefaults) {
-    if (!Object.prototype.hasOwnProperty.call(inputs, key)) {
-      inputs[key] = core.getInput(key) || inputDefaults[key]
-    }
+  for (const key of inputKeys) {
+    inputs[key] = core.getInput(key)
   }
 
   process.chdir(inputs['working-directory'])
