@@ -86,7 +86,7 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
 
   if (bundlerVersion === 'default') {
     if (common.isBundler2dot2Default(engine, rubyVersion)) {
-      if (common.windows && engine === 'ruby') {
+      if (common.windows && engine === 'ruby' && (common.isStableVersion(rubyVersion) || rubyVersion === 'head')) {
         // https://github.com/ruby/setup-ruby/issues/371
         console.log(`Installing latest Bundler for ${engine}-${rubyVersion} on Windows because bin/bundle does not work in bash otherwise`)
         bundlerVersion = 'latest'
