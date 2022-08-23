@@ -115,9 +115,12 @@ jobs:
       env:
         BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/gem_from_github.gemfile
 
-    - name: which ruby, rake, bundle
+    - name: which ruby, bundle
       shell: bash
-      run: which -a ruby rake bundle
+      run: which -a ruby bundle
+    - name: which rake
+      run: which -a rake
+      if: "!startsWith(matrix.os, 'windows')"
     - name: where ruby, rake, bundle
       if: startsWith(matrix.os, 'windows')
       run: |
