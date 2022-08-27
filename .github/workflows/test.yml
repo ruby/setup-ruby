@@ -139,6 +139,17 @@ jobs:
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
       run: gem install sassc
 
+  testNoGemfile:
+    name: "Test with no Gemfile"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: rm Gemfile
+      - uses: ./
+        with:
+          ruby-version: '2.6'
+      - run: ruby -v
+
   testLatestRubygemsVersion:
     name: "Test rubygems: latest upgrades the default RubyGems version"
     runs-on: ubuntu-latest
