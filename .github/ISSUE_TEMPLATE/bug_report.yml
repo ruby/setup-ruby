@@ -6,8 +6,7 @@ body:
     value: Please note we will close your issue without comment if you do not fill out the requested information.
 - type: checkboxes
   attributes:
-    label: To check before filing an issue
-    description: Ensure the following before filing this issue.
+    label: Ensure the following before filing this issue
     options:
     - label: |
         I tried with the latest version with `- uses: ruby/setup-ruby@v1` (see [Versioning policy](https://github.com/ruby/setup-ruby/blob/master/README.md#versioning))
@@ -21,8 +20,7 @@ body:
     #   required: true
 - type: dropdown
   attributes:
-    label: Runner
-    description: Are you running on a GitHub-hosted runner or a self-hosted runner?
+    label: Are you running on a GitHub-hosted runner or a self-hosted runner?
     options:
       - GitHub-hosted runner
       - self-hosted runner
