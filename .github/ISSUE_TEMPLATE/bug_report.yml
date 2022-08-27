@@ -39,6 +39,7 @@ body:
     required: true
 - type: textarea
   attributes:
+    render: shell
     label: The command and output of the failing step
   validations:
     required: true
