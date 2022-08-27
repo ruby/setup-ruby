@@ -22,10 +22,10 @@ body:
 - type: dropdown
   attributes:
     label: Runner
-    description: Are you running on a GitHub-hosted runners or self-hosted runners?
+    description: Are you running on a GitHub-hosted runner or a self-hosted runner?
     options:
-      - GitHub-hosted runners
-      - self-hosted runners
+      - GitHub-hosted runner
+      - self-hosted runner
   validations:
     required: true
 - type: textarea
