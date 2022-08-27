@@ -29,7 +29,7 @@ body:
 - type: textarea
   attributes:
     render: yaml
-    label: The workflow code or a link to to the workflow file
+    label: The workflow code or a link to the workflow file
   validations:
     required: true
 - type: input
