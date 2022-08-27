@@ -1,5 +1,8 @@
 #!/usr/bin/sh
 set -e
-yarn install
-yarn run package
-exec git add dist/index.js
+
+if git diff --cached --name-only | grep -E '.(js|json)$'; then
+  yarn install
+  yarn run package
+  exec git add dist/index.js
+fi
