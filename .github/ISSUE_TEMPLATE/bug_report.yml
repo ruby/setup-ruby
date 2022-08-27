@@ -3,10 +3,10 @@ description: Create a report to help us improve
 body:
 - type: markdown
   attributes:
-    value: Please note we will close your issue without comment if you do not fill out the issue checklist below and provide ALL the requested information.
+    value: Please note we will close your issue without comment if you do not fill out the requested information.
 - type: checkboxes
   attributes:
-    label: Verification
+    label: To check before filing an issue
     description: Ensure the following before filing this issue.
     options:
     - label: |
@@ -21,7 +21,7 @@ body:
     #   required: true
 - type: dropdown
   attributes:
-    label: Version
+    label: Runner
     description: Are you running on a GitHub-hosted runners or self-hosted runners?
     options:
       - GitHub-hosted runners
@@ -41,6 +41,11 @@ body:
     required: true
 - type: textarea
   attributes:
-    label: the command and output of the step failing
+    label: The command and output of the failing step
   validations:
     required: true
+- type: textarea
+  attributes:
+    label: Any other notes?
+  validations:
+    required: false
