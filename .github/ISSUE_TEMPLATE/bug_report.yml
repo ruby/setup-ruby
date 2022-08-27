@@ -12,7 +12,7 @@ body:
         I verified it reproduces with the latest version with `- uses: ruby/setup-ruby@v1` (see [Versioning policy](https://github.com/ruby/setup-ruby/blob/master/README.md#versioning))
       required: true
     - label: |
-        I tried to reproduce the issue locally by following the workflow steps (including all commands done by ruby/setup-ruby, except for `Downloading Ruby` & `Extracting Ruby`),
+        I tried to reproduce the issue locally by following the workflow steps (including all commands done by `ruby/setup-ruby`, except for `Downloading Ruby` & `Extracting Ruby`),
         and it did not reproduce locally (if it does reproduce locally, it's not a ruby/setup-ruby issue)
       required: true
     # - label: |
