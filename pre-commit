@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 set -e
 
 if git diff --cached --name-only | grep -E '.(js|json)$'; then
