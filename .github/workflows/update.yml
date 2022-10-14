@@ -1,0 +1,50 @@
+name: Update index.js
+
+on:
+  push:
+    paths:
+      - '.github/workflows/update.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/update.yml'
+  schedule:
+    - cron: '11 22 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    if: ${{ github.event_name == 'schedule' || github.repository == 'ruby/setup-ruby' }}
+    name: update
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set ENV
+        run: |
+          echo "TODAY=$(date +%F)" >> $GITHUB_ENV
+      - name: Clear stored yarn data
+        run: >-
+          rm -fr
+          ~/.yarn
+          ~/.yarnrc
+          ~/.cache/yarn
+          ~/.config/yarn
+      - run: yarn upgrade
+      - run: yarn run package
+      - name: Check diffs
+        id: diff
+        run: git diff --no-ext-diff --ignore-submodules --stat --exit-code
+        continue-on-error: true
+      - name: Commit
+        run: |
+          git pull --ff-only origin ${GITHUB_REF#refs/heads/}
+          git add --all
+          git commit --message="Update packages at ${TODAY}"
+          git push origin ${GITHUB_REF#refs/heads/}
+        env:
+          EMAIL: svn-admin@ruby-lang.org
+          GIT_AUTHOR_NAME: git
+          GIT_COMMITTER_NAME: git
+        if: >
+          ${{ github.repository == 'ruby/setup-ruby' &&
+              !startsWith(github.event_name, 'pull') &&
+              steps.diff.outcome == 'failure' }}
