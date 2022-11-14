@@ -18,7 +18,7 @@
     semver "^6.1.0"
     uuid "^3.3.3"
 
-"@actions/core@^1.10.0", "@actions/core@^1.2.6", "@actions/core@^1.9.1":
+"@actions/core@^1.10.0", "@actions/core@^1.2.6":
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/@actions/core/-/core-1.10.0.tgz#44551c3c71163949a2f06e94d9ca2157a0cfac4f"
   integrity sha512-2aZDDa3zrrZbP5ZYg159sNoLRb61nQ7awl5pSvIq5Qpj81vwDzdMRKzkWJGJuwVvWpvZKx7vspJALyvaaIQyug==
