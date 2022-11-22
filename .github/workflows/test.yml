@@ -239,6 +239,18 @@ jobs:
         bundler: 2.2.3
     - run: bundle --version | grep -F "Bundler version 2.2.3"
 
+  testBundlerDev:
+    name: "Test BUNDLED WITH Bundler dev"
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler-dev.gemfile
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        with:
+          ruby-version: ruby-head
+          bundler-cache: true
+
   testDependencyOnBundler1:
     name: "Test gemfile depending on Bundler 1"
     runs-on: ubuntu-latest

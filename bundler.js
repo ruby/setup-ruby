@@ -6,6 +6,7 @@ const cache = require('@actions/cache')
 const common = require('./common')
 
 export const DEFAULT_CACHE_VERSION = '0'
+export const BUNDLER_VERSION_REGEXP = /^\d+(?:\.\d+){0,2}$/
 
 // The returned gemfile is guaranteed to exist, the lockfile might not exist
 export function detectGemfiles() {
@@ -30,10 +31,14 @@ function readBundledWithFromGemfileLock(lockFile) {
     const bundledWithLine = lines.findIndex(line => /^BUNDLED WITH$/.test(line.trim()))
     if (bundledWithLine !== -1) {
       const nextLine = lines[bundledWithLine+1]
-      if (nextLine && /^\d+/.test(nextLine.trim())) {
+      if (nextLine) {
         const bundlerVersion = nextLine.trim()
-        console.log(`Using Bundler ${bundlerVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
-        return bundlerVersion
+        if (BUNDLER_VERSION_REGEXP.test(bundlerVersion)) {
+          console.log(`Using Bundler ${bundlerVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
+          return bundlerVersion
+        } else {
+          console.log(`Could not parse BUNDLED WITH version as a valid Bundler release, ignoring it: ${bundlerVersion}`)
+        }
       }
     }
   }
@@ -95,7 +100,7 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
     bundlerVersion = '2'
   }
 
-  if (/^\d+(?:\.\d+){0,2}$/.test(bundlerVersion)) {
+  if (BUNDLER_VERSION_REGEXP.test(bundlerVersion)) {
     // OK - input is a 1, 2, or 3 part version number
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
