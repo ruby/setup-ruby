@@ -184,6 +184,7 @@ jobs:
     - run: gem --version | grep -F "3.3.3"
 
   testUseBundlerFromRubyGemsUpdate:
+    if: false # https://github.com/ruby/setup-ruby/issues/405
     name: "Test rubygems: version uses the Bundler installed by the rubygems update"
     runs-on: ubuntu-latest
     steps:
