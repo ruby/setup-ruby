@@ -53,7 +53,7 @@ versions.each do |engine_version|
     file = "#{__dir__}/README.md"
     lines = File.readlines(file)
     engine_line = lines.find { |line| line.start_with?("| `#{engine}`") }
-    engine_line.sub!(/(.+ (?:-|until)) (\d+(?:\.\d+)+)/) do
+    engine_line.sub!(/(.+ (?:-|until)) (\d+(?:\.\d+)+(?:-\w+)?)/) do
       if Gem::Version.new(version) > Gem::Version.new($2)
         "#{$1} #{version}"
       else
