@@ -249,7 +249,7 @@ This follows the [recommendations](https://github.com/actions/toolkit/blob/maste
 ## Using self-hosted runners
 
 This action might work with [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners)
-if the [GitHub Actions Runner Images](https://github.com/actions/runner-images)) is very similar to the ones used by GitHub runners. Notably:
+if the [Runner Image](https://github.com/actions/runner-images) is very similar to the ones used by GitHub runners. Notably:
 
 * Make sure to use the same operating system and version.
 * Set the environment variable `ImageOS` on the runner to the corresponding value on GitHub-hosted runners (e.g. `ubuntu18`/`macos1015`/`win19`). This is necessary to detect the operating system and version.
