@@ -132,7 +132,7 @@ and the [condition and expression syntax](https://help.github.com/en/actions/ref
 * engine-version like `ruby-2.6.5` and `truffleruby-19.3.0`
 * short version like `'2.6'`, automatically using the latest release matching that version (`2.6.10`)
 * version only like `'2.6.5'`, assumes MRI for the engine
-* engine only like `truffleruby`, uses the latest stable release of that implementation
+* engine only like `ruby` and `truffleruby`, uses the latest stable release of that implementation
 * `.ruby-version` reads from the project's `.ruby-version` file
 * `.tool-versions` reads from the project's `.tool-versions` file
 * If the `ruby-version` input is not specified, `.ruby-version` is tried first, followed by `.tool-versions`
