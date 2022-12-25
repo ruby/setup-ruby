@@ -135,13 +135,14 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
     }
   }
 
-  // Use Bundler 2.3 when we use Ruby 2.3.2-2.5
+  const targetRubyVersion = common.targetRubyVersion(engine, rubyVersion)
+  // Use Bundler 2.3 when we use Ruby 2.3.2 - 2.5
   // Use Bundler 2.4 when we use Ruby 2.6-2.7
   if (bundlerVersion == '2') {
-    if (engine === 'ruby' && floatVersion <= 2.5) {
-      console.log('Ruby 2.3.2-2.5 only works with Bundler 2.3')
+    if (targetRubyVersion <= 2.5) { // < 2.3.2 already handled above
+      console.log('Ruby 2.3.2 - 2.5 only works with Bundler 2.3')
       bundlerVersion = '2.3'
-    } else if (engine === 'ruby' && floatVersion <= 2.7) {
+    } else if (targetRubyVersion <= 2.7) {
       console.log('Ruby 2.6-2.7 only works with Bundler 2.4')
       bundlerVersion = '2.4'
     }
@@ -285,6 +286,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "isBundler1Default": () => (/* binding */ isBundler1Default),
 /* harmony export */   "isBundler2Default": () => (/* binding */ isBundler2Default),
 /* harmony export */   "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
+/* harmony export */   "targetRubyVersion": () => (/* binding */ targetRubyVersion),
 /* harmony export */   "floatVersion": () => (/* binding */ floatVersion),
 /* harmony export */   "hashFile": () => (/* binding */ hashFile),
 /* harmony export */   "supportedPlatforms": () => (/* binding */ supportedPlatforms),
@@ -390,6 +392,23 @@ function isBundler2dot2Default(engine, rubyVersion) {
   } else {
     return false
   }
+}
+
+function targetRubyVersion(engine, rubyVersion) {
+  const version = floatVersion(rubyVersion)
+  if (engine === 'ruby') {
+    return version
+  } else if (engine === 'jruby') {
+    if (version === 9.1) {
+      return 2.3
+    } else if (version === 9.2) {
+      return 2.5
+    } else if (version === 9.3) {
+      return 2.6
+    }
+  }
+
+  return 9.9 // unknown, assume recent
 }
 
 function floatVersion(rubyVersion) {

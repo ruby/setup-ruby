@@ -120,13 +120,14 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
     }
   }
 
-  // Use Bundler 2.3 when we use Ruby 2.3.2-2.5
+  const targetRubyVersion = common.targetRubyVersion(engine, rubyVersion)
+  // Use Bundler 2.3 when we use Ruby 2.3.2 - 2.5
   // Use Bundler 2.4 when we use Ruby 2.6-2.7
   if (bundlerVersion == '2') {
-    if (engine === 'ruby' && floatVersion <= 2.5) {
-      console.log('Ruby 2.3.2-2.5 only works with Bundler 2.3')
+    if (targetRubyVersion <= 2.5) { // < 2.3.2 already handled above
+      console.log('Ruby 2.3.2 - 2.5 only works with Bundler 2.3')
       bundlerVersion = '2.3'
-    } else if (engine === 'ruby' && floatVersion <= 2.7) {
+    } else if (targetRubyVersion <= 2.7) {
       console.log('Ruby 2.6-2.7 only works with Bundler 2.4')
       bundlerVersion = '2.4'
     }
