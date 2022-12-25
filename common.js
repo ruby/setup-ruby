@@ -95,6 +95,23 @@ export function isBundler2dot2Default(engine, rubyVersion) {
   }
 }
 
+export function targetRubyVersion(engine, rubyVersion) {
+  const version = floatVersion(rubyVersion)
+  if (engine === 'ruby') {
+    return version
+  } else if (engine === 'jruby') {
+    if (version === 9.1) {
+      return 2.3
+    } else if (version === 9.2) {
+      return 2.5
+    } else if (version === 9.3) {
+      return 2.6
+    }
+  }
+
+  return 9.9 // unknown, assume recent
+}
+
 export function floatVersion(rubyVersion) {
   const match = rubyVersion.match(/^\d+\.\d+/)
   if (match) {
