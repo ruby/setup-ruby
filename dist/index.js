@@ -122,8 +122,6 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   }
 
   // Use Bundler 1 when we know Bundler 2 does not work
-  // Use Bundler 2.3 when we use Ruby 2.3.2-2.5
-  // Use Bundler 2.4 when we use Ruby 2.6-2.7
   if (bundlerVersion.startsWith('2')) {
     if (engine === 'ruby' && floatVersion <= 2.2) {
       console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
@@ -131,15 +129,21 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
     } else if (engine === 'ruby' && /^2\.3\.[01]/.test(rubyVersion)) {
       console.log('Ruby 2.3.0 and 2.3.1 have shipped with an old rubygems that only works with Bundler 1')
       bundlerVersion = '1'
-    } else if (engine === 'ruby' && floatVersion <= 2.5) {
+    } else if (engine === 'jruby' && rubyVersion.startsWith('9.1')) { // JRuby 9.1 targets Ruby 2.3, treat it the same
+      console.log('JRuby 9.1 has a bug with Bundler 2 (https://github.com/ruby/setup-ruby/issues/108), using Bundler 1 instead on JRuby 9.1')
+      bundlerVersion = '1'
+    }
+  }
+
+  // Use Bundler 2.3 when we use Ruby 2.3.2-2.5
+  // Use Bundler 2.4 when we use Ruby 2.6-2.7
+  if (bundlerVersion == '2') {
+    if (engine === 'ruby' && floatVersion <= 2.5) {
       console.log('Ruby 2.3.2-2.5 only works with Bundler 2.3')
       bundlerVersion = '2.3'
     } else if (engine === 'ruby' && floatVersion <= 2.7) {
       console.log('Ruby 2.6-2.7 only works with Bundler 2.4')
       bundlerVersion = '2.4'
-    } else if (engine === 'jruby' && rubyVersion.startsWith('9.1')) { // JRuby 9.1 targets Ruby 2.3, treat it the same
-      console.log('JRuby 9.1 has a bug with Bundler 2 (https://github.com/ruby/setup-ruby/issues/108), using Bundler 1 instead on JRuby 9.1')
-      bundlerVersion = '1'
     }
   }
 
