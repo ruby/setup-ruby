@@ -186,17 +186,16 @@ jobs:
     - run: gem --version | grep -F "3.3.3"
 
   testUseBundlerFromRubyGemsUpdate:
-    if: false # https://github.com/ruby/setup-ruby/issues/405
     name: "Test rubygems: version uses the Bundler installed by the rubygems update"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ./
         with:
-          ruby-version: '2.2'
-          rubygems: 2.7.11
-      - run: gem --version | grep -F "2.7.11"
-      - run: bundle --version | grep -F "1.16.6"
+          ruby-version: '3.1.0'
+          rubygems: 3.4.0
+      - run: gem --version | grep -F "3.4.0"
+      - run: bundle --version | grep -F "2.4.0"
 
   testFixedBundlerVersionForOldRuby:
     name: "Test bundler: 1.x for old Ruby"
