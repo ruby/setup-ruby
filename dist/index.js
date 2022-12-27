@@ -68126,6 +68126,8 @@ __nccwpck_require__.r(__webpack_exports__);
 // 7z arguments
 //   -aoa overwrite existing, -bd disable progress indicator
 
+// OpenSSL version detection is needed in installGCCTools and installJRubyTools
+
 const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
 const cp = __nccwpck_require__(2081)
@@ -68205,7 +68207,7 @@ async function install(platform, engine, version) {
   // windows 2016 and 2019 need ucrt64 installed, 2022 and future images need
   // ucrt64 or mingw64 installed, depending on Ruby version
   if (((msys2Type === 'ucrt64') || !hasMSYS2PreInstalled) && common.floatVersion(version) >= 2.4) {
-    await installGCCTools(msys2Type)
+    await installGCCTools(msys2Type, version)
   }
 
   if (version === 'mswin') {
@@ -68222,14 +68224,23 @@ async function install(platform, engine, version) {
 
 // Actions windows-2022 image does not contain any mingw or ucrt build tools.  Install tools for it,
 // and also install ucrt tools on earlier versions, which have msys2 and mingw tools preinstalled.
-async function installGCCTools(type) {
-  const downloadPath = await common.measure(`Downloading ${type} build tools`, async () => {
-    let url = `${msys2GCCReleaseURI}/msys2-gcc-pkgs/${type}.7z`
+async function installGCCTools(type, version) {
+  // 2022-Dec ruby/msys2-gcc-pkgs now uses a suffix to delineate different archive versions.
+  // At present, the only use is to indicate the included OpenSSL version.
+  // With no suffix, archives include OpenSSL 1.1.1, with a '-3.0' suffix, they include
+  // OpenSSL 3.0.x.
+  // Currently, OpenSSL 3 is used in Ruby 3.2 & 'head', both use a custom RubyInstaller2 package.
+  let suffix = ''
+  if ((version === 'head') || (!common.isHeadVersion(version) && common.floatVersion(version) >= 3.2)) {
+    suffix = '-3.0'
+  }
+  const downloadPath = await common.measure(`Downloading ${type}${suffix} build tools`, async () => {
+    let url = `${msys2GCCReleaseURI}/msys2-gcc-pkgs/${type}${suffix}.7z`
     console.log(url)
     return await tc.downloadTool(url)
   })
 
-  await common.measure(`Extracting  ${type} build tools`, async () =>
+  await common.measure(`Extracting  ${type}${suffix} build tools`, async () =>
     exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${msys2BasePath}`], { silent: true }))
 }
 
@@ -68254,7 +68265,8 @@ async function installMSYS2Tools() {
 // windows-2022 and later images
 async function installJRubyTools() {
   await installMSYS2Tools()
-  await installGCCTools('mingw64')
+  // Will need to add OpenSSL version detection when JRuby uses OpenSSL 3.0 ?
+  await installGCCTools('mingw64', '2.7')
 }
 
 // Install vcpkg files needed to build mswin Ruby
