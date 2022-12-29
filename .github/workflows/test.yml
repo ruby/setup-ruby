@@ -27,14 +27,12 @@ jobs:
         - { os: windows-2022, ruby: ucrt  }
         exclude:
         - { os: windows-2019, ruby: '1.9' }
-        - { os: windows-2019, ruby: '3.2' }
         - { os: windows-2019, ruby: debug }
         - { os: windows-2019, ruby: truffleruby }
         - { os: windows-2019, ruby: truffleruby-head }
         - { os: windows-2019, ruby: truffleruby+graalvm }
         - { os: windows-2019, ruby: truffleruby+graalvm-head }
         - { os: windows-2022, ruby: '1.9' }
-        - { os: windows-2022, ruby: '3.2' }
         - { os: windows-2022, ruby: debug }
         - { os: windows-2022, ruby: truffleruby }
         - { os: windows-2022, ruby: truffleruby-head }
