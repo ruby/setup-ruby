@@ -406,6 +406,14 @@ function targetRubyVersion(engine, rubyVersion) {
     } else if (version === 9.3) {
       return 2.6
     }
+  } else if (engine.startsWith('truffleruby')) {
+    if (version < 21.0) {
+      return 2.6
+    } else if (version < 22.0) {
+      return 2.7
+    } else if (version < 23.0) {
+      return 3.0
+    }
   }
 
   return 9.9 // unknown, assume recent
