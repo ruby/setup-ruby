@@ -140,7 +140,7 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   const targetRubyVersion = common.targetRubyVersion(engine, rubyVersion)
   // Use Bundler 2.3 when we use Ruby 2.3.2 - 2.5
   // Use Bundler 2.4 when we use Ruby 2.6-2.7
-  if (bundlerVersion == '2') {
+  if (bundlerVersion === '2') {
     if (targetRubyVersion <= 2.5) { // < 2.3.2 already handled above
       console.log('Ruby 2.3.2 - 2.5 only works with Bundler 2.3')
       bundlerVersion = '2.3'
@@ -160,6 +160,14 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
 
   await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
 
+  if (bundlerVersion.startsWith('1') && common.isBundler2Default(engine, rubyVersion)) {
+    // If Bundler 1 is specified on Rubies which ship with Bundler 2,
+    // we need to specify which Bundler version to use explicitly until the lockfile exists.
+    // We actually set it globally for the case of bundler-cache: false with manual bundler install later.
+    console.log(`Setting BUNDLER_VERSION=${bundlerVersion} to ensure Bundler 1 is used`)
+    core.exportVariable('BUNDLER_VERSION', bundlerVersion)
+  }
+
   return bundlerVersion
 }
 
@@ -169,27 +177,19 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
     return false
   }
 
-  let envOptions = {}
-  if (bundlerVersion.startsWith('1') && common.isBundler2Default(engine, rubyVersion)) {
-    // If Bundler 1 is specified on Rubies which ship with Bundler 2,
-    // we need to specify which Bundler version to use explicitly until the lockfile exists.
-    console.log(`Setting BUNDLER_VERSION=${bundlerVersion} for "bundle config|lock" commands below to ensure Bundler 1 is used`)
-    envOptions = { env: { ...process.env, BUNDLER_VERSION: bundlerVersion } }
-  }
-
   // config
   const cachePath = 'vendor/bundle'
   // An absolute path, so it is reliably under $PWD/vendor/bundle, and not relative to the gemfile's directory
   const bundleCachePath = path.join(process.cwd(), cachePath)
 
-  await exec.exec('bundle', ['config', '--local', 'path', bundleCachePath], envOptions)
+  await exec.exec('bundle', ['config', '--local', 'path', bundleCachePath])
 
   if (fs.existsSync(lockFile)) {
-    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'], envOptions)
+    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'])
   } else {
     // Generate the lockfile so we can use it to compute the cache key.
     // This will also automatically pick up the latest gem versions compatible with the Gemfile.
-    await exec.exec('bundle', ['lock'], envOptions)
+    await exec.exec('bundle', ['lock'])
   }
 
   await afterLockFile(lockFile, platform, engine, rubyVersion)
