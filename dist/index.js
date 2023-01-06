@@ -8,7 +8,6 @@
 __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   "DEFAULT_CACHE_VERSION": () => (/* binding */ DEFAULT_CACHE_VERSION),
-/* harmony export */   "BUNDLER_VERSION_REGEXP": () => (/* binding */ BUNDLER_VERSION_REGEXP),
 /* harmony export */   "detectGemfiles": () => (/* binding */ detectGemfiles),
 /* harmony export */   "installBundler": () => (/* binding */ installBundler),
 /* harmony export */   "bundleInstall": () => (/* binding */ bundleInstall)
@@ -21,7 +20,10 @@ const cache = __nccwpck_require__(7799)
 const common = __nccwpck_require__(4717)
 
 const DEFAULT_CACHE_VERSION = '0'
-const BUNDLER_VERSION_REGEXP = /^\d+(?:\.\d+){0,2}$/
+
+function isValidBundlerVersion(bundlerVersion) {
+  return /^\d+(?:\.\d+){0,2}/.test(bundlerVersion) && !bundlerVersion.endsWith('.dev')
+}
 
 // The returned gemfile is guaranteed to exist, the lockfile might not exist
 function detectGemfiles() {
@@ -48,7 +50,7 @@ function readBundledWithFromGemfileLock(lockFile) {
       const nextLine = lines[bundledWithLine+1]
       if (nextLine) {
         const bundlerVersion = nextLine.trim()
-        if (BUNDLER_VERSION_REGEXP.test(bundlerVersion)) {
+        if (isValidBundlerVersion(bundlerVersion)) {
           console.log(`Using Bundler ${bundlerVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
           return bundlerVersion
         } else {
@@ -115,7 +117,7 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
     bundlerVersion = '2'
   }
 
-  if (BUNDLER_VERSION_REGEXP.test(bundlerVersion)) {
+  if (isValidBundlerVersion(bundlerVersion)) {
     // OK - input is a 1, 2, or 3 part version number
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
@@ -154,7 +156,7 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   const force = ((platform.startsWith('windows-') && engine === 'ruby' && floatVersion >= 3.1) || (engine === 'truffleruby')) ? ['--force'] : []
 
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
-  const bundlerVersionConstraint = versionParts === 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
+  const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
 
   await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
 

@@ -6,7 +6,10 @@ const cache = require('@actions/cache')
 const common = require('./common')
 
 export const DEFAULT_CACHE_VERSION = '0'
-export const BUNDLER_VERSION_REGEXP = /^\d+(?:\.\d+){0,2}$/
+
+function isValidBundlerVersion(bundlerVersion) {
+  return /^\d+(?:\.\d+){0,2}/.test(bundlerVersion) && !bundlerVersion.endsWith('.dev')
+}
 
 // The returned gemfile is guaranteed to exist, the lockfile might not exist
 export function detectGemfiles() {
@@ -33,7 +36,7 @@ function readBundledWithFromGemfileLock(lockFile) {
       const nextLine = lines[bundledWithLine+1]
       if (nextLine) {
         const bundlerVersion = nextLine.trim()
-        if (BUNDLER_VERSION_REGEXP.test(bundlerVersion)) {
+        if (isValidBundlerVersion(bundlerVersion)) {
           console.log(`Using Bundler ${bundlerVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
           return bundlerVersion
         } else {
@@ -100,7 +103,7 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
     bundlerVersion = '2'
   }
 
-  if (BUNDLER_VERSION_REGEXP.test(bundlerVersion)) {
+  if (isValidBundlerVersion(bundlerVersion)) {
     // OK - input is a 1, 2, or 3 part version number
   } else {
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
@@ -139,7 +142,7 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   const force = ((platform.startsWith('windows-') && engine === 'ruby' && floatVersion >= 3.1) || (engine === 'truffleruby')) ? ['--force'] : []
 
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
-  const bundlerVersionConstraint = versionParts === 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
+  const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
 
   await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
 

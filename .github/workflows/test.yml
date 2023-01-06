@@ -244,6 +244,17 @@ jobs:
         bundler: 2.2.3
     - run: bundle --version | grep -F "Bundler version 2.2.3"
 
+  testBundlerPre:
+    name: "Test with a Bundler pre/rc version"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        with:
+          ruby-version: '2.6'
+          bundler: 2.2.0.rc.2
+      - run: bundle --version | grep -F "Bundler version 2.2.0.rc.2"
+
   testBundlerDev:
     name: "Test BUNDLED WITH Bundler dev"
     runs-on: ubuntu-latest
