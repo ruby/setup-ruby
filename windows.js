@@ -103,10 +103,11 @@ async function installGCCTools(type, version) {
   // 2022-Dec ruby/msys2-gcc-pkgs now uses a suffix to delineate different archive versions.
   // At present, the only use is to indicate the included OpenSSL version.
   // With no suffix, archives include OpenSSL 1.1.1, with a '-3.0' suffix, they include
-  // OpenSSL 3.0.x.
-  // Currently, OpenSSL 3 is used in Ruby 3.2 & 'head', both use a custom RubyInstaller2 package.
+  // OpenSSL 3.0.x.  Note that the mswin archive uses OpenSSL 3. 
+  // As of Jan-2023, OpenSSL 3 is used in Ruby 3.2 & all head versions.  MSYS2 updated
+  // to OpenSSL 3 on 14-Jan-2023.
   let suffix = ''
-  if ((version === 'head') || (!common.isHeadVersion(version) && common.floatVersion(version) >= 3.2)) {
+  if (common.isHeadVersion(version) || common.floatVersion(version) >= 3.2) {
     suffix = '-3.0'
   }
   const downloadPath = await common.measure(`Downloading ${type}${suffix} build tools`, async () => {
