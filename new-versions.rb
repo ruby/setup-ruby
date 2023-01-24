@@ -1,5 +1,8 @@
 versions = ARGV.fetch(0).split(',').map(&:strip)
+p versions
+
 versions.each do |engine_version|
+  puts engine_version
   engine_input, version = engine_version.split('-', 2)
 
   if engine_input == 'windows'
