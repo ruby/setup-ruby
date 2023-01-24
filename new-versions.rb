@@ -7,14 +7,14 @@ versions.each do |engine_version|
     exit
   end
 
-  MATCH = case engine_input
+  match = case engine_input
   when 'ruby', 'jruby'
     /^\d+\.\d+\./
   when 'truffleruby'
     /^\d+\./
   end
 
-  raise unless version[MATCH]
+  raise engine_version unless version[match]
 
   engines = [engine_input]
   engines << 'truffleruby+graalvm' if engine_input == 'truffleruby'
@@ -37,7 +37,7 @@ versions.each do |engine_version|
     puts lines[from..to]
 
     release_line = lines[from..to].find { |line|
-      v = line[/"([^"]+)"/, 1] and v[MATCH] == version[MATCH]
+      v = line[/"([^"]+)"/, 1] and v[match] == version[match]
     }
 
     if release_line
