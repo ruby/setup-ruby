@@ -1,10 +1,7 @@
 versions = ARGV.fetch(0).split(',').map(&:strip)
-p versions
 
 versions.each do |engine_version|
-  puts engine_version
   engine, version = engine_version.split('-', 2)
-  p [engine, version]
 
   if engine == 'windows'
     require_relative 'generate-windows-versions'
