@@ -282,6 +282,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "drive": () => (/* binding */ drive),
 /* harmony export */   "partition": () => (/* binding */ partition),
 /* harmony export */   "measure": () => (/* binding */ measure),
+/* harmony export */   "time": () => (/* binding */ time),
 /* harmony export */   "isHeadVersion": () => (/* binding */ isHeadVersion),
 /* harmony export */   "isStableVersion": () => (/* binding */ isStableVersion),
 /* harmony export */   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
@@ -345,6 +346,19 @@ async function measure(name, block) {
     } finally {
       inGroup = false
     }
+  }
+}
+
+// Same as mesaure() but without the group
+async function time(name, block) {
+  console.log(`> ${name}`)
+  const start = performance.now()
+  try {
+    return await block()
+  } finally {
+    const end = performance.now()
+    const duration = (end - start) / 1000.0
+    console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
   }
 }
 
@@ -68822,7 +68836,7 @@ async function setupRuby(options = {}) {
   }
 
   if (inputs['bundler-cache'] === 'true') {
-    await common.measure('bundle install', async () =>
+    await common.time('bundle install', async () =>
       bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
   }
 

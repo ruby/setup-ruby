@@ -47,6 +47,19 @@ export async function measure(name, block) {
   }
 }
 
+// Same as mesaure() but without the group
+export async function time(name, block) {
+  console.log(`> ${name}`)
+  const start = performance.now()
+  try {
+    return await block()
+  } finally {
+    const end = performance.now()
+    const duration = (end - start) / 1000.0
+    console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
+  }
+}
+
 export function isHeadVersion(rubyVersion) {
   return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
 }

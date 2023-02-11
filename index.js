@@ -92,7 +92,7 @@ export async function setupRuby(options = {}) {
   }
 
   if (inputs['bundler-cache'] === 'true') {
-    await common.measure('bundle install', async () =>
+    await common.time('bundle install', async () =>
       bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
   }
 
