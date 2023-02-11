@@ -47,17 +47,16 @@ export async function measure(name, block) {
   }
 }
 
-// Same as mesaure() but without the group
+// Same as mesaure() but without the group, and no time shown on error
 export async function time(name, block) {
   console.log(`> ${name}`)
   const start = performance.now()
-  try {
-    return await block()
-  } finally {
-    const end = performance.now()
-    const duration = (end - start) / 1000.0
-    console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
-  }
+  const value = await block()
+  const end = performance.now()
+
+  const duration = (end - start) / 1000.0
+  console.log(`Took ${duration.toFixed(2).padStart(6)} seconds`)
+  return value
 }
 
 export function isHeadVersion(rubyVersion) {
