@@ -232,8 +232,14 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
 }
 
 async function computeBaseKey(platform, engine, version, lockFile, cacheVersion) {
-  const cacheVersionSuffix = DEFAULT_CACHE_VERSION === cacheVersion ? '' : `-cachever:${cacheVersion}`
-  let key = `setup-ruby-bundler-cache-v4-${platform}-${engine}-${version}${cacheVersionSuffix}`
+  const cwd = process.cwd()
+  const bundleWith = process.env['BUNDLE_WITH'] || ''
+  const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
+  let key = `setup-ruby-bundler-cache-v5-${platform}-${engine}-${version}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}`
+
+  if (cacheVersion !== DEFAULT_CACHE_VERSION) {
+    key += `-v-${cacheVersion}`
+  }
 
   if (common.isHeadVersion(version)) {
     if (engine !== 'jruby') {
