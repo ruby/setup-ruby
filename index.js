@@ -23,7 +23,11 @@ export async function run() {
   try {
     await setupRuby()
   } catch (error) {
-    core.setFailed(error.stack)
+    if (/\bprocess\b.+\bfailed\b/.test(error.message)) {
+      core.setFailed(error.message)
+    } else {
+      core.setFailed(error.stack)
+    }
   }
 }
 
