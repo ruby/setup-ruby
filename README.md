@@ -42,7 +42,7 @@ The action works on these [GitHub-hosted runners](https://docs.github.com/en/act
 
 | Operating System | Supported |
 | ---------------- | --------- |
-| Ubuntu  | `ubuntu-18.04`, `ubuntu-20.04`, `ubuntu-22.04` |
+| Ubuntu  | `ubuntu-20.04`, `ubuntu-22.04` |
 | macOS   | `macos-11`, `macos-12` |
 | Windows | `windows-2019`, `windows-2022` |
 
