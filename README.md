@@ -252,7 +252,7 @@ This action might work with [self-hosted runners](https://docs.github.com/en/act
 if the [Runner Image](https://github.com/actions/runner-images) is very similar to the ones used by GitHub runners. Notably:
 
 * Make sure to use the same operating system and version.
-* Set the environment variable `ImageOS` on the runner to the corresponding value on GitHub-hosted runners (e.g. `ubuntu18`/`macos1015`/`win19`). This is necessary to detect the operating system and version.
+* Set the environment variable `ImageOS` on the runner to the corresponding value on GitHub-hosted runners (e.g. `ubuntu22`/`macos12`/`win22`). This is necessary to detect the operating system and version.
 * Make sure to use the same version of libssl.
 * Make sure that the operating system has `libyaml-0` and [`libgmp`](https://stackoverflow.com/questions/26555902/ruby-v-dyld-library-not-loaded-usr-local-lib-libgmp-10-dylib) installed
 * The default tool cache directory (`/opt/hostedtoolcache` on Linux, `/Users/runner/hostedtoolcache` on macOS,
