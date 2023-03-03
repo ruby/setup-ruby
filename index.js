@@ -16,6 +16,7 @@ const inputDefaults = {
   'bundler-cache': 'false',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
+  'self-hosted': 'false',
 }
 
 // entry point when this action is run on its own
@@ -39,6 +40,7 @@ export async function setupRuby(options = {}) {
       inputs[key] = core.getInput(key) || inputDefaults[key]
     }
   }
+  common.inputs.selfHosted = inputs['self-hosted']
 
   process.chdir(inputs['working-directory'])
 
