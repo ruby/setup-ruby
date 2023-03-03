@@ -17,7 +17,7 @@ const path = __nccwpck_require__(1017)
 const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const cache = __nccwpck_require__(7799)
-const common = __nccwpck_require__(4717)
+const common = __nccwpck_require__(3143)
 
 const DEFAULT_CACHE_VERSION = '0'
 
@@ -249,7 +249,7 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
   const cwd = process.cwd()
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
-  let key = `setup-ruby-bundler-cache-v5-${platform}-${engine}-${version}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}`
+  let key = `setup-ruby-bundler-cache-v5-${common.getOSNameVersionArch()}-${engine}-${version}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}`
 
   if (cacheVersion !== DEFAULT_CACHE_VERSION) {
     key += `-v-${cacheVersion}`
@@ -278,42 +278,88 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
 
 /***/ }),
 
-/***/ 4717:
+/***/ 3143:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
+// ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "windows": () => (/* binding */ windows),
-/* harmony export */   "drive": () => (/* binding */ drive),
-/* harmony export */   "partition": () => (/* binding */ partition),
-/* harmony export */   "measure": () => (/* binding */ measure),
-/* harmony export */   "time": () => (/* binding */ time),
-/* harmony export */   "isHeadVersion": () => (/* binding */ isHeadVersion),
-/* harmony export */   "isStableVersion": () => (/* binding */ isStableVersion),
-/* harmony export */   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
-/* harmony export */   "isBundler1Default": () => (/* binding */ isBundler1Default),
-/* harmony export */   "isBundler2Default": () => (/* binding */ isBundler2Default),
-/* harmony export */   "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
-/* harmony export */   "targetRubyVersion": () => (/* binding */ targetRubyVersion),
-/* harmony export */   "floatVersion": () => (/* binding */ floatVersion),
-/* harmony export */   "hashFile": () => (/* binding */ hashFile),
-/* harmony export */   "supportedPlatforms": () => (/* binding */ supportedPlatforms),
-/* harmony export */   "getVirtualEnvironmentName": () => (/* binding */ getVirtualEnvironmentName),
-/* harmony export */   "shouldUseToolCache": () => (/* binding */ shouldUseToolCache),
-/* harmony export */   "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
-/* harmony export */   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
-/* harmony export */   "win2nix": () => (/* binding */ win2nix),
-/* harmony export */   "setupPath": () => (/* binding */ setupPath)
-/* harmony export */ });
+
+// EXPORTS
+__nccwpck_require__.d(__webpack_exports__, {
+  "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
+  "drive": () => (/* binding */ drive),
+  "floatVersion": () => (/* binding */ floatVersion),
+  "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
+  "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
+  "getVirtualEnvironmentName": () => (/* binding */ getVirtualEnvironmentName),
+  "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
+  "hashFile": () => (/* binding */ hashFile),
+  "isBundler1Default": () => (/* binding */ isBundler1Default),
+  "isBundler2Default": () => (/* binding */ isBundler2Default),
+  "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
+  "isHeadVersion": () => (/* binding */ isHeadVersion),
+  "isSelfHostedRunner": () => (/* binding */ isSelfHostedRunner),
+  "isStableVersion": () => (/* binding */ isStableVersion),
+  "measure": () => (/* binding */ measure),
+  "partition": () => (/* binding */ partition),
+  "setupPath": () => (/* binding */ setupPath),
+  "shouldUseToolCache": () => (/* binding */ shouldUseToolCache),
+  "targetRubyVersion": () => (/* binding */ targetRubyVersion),
+  "time": () => (/* binding */ time),
+  "toolCacheCompleteFile": () => (/* binding */ toolCacheCompleteFile),
+  "win2nix": () => (/* binding */ win2nix),
+  "windows": () => (/* binding */ windows)
+});
+
+;// CONCATENATED MODULE: external "node:os"
+const external_node_os_namespaceObject = require("node:os");
+;// CONCATENATED MODULE: ./node_modules/macos-release/index.js
+
+
+const nameMap = new Map([
+	[22, ['Ventura', '13']],
+	[21, ['Monterey', '12']],
+	[20, ['Big Sur', '11']],
+	[19, ['Catalina', '10.15']],
+	[18, ['Mojave', '10.14']],
+	[17, ['High Sierra', '10.13']],
+	[16, ['Sierra', '10.12']],
+	[15, ['El Capitan', '10.11']],
+	[14, ['Yosemite', '10.10']],
+	[13, ['Mavericks', '10.9']],
+	[12, ['Mountain Lion', '10.8']],
+	[11, ['Lion', '10.7']],
+	[10, ['Snow Leopard', '10.6']],
+	[9, ['Leopard', '10.5']],
+	[8, ['Tiger', '10.4']],
+	[7, ['Panther', '10.3']],
+	[6, ['Jaguar', '10.2']],
+	[5, ['Puma', '10.1']],
+]);
+
+function macosRelease(release) {
+	release = Number((release || external_node_os_namespaceObject.release()).split('.')[0]);
+
+	const [name, version] = nameMap.get(release) || ['Unknown', ''];
+
+	return {
+		name,
+		version,
+	};
+}
+
+;// CONCATENATED MODULE: ./common.js
 const os = __nccwpck_require__(2037)
 const path = __nccwpck_require__(1017)
 const fs = __nccwpck_require__(7147)
 const util = __nccwpck_require__(3837)
 const stream = __nccwpck_require__(2781)
-const crypto = __nccwpck_require__(6113)
+const common_crypto = __nccwpck_require__(6113)
 const core = __nccwpck_require__(2186)
 const { performance } = __nccwpck_require__(4074)
+const linuxOSInfo = __nccwpck_require__(8487)
+;
 
 const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
@@ -453,59 +499,80 @@ function floatVersion(rubyVersion) {
 
 async function hashFile(file) {
   // See https://github.com/actions/runner/blob/master/src/Misc/expressionFunc/hashFiles/src/hashFiles.ts
-  const hash = crypto.createHash('sha256')
+  const hash = common_crypto.createHash('sha256')
   const pipeline = util.promisify(stream.pipeline)
   await pipeline(fs.createReadStream(file), hash)
   return hash.digest('hex')
 }
 
-function getImageOS() {
-  const imageOS = process.env['ImageOS']
-  if (!imageOS) {
-    throw new Error('The environment variable ImageOS must be set')
-  }
-  return imageOS
-}
-
-const supportedPlatforms = [
-  'ubuntu-20.04',
-  'ubuntu-22.04',
-  'macos-11',
-  'macos-12',
-  'windows-2019',
-  'windows-2022',
+const GitHubHostedPlatforms = [
+  'ubuntu-20.04-x64',
+  'ubuntu-22.04-x64',
+  'macos-11-x64',
+  'macos-12-x64',
+  'windows-2019-x64',
+  'windows-2022-x64',
 ]
 
+// Actually a self-hosted runner which does not correspond to a GitHub-hosted runner image
+function isSelfHostedRunner() {
+  return !GitHubHostedPlatforms.includes(getOSNameVersionArch())
+}
+
+let virtualEnvironmentName = undefined
+
 function getVirtualEnvironmentName() {
-  const imageOS = getImageOS()
-
-  let match = imageOS.match(/^ubuntu(\d+)/) // e.g. ubuntu18
-  if (match) {
-    return `ubuntu-${match[1]}.04`
+  if (virtualEnvironmentName !== undefined) {
+    return virtualEnvironmentName
   }
 
-  match = imageOS.match(/^macos(\d{2})(\d+)?/) // e.g. macos1015, macos11
-  if (match) {
-    if (match[2]) {
-      return `macos-${match[1]}.${match[2]}`
-    } else {
-      return `macos-${match[1]}`
-    }
+  const platform = os.platform()
+  let osName
+  let osVersion
+  if (platform === 'linux') {
+    const info = linuxOSInfo({mode: 'sync'})
+    osName = info.id
+    osVersion = info.version_id
+  } else if (platform === 'darwin') {
+    osName = 'macos'
+    osVersion = macosRelease().version
+  } else if (platform === 'win32') {
+    osName = 'windows'
+    osVersion = findWindowsVersion()
+  } else {
+    throw new Error(`Unknown platform ${platform}`)
   }
 
-  match = imageOS.match(/^win(\d+)/) // e.g. win19
-  if (match) {
-    return `windows-20${match[1]}`
-  }
+  virtualEnvironmentName = `${osName}-${osVersion}`
+  return virtualEnvironmentName
+}
 
-  throw new Error(`Unknown ImageOS ${imageOS}`)
+function getOSNameVersionArch() {
+  return `${getVirtualEnvironmentName()}-${os.arch()}`
+}
+
+function findWindowsVersion() {
+  const version = os.version();
+  const match = version.match(/^Windows Server (\d+) Datacenter/)
+  if (match) {
+    return match[1]
+  } else {
+    throw new Error('Could not find Windows version')
+  }
 }
 
 function shouldUseToolCache(engine, version) {
-  return engine === 'ruby' && !isHeadVersion(version)
+  return (engine === 'ruby' && !isHeadVersion(version)) || isSelfHostedRunner()
 }
 
 function getPlatformToolCache(platform) {
+  if (isSelfHostedRunner()) {
+    const runnerToolCache = process.env['RUNNER_TOOL_CACHE']
+    if (!runnerToolCache) {
+      throw new Error('$RUNNER_TOOL_CACHE must be set on self-hosted runners')
+    }
+    return runnerToolCache
+  }
   // Hardcode paths rather than using $RUNNER_TOOL_CACHE because the prebuilt Rubies cannot be moved anyway
   if (platform.startsWith('ubuntu-')) {
     return '/opt/hostedtoolcache'
@@ -518,14 +585,23 @@ function getPlatformToolCache(platform) {
   }
 }
 
-function getToolCacheRubyPrefix(platform, version) {
+function getToolCacheRubyPrefix(platform, engine, version) {
   const toolCache = getPlatformToolCache(platform)
-  return path.join(toolCache, 'Ruby', version, 'x64')
+  const name = {
+    ruby: 'Ruby',
+    jruby: 'JRuby',
+    truffleruby: 'TruffleRuby',
+    "truffleruby+graalvm": 'TruffleRubyGraalVM'
+  }[engine]
+  return path.join(toolCache, name, version, os.arch())
+}
+
+function toolCacheCompleteFile(toolCacheRubyPrefix) {
+  return `${toolCacheRubyPrefix}.complete`
 }
 
 function createToolCacheCompleteFile(toolCacheRubyPrefix) {
-  const completeFile = `${toolCacheRubyPrefix}.complete`
-  fs.writeFileSync(completeFile, '')
+  fs.writeFileSync(toolCacheCompleteFile(toolCacheRubyPrefix), '')
 }
 
 // convert windows path like C:\Users\runneradmin to /c/Users/runneradmin
@@ -50428,6 +50504,177 @@ DelayedStream.prototype._checkIfMaxDataSizeExceeded = function() {
 
 /***/ }),
 
+/***/ 8487:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const fs = __nccwpck_require__(7147)
+const os = __nccwpck_require__(2037)
+
+/**
+ * Get OS release info from the node os module and augment that with information
+ * from '/etc/os-release', '/usr/lib/os-release', or '/etc/alpine-release'. The
+ * information in that file is distribution-dependent. If not Linux return only
+ * the node os module info.
+ *
+ * @returns info {object} via Promise | callback | return value
+ *
+ * the file property in the info object will be filled in with one of:
+ *   - undefined, if not Linux
+ *   - the file path (above) used
+ *   - an Error instance if no file could be read
+ */
+function linuxOsInfo (opts) {
+  let outputData = {
+    type: os.type(),
+    platform: os.platform(),
+    hostname: os.hostname(),
+    arch: os.arch(),
+    release: os.release(),
+    file: undefined,
+  }
+
+  let mode = 'promise'
+  opts = opts || {}
+
+
+
+  const list = Array.isArray(opts.list) ? opts.list : defaultList
+
+  if (typeof opts.mode === 'function') {
+    mode = 'callback'
+  } else if (opts.mode === 'sync') {
+    mode = 'sync'
+  }
+
+  if (os.type() !== 'Linux') {
+    if (mode === 'promise') {
+      return Promise.resolve(outputData)
+    } else if (mode === 'callback') {
+      return opts.mode(null, outputData)
+    } else {
+      return outputData
+    }
+  }
+
+  if (mode === 'sync') {
+    return synchronousRead()
+  } else {
+    // return a Promise that can be ignored if caller expects a callback
+    return new Promise(asynchronousRead)
+  }
+
+  // loop through the file list synchronously
+  function synchronousRead () {
+    for (let i = 0; i < list.length; i++) {
+      let data
+      try {
+        data = fs.readFileSync(list[i].path, 'utf8')
+        list[i].parser(data, outputData)
+        outputData.file = list[i].path
+        return outputData
+      } catch (e) {
+        // accumulate errors?
+      }
+    }
+    outputData.file = new Error('linux-os-info - no file found')
+    return outputData
+  }
+
+  // loop through the file list on completion of async reads
+  function asynchronousRead (resolve, reject) {
+    let i = 0
+
+    function tryRead () {
+      if (i >= list.length) {
+        const e = new Error('linux-os-info - no file found')
+        outputData.file = e
+        mode === 'promise' ? resolve(outputData) : opts.mode(null, outputData)
+      } else {
+        // try to read the file.
+        let file = list[i].path
+        fs.readFile(file, 'utf8', (err, data) => {
+          if (err) {
+            i += 1
+            tryRead()
+          } else {
+            list[i].parser(data, outputData)
+            outputData.file = file
+            mode === 'promise' ? resolve(outputData) : opts.mode(null, outputData)
+          }
+        })
+      }
+    }
+
+    tryRead()
+  }
+}
+
+//
+// the default list of files to try to read and their parsers.
+// in theory this can be replaced, especially for testing purposes.
+// but it's not documented at this time unless one is reading this.
+//
+const defaultList = [
+  {path: '/etc/os-release', parser: etcOsRelease},
+  {path: '/usr/lib/os-release', parser: usrLibOsRelease},
+  {path: '/etc/alpine-release', parser: etcAlpineRelease}
+]
+
+//
+// helper functions to parse file data
+//
+
+function etcOsRelease(data, outputData) {
+  addOsReleaseToOutputData(data, outputData)
+}
+
+function usrLibOsRelease(data, outputData) {
+  addOsReleaseToOutputData(data, outputData)
+}
+
+// the alpine-release file only contains the version string
+// so fill in the basics based on that.
+function etcAlpineRelease(data, outputData) {
+  outputData.name = 'Alpine'
+  outputData.id = 'alpine'
+  outputData.version = data
+  outputData.version_id = data
+}
+
+function addOsReleaseToOutputData(data, outputData) {
+  const lines = data.split('\n')
+
+  lines.forEach(line => {
+    let index = line.indexOf('=')
+    // only look at lines with at least a one character key
+    if (index >= 1) {
+      // lowercase key and remove quotes on value
+      let key = line.slice(0, index).toLowerCase()
+      let value = line.slice(index + 1).replace(/"/g, '')
+
+      Object.defineProperty(outputData, key, {
+        value: value,
+        writable: true,
+        enumerable: true,
+        configurable: true
+      })
+    }
+  });
+}
+
+module.exports = linuxOsInfo
+
+//
+// a tiny bit of testing
+//
+if (false) {}
+
+
+/***/ }),
+
 /***/ 7129:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -67979,10 +68226,11 @@ __nccwpck_require__.r(__webpack_exports__);
 const os = __nccwpck_require__(2037)
 const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
+const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const io = __nccwpck_require__(7436)
 const tc = __nccwpck_require__(7784)
-const common = __nccwpck_require__(4717)
+const common = __nccwpck_require__(3143)
 const rubyBuilderVersions = __nccwpck_require__(5959)
 
 const builderReleaseTag = 'toolcache'
@@ -67991,10 +68239,6 @@ const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 const windows = common.windows
 
 function getAvailableVersions(platform, engine) {
-  if (!common.supportedPlatforms.includes(platform)) {
-    throw new Error(`Unsupported platform ${platform}`)
-  }
-
   return rubyBuilderVersions[engine]
 }
 
@@ -68005,7 +68249,21 @@ async function install(platform, engine, version) {
     if (inToolCache) {
       rubyPrefix = inToolCache
     } else {
-      rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
+      const toolCacheRubyPrefix = common.getToolCacheRubyPrefix(platform, engine, version)
+      if (common.isSelfHostedRunner()) {
+        const rubyBuildDefinition = engine === 'ruby' ? version : `${engine}-${version}`
+        core.error(
+          `The current runner (${common.getOSNameVersionArch()}) was detected as self-hosted and not matching a GitHub-hosted runner image.\n` +
+          `In such a case, you should install Ruby in the $RUNNER_TOOL_CACHE yourself, for example using https://github.com/rbenv/ruby-build:\n` +
+          `You can take inspiration from this workflow for more details: https://github.com/ruby/ruby-builder/blob/master/.github/workflows/build.yml\n` +
+          `$ ruby-build ${rubyBuildDefinition} ${toolCacheRubyPrefix}\n` +
+          `Once that completes successfully, mark it as complete with:\n` +
+          `$ touch ${common.toolCacheCompleteFile(toolCacheRubyPrefix)}\n` +
+          `It is your responsibility to ensure installing Ruby like that is not done in parallel.\n`)
+        process.exit(1)
+      } else {
+        rubyPrefix = toolCacheRubyPrefix
+      }
     }
   } else if (windows) {
     rubyPrefix = path.join(`${common.drive}:`, `${engine}-${version}`)
@@ -68162,7 +68420,7 @@ const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const io = __nccwpck_require__(7436)
 const tc = __nccwpck_require__(7784)
-const common = __nccwpck_require__(4717)
+const common = __nccwpck_require__(3143)
 const rubyInstallerVersions = __nccwpck_require__(6459)
 
 const drive = common.drive
@@ -68179,13 +68437,7 @@ const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 const msys1 = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys1}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys1}\\mingw\\bin`, `${msys1}\\bin`]
 
-const virtualEnv = common.getVirtualEnvironmentName()
-
 function getAvailableVersions(platform, engine) {
-  if (!common.supportedPlatforms.includes(platform)) {
-    throw new Error(`Unsupported platform ${platform}`)
-  }
-
   if (engine === 'ruby') {
     return Object.keys(rubyInstallerVersions)
   } else {
@@ -68198,7 +68450,7 @@ async function install(platform, engine, version) {
 
   // The windows-2016 and windows-2019 images have MSYS2 build tools (C:/msys64/usr)
   // and MinGW build tools installed.  The windows-2022 image has neither.
-  const hasMSYS2PreInstalled = ['windows-2019', 'windows-2016'].includes(virtualEnv)
+  const hasMSYS2PreInstalled = ['windows-2019', 'windows-2016'].includes(platform)
 
   if (!url.endsWith('.7z')) {
     throw new Error(`URL should end in .7z: ${url}`)
@@ -68211,7 +68463,7 @@ async function install(platform, engine, version) {
     if (inToolCache) {
       rubyPrefix = inToolCache
     } else {
-      rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
+      rubyPrefix = common.getToolCacheRubyPrefix(platform, engine, version)
     }
   } else {
     rubyPrefix = `${drive}:\\${base}`
@@ -68750,7 +69002,7 @@ const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
 const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
-const common = __nccwpck_require__(4717)
+const common = __nccwpck_require__(3143)
 const rubygems = __nccwpck_require__(160)
 const bundler = __nccwpck_require__(1641)
 
@@ -68793,7 +69045,7 @@ async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
-  if (platform.startsWith('windows-') && engine === 'ruby') {
+  if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
     installer = __nccwpck_require__(3216)
   } else {
     installer = __nccwpck_require__(9974)
@@ -68807,7 +69059,7 @@ async function setupRuby(options = {}) {
 
   // JRuby can use compiled extension code, so make sure gcc exists.
   // As of Jan-2022, JRuby compiles against msvcrt.
-  if (platform.startsWith('windows') && (engine === 'jruby') && 
+  if (platform.startsWith('windows') && engine === 'jruby' &&
     !fs.existsSync('C:\\msys64\\mingw64\\bin\\gcc.exe')) {
     await (__nccwpck_require__(3216).installJRubyTools)()
   }

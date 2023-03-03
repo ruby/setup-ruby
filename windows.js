@@ -27,13 +27,7 @@ const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
 const msys1 = `${drive}:\\DevKit64`
 const msysPathEntries = [`${msys1}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys1}\\mingw\\bin`, `${msys1}\\bin`]
 
-const virtualEnv = common.getVirtualEnvironmentName()
-
 export function getAvailableVersions(platform, engine) {
-  if (!common.supportedPlatforms.includes(platform)) {
-    throw new Error(`Unsupported platform ${platform}`)
-  }
-
   if (engine === 'ruby') {
     return Object.keys(rubyInstallerVersions)
   } else {
@@ -46,7 +40,7 @@ export async function install(platform, engine, version) {
 
   // The windows-2016 and windows-2019 images have MSYS2 build tools (C:/msys64/usr)
   // and MinGW build tools installed.  The windows-2022 image has neither.
-  const hasMSYS2PreInstalled = ['windows-2019', 'windows-2016'].includes(virtualEnv)
+  const hasMSYS2PreInstalled = ['windows-2019', 'windows-2016'].includes(platform)
 
   if (!url.endsWith('.7z')) {
     throw new Error(`URL should end in .7z: ${url}`)
@@ -59,7 +53,7 @@ export async function install(platform, engine, version) {
     if (inToolCache) {
       rubyPrefix = inToolCache
     } else {
-      rubyPrefix = common.getToolCacheRubyPrefix(platform, version)
+      rubyPrefix = common.getToolCacheRubyPrefix(platform, engine, version)
     }
   } else {
     rubyPrefix = `${drive}:\\${base}`

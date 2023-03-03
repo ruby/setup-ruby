@@ -46,7 +46,7 @@ export async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
-  if (platform.startsWith('windows-') && engine === 'ruby') {
+  if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
     installer = require('./windows')
   } else {
     installer = require('./ruby-builder')
@@ -60,7 +60,7 @@ export async function setupRuby(options = {}) {
 
   // JRuby can use compiled extension code, so make sure gcc exists.
   // As of Jan-2022, JRuby compiles against msvcrt.
-  if (platform.startsWith('windows') && (engine === 'jruby') && 
+  if (platform.startsWith('windows') && engine === 'jruby' &&
     !fs.existsSync('C:\\msys64\\mingw64\\bin\\gcc.exe')) {
     await require('./windows').installJRubyTools()
   }
