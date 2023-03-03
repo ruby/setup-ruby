@@ -162,9 +162,12 @@ const GitHubHostedPlatforms = [
   'windows-2022-x64',
 ]
 
-// Actually a self-hosted runner which does not correspond to a GitHub-hosted runner image
+// Actually a self-hosted runner for which either
+// * the OS and OS version does not correspond to a GitHub-hosted runner image,
+// * or the hosted tool cache is different from the default tool cache path
 export function isSelfHostedRunner() {
-  return !GitHubHostedPlatforms.includes(getOSNameVersionArch())
+  return !GitHubHostedPlatforms.includes(getOSNameVersionArch()) ||
+      getRunnerToolCache() !== getDefaultToolCachePath()
 }
 
 let virtualEnvironmentName = undefined
@@ -213,28 +216,31 @@ export function shouldUseToolCache(engine, version) {
   return (engine === 'ruby' && !isHeadVersion(version)) || isSelfHostedRunner()
 }
 
-function getPlatformToolCache(platform) {
-  if (isSelfHostedRunner()) {
-    const runnerToolCache = process.env['RUNNER_TOOL_CACHE']
-    if (!runnerToolCache) {
-      throw new Error('$RUNNER_TOOL_CACHE must be set on self-hosted runners')
-    }
-    return runnerToolCache
+export function getRunnerToolCache() {
+  const runnerToolCache = process.env['RUNNER_TOOL_CACHE']
+  if (!runnerToolCache) {
+    throw new Error('$RUNNER_TOOL_CACHE must be set')
   }
-  // Hardcode paths rather than using $RUNNER_TOOL_CACHE because the prebuilt Rubies cannot be moved anyway
+  return runnerToolCache
+}
+
+// Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE,
+// so they can only be used if the two paths are the same
+function getDefaultToolCachePath() {
+  const platform = getVirtualEnvironmentName()
   if (platform.startsWith('ubuntu-')) {
     return '/opt/hostedtoolcache'
   } else if (platform.startsWith('macos-')) {
     return '/Users/runner/hostedtoolcache'
   } else if (platform.startsWith('windows-')) {
-    return 'C:/hostedtoolcache/windows'
+    return 'C:\\hostedtoolcache\\windows'
   } else {
     throw new Error('Unknown platform')
   }
 }
 
 export function getToolCacheRubyPrefix(platform, engine, version) {
-  const toolCache = getPlatformToolCache(platform)
+  const toolCache = getRunnerToolCache()
   const name = {
     ruby: 'Ruby',
     jruby: 'JRuby',
