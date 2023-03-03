@@ -7,7 +7,7 @@ body:
       First, take some time to think whether this is really an issue of ruby/setup-ruby and whether it is fixable in this action.
       This action basically just downloads a prebuilt Ruby and adds it to `PATH`, so it is unlikely the bug is in this action.
       Give some thoughts whether it could be an issue in your workflow, in the gems you use, in GitHub Actions, in Ruby, RubyGems, Bundler, etc.
-      This is NOT the place to ask help about your workflow failing, it is only to report issues about ruby/setup-ruby.
+      This is NOT the place to ask help about your workflow failing (ask that on [GitHub Community](https://github.com/orgs/community/discussions/categories/actions) or [Discussions](https://github.com/ruby/setup-ruby/discussions) instead), it is only to report issues about ruby/setup-ruby.
       Please note we will close your issue without comment if you do not fill out the requested information.
 - type: checkboxes
   attributes:
