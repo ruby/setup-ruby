@@ -13,6 +13,10 @@ export const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
 export const drive = (windows ? (process.env['GITHUB_WORKSPACE'] || 'C')[0] : undefined)
 
+export const inputs = {
+  selfHosted: undefined
+}
+
 export function partition(string, separator) {
   const i = string.indexOf(separator)
   if (i === -1) {
@@ -166,8 +170,13 @@ const GitHubHostedPlatforms = [
 // * the OS and OS version does not correspond to a GitHub-hosted runner image,
 // * or the hosted tool cache is different from the default tool cache path
 export function isSelfHostedRunner() {
-  return !GitHubHostedPlatforms.includes(getOSNameVersionArch()) ||
-      getRunnerToolCache() !== getDefaultToolCachePath()
+  if (inputs.selfHosted === undefined) {
+    throw new Error('inputs.selfHosted should have been already set')
+  }
+
+  return inputs.selfHosted === 'true' ||
+    !GitHubHostedPlatforms.includes(getOSNameVersionArch()) ||
+    getRunnerToolCache() !== getDefaultToolCachePath()
 }
 
 let virtualEnvironmentName = undefined

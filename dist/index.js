@@ -296,6 +296,7 @@ __nccwpck_require__.d(__webpack_exports__, {
   "getVirtualEnvironmentName": () => (/* binding */ getVirtualEnvironmentName),
   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
   "hashFile": () => (/* binding */ hashFile),
+  "inputs": () => (/* binding */ inputs),
   "isBundler1Default": () => (/* binding */ isBundler1Default),
   "isBundler2Default": () => (/* binding */ isBundler2Default),
   "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
@@ -365,6 +366,10 @@ const linuxOSInfo = __nccwpck_require__(8487)
 const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
 const drive = (windows ? (process.env['GITHUB_WORKSPACE'] || 'C')[0] : undefined)
+
+const inputs = {
+  selfHosted: undefined
+}
 
 function partition(string, separator) {
   const i = string.indexOf(separator)
@@ -519,8 +524,13 @@ const GitHubHostedPlatforms = [
 // * the OS and OS version does not correspond to a GitHub-hosted runner image,
 // * or the hosted tool cache is different from the default tool cache path
 function isSelfHostedRunner() {
-  return !GitHubHostedPlatforms.includes(getOSNameVersionArch()) ||
-      getRunnerToolCache() !== getDefaultToolCachePath()
+  if (inputs.selfHosted === undefined) {
+    throw new Error('inputs.selfHosted should have been already set')
+  }
+
+  return inputs.selfHosted === 'true' ||
+    !GitHubHostedPlatforms.includes(getOSNameVersionArch()) ||
+    getRunnerToolCache() !== getDefaultToolCachePath()
 }
 
 let virtualEnvironmentName = undefined
@@ -69022,6 +69032,7 @@ const inputDefaults = {
   'bundler-cache': 'false',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
+  'self-hosted': 'false',
 }
 
 // entry point when this action is run on its own
@@ -69045,6 +69056,7 @@ async function setupRuby(options = {}) {
       inputs[key] = core.getInput(key) || inputDefaults[key]
     }
   }
+  common.inputs.selfHosted = inputs['self-hosted']
 
   process.chdir(inputs['working-directory'])
 
