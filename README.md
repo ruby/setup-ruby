@@ -252,7 +252,6 @@ This action might work with [self-hosted runners](https://docs.github.com/en/act
 if the [Runner Image](https://github.com/actions/runner-images) is very similar to the ones used by GitHub runners. Notably:
 
 * Make sure to use the same operating system and version.
-* Set the environment variable `ImageOS` on the runner to the corresponding value on GitHub-hosted runners (e.g. `ubuntu18`/`macos1015`/`win19`). This is necessary to detect the operating system and version.
 * Make sure to use the same version of libssl.
 * Make sure that the operating system has `libyaml-0` and [`libgmp`](https://stackoverflow.com/questions/26555902/ruby-v-dyld-library-not-loaded-usr-local-lib-libgmp-10-dylib) installed
 * The default tool cache directory (`/opt/hostedtoolcache` on Linux, `/Users/runner/hostedtoolcache` on macOS,
@@ -260,9 +259,9 @@ if the [Runner Image](https://github.com/actions/runner-images) is very similar 
   This is necessary since the Ruby builds embed the install path when built and cannot be moved around.
 * `/home/runner` must be writable by the `runner` user.
 
-In other cases, please use a system Ruby or [install Ruby manually](https://github.com/postmodern/chruby/wiki#installing-rubies) instead.
-
-On a self-hosted runner you need to define the `ImageOs` as an evironment variable on the host, you can do this in the `~/actions-runner/.env` file (See [#230](https://github.com/ruby/setup-ruby/issues/230)).
+In other cases, you will need to install Ruby in the runner tool cache as shown by the action when it detects that case
+(run it so it will show you where to install Ruby).
+You could of course also not use this action and e.g. use Ruby from a system package or use a Docker image instead.
 
 ## History
 
