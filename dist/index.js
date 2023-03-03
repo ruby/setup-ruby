@@ -305,6 +305,7 @@ __nccwpck_require__.d(__webpack_exports__, {
   "isStableVersion": () => (/* binding */ isStableVersion),
   "measure": () => (/* binding */ measure),
   "partition": () => (/* binding */ partition),
+  "selfHostedRunnerReason": () => (/* binding */ selfHostedRunnerReason),
   "setupPath": () => (/* binding */ setupPath),
   "shouldUseToolCache": () => (/* binding */ shouldUseToolCache),
   "targetRubyVersion": () => (/* binding */ targetRubyVersion),
@@ -531,6 +532,18 @@ function isSelfHostedRunner() {
   return inputs.selfHosted === 'true' ||
     !GitHubHostedPlatforms.includes(getOSNameVersionArch()) ||
     getRunnerToolCache() !== getDefaultToolCachePath()
+}
+
+function selfHostedRunnerReason() {
+  if (inputs.selfHosted === 'true') {
+    return 'the self-hosted input was set'
+  } else if (!GitHubHostedPlatforms.includes(getOSNameVersionArch())) {
+    return 'the platform does not match a GitHub-hosted runner image (or that image is deprecated and no longer supported)'
+  } else if (getRunnerToolCache() !== getDefaultToolCachePath()) {
+    return 'the $RUNNER_TOOL_CACHE is different than the default tool cache path (they must be the same to reuse prebuilt Ruby binaries)'
+  } else {
+    return 'unknown reason'
+  }
 }
 
 let virtualEnvironmentName = undefined
@@ -68270,8 +68283,8 @@ async function install(platform, engine, version) {
       if (common.isSelfHostedRunner()) {
         const rubyBuildDefinition = engine === 'ruby' ? version : `${engine}-${version}`
         core.error(
-          `The current runner (${common.getOSNameVersionArch()}, RUNNER_TOOL_CACHE=${common.getRunnerToolCache()}) was detected as self-hosted and not matching a GitHub-hosted runner image.\n` +
-          `In such a case, you should install Ruby in the $RUNNER_TOOL_CACHE yourself, for example using https://github.com/rbenv/ruby-build:\n` +
+          `The current runner (${common.getOSNameVersionArch()}, RUNNER_TOOL_CACHE=${common.getRunnerToolCache()}) was detected as self-hosted because ${common.selfHostedRunnerReason()}.\n` +
+          `In such a case, you should install Ruby in the $RUNNER_TOOL_CACHE yourself, for example using https://github.com/rbenv/ruby-build\n` +
           `You can take inspiration from this workflow for more details: https://github.com/ruby/ruby-builder/blob/master/.github/workflows/build.yml\n` +
           `$ ruby-build ${rubyBuildDefinition} ${toolCacheRubyPrefix}\n` +
           `Once that completes successfully, mark it as complete with:\n` +

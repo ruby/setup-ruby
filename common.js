@@ -179,6 +179,18 @@ export function isSelfHostedRunner() {
     getRunnerToolCache() !== getDefaultToolCachePath()
 }
 
+export function selfHostedRunnerReason() {
+  if (inputs.selfHosted === 'true') {
+    return 'the self-hosted input was set'
+  } else if (!GitHubHostedPlatforms.includes(getOSNameVersionArch())) {
+    return 'the platform does not match a GitHub-hosted runner image (or that image is deprecated and no longer supported)'
+  } else if (getRunnerToolCache() !== getDefaultToolCachePath()) {
+    return 'the $RUNNER_TOOL_CACHE is different than the default tool cache path (they must be the same to reuse prebuilt Ruby binaries)'
+  } else {
+    return 'unknown reason'
+  }
+}
+
 let virtualEnvironmentName = undefined
 
 export function getVirtualEnvironmentName() {
