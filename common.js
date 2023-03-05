@@ -264,15 +264,18 @@ function getDefaultToolCachePath() {
   }
 }
 
-export function getToolCacheRubyPrefix(platform, engine, version) {
-  const toolCache = getToolCachePath()
-  const name = {
+export function engineToToolCacheName(engine) {
+  return {
     ruby: 'Ruby',
     jruby: 'JRuby',
     truffleruby: 'TruffleRuby',
     "truffleruby+graalvm": 'TruffleRubyGraalVM'
   }[engine]
-  return path.join(toolCache, name, version, os.arch())
+}
+
+export function getToolCacheRubyPrefix(platform, engine, version) {
+  const toolCache = getToolCachePath()
+  return path.join(toolCache, engineToToolCacheName(engine), version, os.arch())
 }
 
 export function toolCacheCompleteFile(toolCacheRubyPrefix) {
