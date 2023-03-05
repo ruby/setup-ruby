@@ -292,6 +292,7 @@ __nccwpck_require__.d(__webpack_exports__, {
   "floatVersion": () => (/* binding */ floatVersion),
   "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
   "getRunnerToolCache": () => (/* binding */ getRunnerToolCache),
+  "getToolCachePath": () => (/* binding */ getToolCachePath),
   "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
   "getVirtualEnvironmentName": () => (/* binding */ getVirtualEnvironmentName),
   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
@@ -521,17 +522,14 @@ const GitHubHostedPlatforms = [
   'windows-2022-x64',
 ]
 
-// Actually a self-hosted runner for which either
-// * the OS and OS version does not correspond to a GitHub-hosted runner image,
-// * or the hosted tool cache is different from the default tool cache path
+// Actually a self-hosted runner for which  the OS and OS version does not correspond to a GitHub-hosted runner image,
 function isSelfHostedRunner() {
   if (inputs.selfHosted === undefined) {
     throw new Error('inputs.selfHosted should have been already set')
   }
 
   return inputs.selfHosted === 'true' ||
-    !GitHubHostedPlatforms.includes(getOSNameVersionArch()) ||
-    getRunnerToolCache() !== getDefaultToolCachePath()
+    !GitHubHostedPlatforms.includes(getOSNameVersionArch())
 }
 
 function selfHostedRunnerReason() {
@@ -539,8 +537,6 @@ function selfHostedRunnerReason() {
     return 'the self-hosted input was set'
   } else if (!GitHubHostedPlatforms.includes(getOSNameVersionArch())) {
     return 'the platform does not match a GitHub-hosted runner image (or that image is deprecated and no longer supported)'
-  } else if (getRunnerToolCache() !== getDefaultToolCachePath()) {
-    return 'the $RUNNER_TOOL_CACHE is different than the default tool cache path (they must be the same to reuse prebuilt Ruby binaries)'
   } else {
     return 'unknown reason'
   }
@@ -592,6 +588,16 @@ function shouldUseToolCache(engine, version) {
   return (engine === 'ruby' && !isHeadVersion(version)) || isSelfHostedRunner()
 }
 
+function getToolCachePath() {
+  if (isSelfHostedRunner()) {
+    return getRunnerToolCache()
+  } else {
+    // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
+    // so use that path is not isSelfHostedRunner()
+    return getDefaultToolCachePath()
+  }
+}
+
 function getRunnerToolCache() {
   const runnerToolCache = process.env['RUNNER_TOOL_CACHE']
   if (!runnerToolCache) {
@@ -600,8 +606,7 @@ function getRunnerToolCache() {
   return runnerToolCache
 }
 
-// Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE,
-// so they can only be used if the two paths are the same
+// Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
 function getDefaultToolCachePath() {
   const platform = getVirtualEnvironmentName()
   if (platform.startsWith('ubuntu-')) {
@@ -616,7 +621,7 @@ function getDefaultToolCachePath() {
 }
 
 function getToolCacheRubyPrefix(platform, engine, version) {
-  const toolCache = getRunnerToolCache()
+  const toolCache = getToolCachePath()
   const name = {
     ruby: 'Ruby',
     jruby: 'JRuby',
@@ -68283,7 +68288,7 @@ async function install(platform, engine, version) {
       if (common.isSelfHostedRunner()) {
         const rubyBuildDefinition = engine === 'ruby' ? version : `${engine}-${version}`
         core.error(
-          `The current runner (${common.getOSNameVersionArch()}, RUNNER_TOOL_CACHE=${common.getRunnerToolCache()}) was detected as self-hosted because ${common.selfHostedRunnerReason()}.\n` +
+          `The current runner (${common.getOSNameVersionArch()}) was detected as self-hosted because ${common.selfHostedRunnerReason()}.\n` +
           `In such a case, you should install Ruby in the $RUNNER_TOOL_CACHE yourself, for example using https://github.com/rbenv/ruby-build\n` +
           `You can take inspiration from this workflow for more details: https://github.com/ruby/ruby-builder/blob/master/.github/workflows/build.yml\n` +
           `$ ruby-build ${rubyBuildDefinition} ${toolCacheRubyPrefix}\n` +
