@@ -289,6 +289,7 @@ __nccwpck_require__.r(__webpack_exports__);
 __nccwpck_require__.d(__webpack_exports__, {
   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
   "drive": () => (/* binding */ drive),
+  "engineToToolCacheName": () => (/* binding */ engineToToolCacheName),
   "floatVersion": () => (/* binding */ floatVersion),
   "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
   "getRunnerToolCache": () => (/* binding */ getRunnerToolCache),
@@ -620,15 +621,18 @@ function getDefaultToolCachePath() {
   }
 }
 
-function getToolCacheRubyPrefix(platform, engine, version) {
-  const toolCache = getToolCachePath()
-  const name = {
+function engineToToolCacheName(engine) {
+  return {
     ruby: 'Ruby',
     jruby: 'JRuby',
     truffleruby: 'TruffleRuby',
     "truffleruby+graalvm": 'TruffleRubyGraalVM'
   }[engine]
-  return path.join(toolCache, name, version, os.arch())
+}
+
+function getToolCacheRubyPrefix(platform, engine, version) {
+  const toolCache = getToolCachePath()
+  return path.join(toolCache, engineToToolCacheName(engine), version, os.arch())
 }
 
 function toolCacheCompleteFile(toolCacheRubyPrefix) {
@@ -68280,7 +68284,7 @@ function getAvailableVersions(platform, engine) {
 async function install(platform, engine, version) {
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
-    inToolCache = tc.find('Ruby', version)
+    inToolCache = tc.find(common.engineToToolCacheName(engine), version)
     if (inToolCache) {
       rubyPrefix = inToolCache
     } else {
@@ -68494,7 +68498,7 @@ async function install(platform, engine, version) {
 
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
-    inToolCache = tc.find('Ruby', version)
+    inToolCache = tc.find(common.engineToToolCacheName(engine), version)
     if (inToolCache) {
       rubyPrefix = inToolCache
     } else {

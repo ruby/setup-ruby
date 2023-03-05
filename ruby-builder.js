@@ -20,7 +20,7 @@ export function getAvailableVersions(platform, engine) {
 export async function install(platform, engine, version) {
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
-    inToolCache = tc.find('Ruby', version)
+    inToolCache = tc.find(common.engineToToolCacheName(engine), version)
     if (inToolCache) {
       rubyPrefix = inToolCache
     } else {
