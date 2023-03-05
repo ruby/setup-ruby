@@ -166,17 +166,14 @@ const GitHubHostedPlatforms = [
   'windows-2022-x64',
 ]
 
-// Actually a self-hosted runner for which either
-// * the OS and OS version does not correspond to a GitHub-hosted runner image,
-// * or the hosted tool cache is different from the default tool cache path
+// Actually a self-hosted runner for which  the OS and OS version does not correspond to a GitHub-hosted runner image,
 export function isSelfHostedRunner() {
   if (inputs.selfHosted === undefined) {
     throw new Error('inputs.selfHosted should have been already set')
   }
 
   return inputs.selfHosted === 'true' ||
-    !GitHubHostedPlatforms.includes(getOSNameVersionArch()) ||
-    getRunnerToolCache() !== getDefaultToolCachePath()
+    !GitHubHostedPlatforms.includes(getOSNameVersionArch())
 }
 
 export function selfHostedRunnerReason() {
@@ -184,8 +181,6 @@ export function selfHostedRunnerReason() {
     return 'the self-hosted input was set'
   } else if (!GitHubHostedPlatforms.includes(getOSNameVersionArch())) {
     return 'the platform does not match a GitHub-hosted runner image (or that image is deprecated and no longer supported)'
-  } else if (getRunnerToolCache() !== getDefaultToolCachePath()) {
-    return 'the $RUNNER_TOOL_CACHE is different than the default tool cache path (they must be the same to reuse prebuilt Ruby binaries)'
   } else {
     return 'unknown reason'
   }
@@ -237,6 +232,16 @@ export function shouldUseToolCache(engine, version) {
   return (engine === 'ruby' && !isHeadVersion(version)) || isSelfHostedRunner()
 }
 
+export function getToolCachePath() {
+  if (isSelfHostedRunner()) {
+    return getRunnerToolCache()
+  } else {
+    // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
+    // so use that path is not isSelfHostedRunner()
+    return getDefaultToolCachePath()
+  }
+}
+
 export function getRunnerToolCache() {
   const runnerToolCache = process.env['RUNNER_TOOL_CACHE']
   if (!runnerToolCache) {
@@ -245,8 +250,7 @@ export function getRunnerToolCache() {
   return runnerToolCache
 }
 
-// Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE,
-// so they can only be used if the two paths are the same
+// Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
 function getDefaultToolCachePath() {
   const platform = getVirtualEnvironmentName()
   if (platform.startsWith('ubuntu-')) {
@@ -261,7 +265,7 @@ function getDefaultToolCachePath() {
 }
 
 export function getToolCacheRubyPrefix(platform, engine, version) {
-  const toolCache = getRunnerToolCache()
+  const toolCache = getToolCachePath()
   const name = {
     ruby: 'Ruby',
     jruby: 'JRuby',
