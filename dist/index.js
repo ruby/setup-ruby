@@ -68326,7 +68326,7 @@ async function install(platform, engine, version) {
   common.setupPath([path.join(rubyPrefix, 'bin')])
 
   if (!inToolCache) {
-    await preparePrefix(rubyPrefix)
+    await io.mkdirP(rubyPrefix)
     if (engine === 'truffleruby+graalvm') {
       await installWithRubyBuild(engine, version, rubyPrefix)
     } else {
@@ -68335,15 +68335,6 @@ async function install(platform, engine, version) {
   }
 
   return rubyPrefix
-}
-
-async function preparePrefix(rubyPrefix) {
-  const parentDir = path.dirname(rubyPrefix)
-
-  await io.rmRF(rubyPrefix)
-  if (!(fs.existsSync(parentDir) && fs.statSync(parentDir).isDirectory())) {
-    await io.mkdirP(parentDir)
-  }
 }
 
 async function installWithRubyBuild(engine, version, rubyPrefix) {
