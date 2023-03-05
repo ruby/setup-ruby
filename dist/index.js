@@ -289,7 +289,6 @@ __nccwpck_require__.r(__webpack_exports__);
 __nccwpck_require__.d(__webpack_exports__, {
   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
   "drive": () => (/* binding */ drive),
-  "engineToToolCacheName": () => (/* binding */ engineToToolCacheName),
   "floatVersion": () => (/* binding */ floatVersion),
   "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
   "getRunnerToolCache": () => (/* binding */ getRunnerToolCache),
@@ -313,6 +312,7 @@ __nccwpck_require__.d(__webpack_exports__, {
   "targetRubyVersion": () => (/* binding */ targetRubyVersion),
   "time": () => (/* binding */ time),
   "toolCacheCompleteFile": () => (/* binding */ toolCacheCompleteFile),
+  "toolCacheFind": () => (/* binding */ toolCacheFind),
   "win2nix": () => (/* binding */ win2nix),
   "windows": () => (/* binding */ windows)
 });
@@ -362,6 +362,7 @@ const util = __nccwpck_require__(3837)
 const stream = __nccwpck_require__(2781)
 const common_crypto = __nccwpck_require__(6113)
 const core = __nccwpck_require__(2186)
+const tc = __nccwpck_require__(7784)
 const { performance } = __nccwpck_require__(4074)
 const linuxOSInfo = __nccwpck_require__(8487)
 ;
@@ -618,6 +619,17 @@ function getDefaultToolCachePath() {
     return 'C:\\hostedtoolcache\\windows'
   } else {
     throw new Error('Unknown platform')
+  }
+}
+
+// tc.find() but using RUNNER_TOOL_CACHE=getToolCachePath()
+function toolCacheFind(engine, version) {
+  const originalToolCache = getToolCachePath()
+  process.env['RUNNER_TOOL_CACHE'] = getToolCachePath()
+  try {
+    return tc.find(engineToToolCacheName(engine), version)
+  } finally {
+    process.env['RUNNER_TOOL_CACHE'] = originalToolCache
   }
 }
 
@@ -68284,7 +68296,7 @@ function getAvailableVersions(platform, engine) {
 async function install(platform, engine, version) {
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
-    inToolCache = tc.find(common.engineToToolCacheName(engine), version)
+    inToolCache = common.toolCacheFind(engine, version)
     if (inToolCache) {
       rubyPrefix = inToolCache
     } else {
@@ -68498,7 +68510,7 @@ async function install(platform, engine, version) {
 
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
-    inToolCache = tc.find(common.engineToToolCacheName(engine), version)
+    inToolCache = common.toolCacheFind(engine, version)
     if (inToolCache) {
       rubyPrefix = inToolCache
     } else {

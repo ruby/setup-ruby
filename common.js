@@ -5,6 +5,7 @@ const util = require('util')
 const stream = require('stream')
 const crypto = require('crypto')
 const core = require('@actions/core')
+const tc = require('@actions/tool-cache')
 const { performance } = require('perf_hooks')
 const linuxOSInfo = require('linux-os-info')
 import macosRelease from 'macos-release'
@@ -264,7 +265,18 @@ function getDefaultToolCachePath() {
   }
 }
 
-export function engineToToolCacheName(engine) {
+// tc.find() but using RUNNER_TOOL_CACHE=getToolCachePath()
+export function toolCacheFind(engine, version) {
+  const originalToolCache = getToolCachePath()
+  process.env['RUNNER_TOOL_CACHE'] = getToolCachePath()
+  try {
+    return tc.find(engineToToolCacheName(engine), version)
+  } finally {
+    process.env['RUNNER_TOOL_CACHE'] = originalToolCache
+  }
+}
+
+function engineToToolCacheName(engine) {
   return {
     ruby: 'Ruby',
     jruby: 'JRuby',
