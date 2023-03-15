@@ -20,8 +20,14 @@ const msys2GCCReleaseURI  = 'https://github.com/ruby/setup-msys2-gcc/releases/do
 const msys2BasePath = process.env['GHCUP_MSYS2']
 const vcPkgBasePath = process.env['VCPKG_INSTALLATION_ROOT']
 
-// needed for Ruby 2.0-2.3, and mswin, cert file used by Git for Windows
-const certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
+// needed for Ruby 2.0-2.3, cert file used by Git for Windows
+let certFile = 'C:\\Program Files\\Git\\mingw64\\etc\\ssl\\cert.pem'
+if (!fs.existsSync(certFile)) {
+  certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
+  if (!fs.existsSync(certFile)) {
+    throw new Error("Cannot find Git's cert file")
+  }
+}
 
 // location & path for old RubyInstaller DevKit (MSYS1), used with Ruby 2.0-2.3
 const msys1 = `${drive}:\\DevKit64`
@@ -97,7 +103,7 @@ async function installGCCTools(type, version) {
   // 2022-Dec ruby/msys2-gcc-pkgs now uses a suffix to delineate different archive versions.
   // At present, the only use is to indicate the included OpenSSL version.
   // With no suffix, archives include OpenSSL 1.1.1, with a '-3.0' suffix, they include
-  // OpenSSL 3.0.x.  Note that the mswin archive uses OpenSSL 3. 
+  // OpenSSL 3.0.x.  Note that the mswin archive uses OpenSSL 3.
   // As of Jan-2023, OpenSSL 3 is used in Ruby 3.2 & all head versions.  MSYS2 updated
   // to OpenSSL 3 on 14-Jan-2023.
   let suffix = ''
@@ -206,29 +212,6 @@ async function installMSYS1(version) {
 
 async function setupMSWin() {
   core.exportVariable('MAKE', 'nmake.exe')
-
-  // Pre-installed OpenSSL use C:\Program Files\Common Files\SSL
-  let certsDir = 'C:\\Program Files\\Common Files\\SSL\\certs'
-  if (!fs.existsSync(certsDir)) {
-    fs.mkdirSync(certsDir, { recursive: true })
-  }
-
-  // cert.pem location is hard-coded by OpenSSL msvc builds
-  let cert = 'C:\\Program Files\\Common Files\\SSL\\cert.pem'
-  if (!fs.existsSync(cert)) {
-    fs.copyFileSync(certFile, cert)
-  }
-
-  // vcpkg openssl uses packages\openssl_x64-windows\certs
-  certsDir = `${vcPkgBasePath}\\packages\\openssl_x64-windows\\certs`
-  if (!fs.existsSync(certsDir)) {
-    fs.mkdirSync(certsDir, { recursive: true })
-  }
-
-  // vcpkg openssl uses packages\openssl_x64-windows\cert.pem
-  cert = `${vcPkgBasePath}\\packages\\openssl_x64-windows\\cert.pem`
-  fs.copyFileSync(certFile, cert)
-
   return await common.measure('Setting up MSVC environment', async () => addVCVARSEnv())
 }
 
