@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@actions/cache@^3":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-3.2.1.tgz#bbd4680aeab811f3e839e58be493ffe7583d0311"
-  integrity sha512-QurbMiY//02+0kN1adJkMHN44RcZ5kAXfhSnKUZmtSmhMTNqLitGArG1xOkt93NNyByTlLGAc5wIOF/dZ2ENOQ==
+"@actions/cache@3.0.6":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-3.0.6.tgz#b76c51a78c927fcf0eb631b96a07e34f575c422b"
+  integrity sha512-Tttit+nqmxgb2M5Ufj5p8Lwd+fx329HOTLzxMrY4aaaZqBzqetgWlEfszMyiXfX4cJML+bzLJbyD9rNYt8TJ8g==
   dependencies:
     "@actions/core" "^1.10.0"
     "@actions/exec" "^1.0.1"
@@ -14,7 +14,7 @@
     "@actions/io" "^1.0.1"
     "@azure/abort-controller" "^1.1.0"
     "@azure/ms-rest-js" "^2.6.0"
-    "@azure/storage-blob" "^12.13.0"
+    "@azure/storage-blob" "^12.8.0"
     semver "^6.1.0"
     uuid "^3.3.3"
 
@@ -154,7 +154,7 @@
     uuid "^8.3.2"
     xml2js "^0.4.19"
 
-"@azure/storage-blob@^12.13.0":
+"@azure/storage-blob@^12.8.0":
   version "12.13.0"
   resolved "https://registry.yarnpkg.com/@azure/storage-blob/-/storage-blob-12.13.0.tgz#9209cbb5c2cd463fb967a0f2ae144ace20879160"
   integrity sha512-t3Q2lvBMJucgTjQcP5+hvEJMAsJSk0qmAnjDLie2td017IiduZbbC9BOcFfmwzR6y6cJdZOuewLCNFmEx9IrXA==
