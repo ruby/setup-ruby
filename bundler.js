@@ -191,7 +191,8 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   // restore cache & install
   let cachedKey = null
   try {
-    cachedKey = await cache.restoreCache(paths, key, restoreKeys)
+    // .slice() to workaround https://github.com/actions/toolkit/issues/1377
+    cachedKey = await cache.restoreCache(paths.slice(), key, restoreKeys)
   } catch (error) {
     if (error.name === cache.ValidationError.name) {
       throw error;
