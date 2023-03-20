@@ -31,21 +31,9 @@ body:
       - self-hosted runner
   validations:
     required: true
-- type: textarea
-  attributes:
-    render: yaml
-    label: The workflow code or a link to the workflow file
-  validations:
-    required: true
 - type: input
   attributes:
-    label: Link to the log of a failed workflow job, or to a gist with the output
-  validations:
-    required: true
-- type: textarea
-  attributes:
-    render: shell
-    label: The command and output of the failing step
+    label: Link to the failed workflow job (must be a public workflow job, so the necessary information is available)
   validations:
     required: true
 - type: textarea
