@@ -94,7 +94,7 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
 
   if (bundlerVersion === 'default') {
     if (common.isBundler2dot2Default(engine, rubyVersion)) {
-      if (common.windows && engine === 'ruby' && (common.isStableVersion(rubyVersion) || rubyVersion === 'head')) {
+      if (common.windows && engine === 'ruby' && (common.isStableVersion(engine, rubyVersion) || rubyVersion === 'head')) {
         // https://github.com/ruby/setup-ruby/issues/371
         console.log(`Installing latest Bundler for ${engine}-${rubyVersion} on Windows because bin/bundle does not work in bash otherwise`)
         bundlerVersion = 'latest'
@@ -427,8 +427,12 @@ function isHeadVersion(rubyVersion) {
   return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
 }
 
-function isStableVersion(rubyVersion) {
-  return /^\d+(\.\d+)*$/.test(rubyVersion)
+function isStableVersion(engine, rubyVersion) {
+  if (engine.startsWith('truffleruby')) {
+    return /^\d+(\.\d+)*(-preview\d+)?$/.test(rubyVersion)
+  } else {
+    return /^\d+(\.\d+)*$/.test(rubyVersion)
+  }
 }
 
 function hasBundlerDefaultGem(engine, rubyVersion) {
@@ -65067,7 +65071,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   if (!engineVersions.includes(parsedVersion)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
     // Try to match stable versions first, so an empty version (engine-only) matches the latest stable version
-    let found = latestToFirstVersion.find(v => common.isStableVersion(v) && v.startsWith(parsedVersion))
+    let found = latestToFirstVersion.find(v => common.isStableVersion(engine, v) && v.startsWith(parsedVersion))
     if (!found) {
       // Exclude head versions, they must be exact matches
       found = latestToFirstVersion.find(v => !common.isHeadVersion(v) && v.startsWith(parsedVersion))

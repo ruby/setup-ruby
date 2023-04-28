@@ -70,8 +70,12 @@ export function isHeadVersion(rubyVersion) {
   return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
 }
 
-export function isStableVersion(rubyVersion) {
-  return /^\d+(\.\d+)*$/.test(rubyVersion)
+export function isStableVersion(engine, rubyVersion) {
+  if (engine.startsWith('truffleruby')) {
+    return /^\d+(\.\d+)*(-preview\d+)?$/.test(rubyVersion)
+  } else {
+    return /^\d+(\.\d+)*$/.test(rubyVersion)
+  }
 }
 
 export function hasBundlerDefaultGem(engine, rubyVersion) {
