@@ -170,6 +170,7 @@ const GitHubHostedPlatforms = [
   'macos-13-x64',
   'windows-2019-x64',
   'windows-2022-x64',
+  'debian-11-x64',
 ]
 
 // Actually a self-hosted runner for which  the OS and OS version does not correspond to a GitHub-hosted runner image,
