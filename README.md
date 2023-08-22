@@ -70,7 +70,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.0' # Not needed with a .ruby-version file
+        ruby-version: '3.2' # Not needed with a .ruby-version file
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bundle exec rake
 ```
@@ -89,7 +89,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['2.7', '3.0', '3.1', head, jruby, jruby-head, truffleruby, truffleruby-head]
+        ruby: ['2.7', '3.0', '3.1', '3.2', head, jruby, jruby-head, truffleruby, truffleruby-head]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -118,7 +118,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.2'
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - run: bundle exec rake
 ```
