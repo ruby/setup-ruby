@@ -49,7 +49,7 @@ jobs:
     name: ${{ matrix.os }} ${{ matrix.ruby }}
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: ./
       with:
@@ -150,7 +150,7 @@ jobs:
     name: "Test with no Gemfile"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: rm Gemfile
       - uses: ./
         with:
@@ -161,7 +161,7 @@ jobs:
     name: "Test rubygems: latest upgrades the default RubyGems version"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -172,7 +172,7 @@ jobs:
     name: "Test rubygems: version upgrades RubyGems to that version if the default is older"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -183,7 +183,7 @@ jobs:
     name: "Test rubygems: version noops if the default is newer"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: ./
       with:
         ruby-version: '3.1.0'
@@ -194,7 +194,7 @@ jobs:
     name: "Test rubygems: version uses the Bundler installed by the rubygems update"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           ruby-version: '3.1.0'
@@ -206,7 +206,7 @@ jobs:
     name: "Test bundler: 1.x for old Ruby"
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           ruby-version: '2.2'
@@ -217,7 +217,7 @@ jobs:
     name: "Test with a major Bundler version"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -228,7 +228,7 @@ jobs:
     name: "Test with a minor Bundler version"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -239,7 +239,7 @@ jobs:
     name: "Test with an exact Bundler version"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -250,7 +250,7 @@ jobs:
     name: "Test with a Bundler pre/rc version"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           ruby-version: '2.6'
@@ -263,7 +263,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler-dev.gemfile
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           ruby-version: ruby-head
@@ -275,7 +275,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler1.gemfile
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           ruby-version: '2.7'
@@ -293,7 +293,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           ruby-version: '2.6'
@@ -306,7 +306,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/nokogiri.gemfile
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           ruby-version: truffleruby-head
@@ -316,7 +316,7 @@ jobs:
   lint:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - run: yarn install
     - run: yarn run package
     - name: Check generated files are up to date
