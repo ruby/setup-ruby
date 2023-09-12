@@ -25,20 +25,7 @@ export async function install(platform, engine, version) {
       rubyPrefix = inToolCache
     } else {
       const toolCacheRubyPrefix = common.getToolCacheRubyPrefix(platform, engine, version)
-      if (common.isSelfHostedRunner()) {
-        const rubyBuildDefinition = engine === 'ruby' ? version : `${engine}-${version}`
-        core.error(
-          `The current runner (${common.getOSNameVersionArch()}) was detected as self-hosted because ${common.selfHostedRunnerReason()}.\n` +
-          `In such a case, you should install Ruby in the $RUNNER_TOOL_CACHE yourself, for example using https://github.com/rbenv/ruby-build\n` +
-          `You can take inspiration from this workflow for more details: https://github.com/ruby/ruby-builder/blob/master/.github/workflows/build.yml\n` +
-          `$ ruby-build ${rubyBuildDefinition} ${toolCacheRubyPrefix}\n` +
-          `Once that completes successfully, mark it as complete with:\n` +
-          `$ touch ${common.toolCacheCompleteFile(toolCacheRubyPrefix)}\n` +
-          `It is your responsibility to ensure installing Ruby like that is not done in parallel.\n`)
-        process.exit(1)
-      } else {
-        rubyPrefix = toolCacheRubyPrefix
-      }
+      rubyPrefix = toolCacheRubyPrefix
     }
   } else if (windows) {
     rubyPrefix = path.join(`${common.drive}:`, `${engine}-${version}`)
