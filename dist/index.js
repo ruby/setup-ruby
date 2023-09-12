@@ -324,6 +324,7 @@ const external_node_os_namespaceObject = require("node:os");
 
 
 const nameMap = new Map([
+	[23, ['Sonoma', '14']],
 	[22, ['Ventura', '13']],
 	[21, ['Monterey', '12']],
 	[20, ['Big Sur', '11']],
@@ -526,6 +527,8 @@ const GitHubHostedPlatforms = [
   'macos-11-x64',
   'macos-12-x64',
   'macos-13-x64',
+  'macos-13-arm64',
+  'macos-14-arm64',
   'windows-2019-x64',
   'windows-2022-x64',
 ]
