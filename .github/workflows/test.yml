@@ -31,6 +31,7 @@ jobs:
         - { os: windows-2022, ruby: mswin }
         - { os: windows-2022, ruby: ucrt  }
         exclude:
+        - { os: ubuntu-22.04, ruby: '2.2' } # https://github.com/ruby/setup-ruby/issues/496
         - { os: windows-2019, ruby: '1.9' }
         - { os: windows-2019, ruby: '3.3' }
         - { os: windows-2019, ruby: debug }
