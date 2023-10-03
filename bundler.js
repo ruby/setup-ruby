@@ -236,7 +236,8 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
   const cwd = process.cwd()
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
-  let key = `setup-ruby-bundler-cache-v6-${common.getOSNameVersionArch()}-${engine}-${version}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}`
+  const bundleOnly = process.env['BUNDLE_ONLY'] || ''
+  let key = `setup-ruby-bundler-cache-v6-${common.getOSNameVersionArch()}-${engine}-${version}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}-only-${bundleOnly}`
 
   if (cacheVersion !== DEFAULT_CACHE_VERSION) {
     key += `-v-${cacheVersion}`
