@@ -168,6 +168,7 @@ const GitHubHostedPlatforms = [
   'macos-11-x64',
   'macos-12-x64',
   'macos-13-x64',
+  'macos-14-x64',
   'windows-2019-x64',
   'windows-2022-x64',
 ]
