@@ -4,15 +4,18 @@ versions = JSON.load(hash).transform_keys(&:to_sym)
 
 by_minor = versions[:ruby].group_by { |v| v[/^\d\.\d/] }
 
-(1..7).each do |minor|
-  p by_minor["2.#{minor}"].map { |v| "ruby-#{v}" }
+by_minor.each_pair do |minor, versions|
+  puts versions.map { |v| "ruby-#{v}" }.join(', ') if minor
 end
 
 puts
-p (versions[:truffleruby] - %w[head]).map { |v| "truffleruby-#{v}" }
+puts (versions[:truffleruby] - %w[head]).map { |v| "truffleruby-#{v}" }.join(', ')
 
 puts
-p (versions[:jruby] - %w[head]).map { |v| "jruby-#{v}" }
+puts (versions[:"truffleruby+graalvm"] - %w[head]).map { |v| "truffleruby+graalvm-#{v}" }.join(', ')
+
+puts
+puts (versions[:jruby] - %w[head]).map { |v| "jruby-#{v}" }.join(', ')
 
 (versions[:jruby] - %w[head]).each do |v|
   puts "- { os: windows-latest, jruby-version: #{v}, ruby: jruby-#{v} }"
