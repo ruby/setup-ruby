@@ -168,6 +168,7 @@ const GitHubHostedPlatforms = [
   'macos-11-x64',
   'macos-12-x64',
   'macos-13-x64',
+  'macos-13-arm64',
   'windows-2019-x64',
   'windows-2022-x64',
 ]
@@ -243,7 +244,7 @@ export function getToolCachePath() {
     return getRunnerToolCache()
   } else {
     // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
-    // so use that path is not isSelfHostedRunner()
+    // so use that path if not isSelfHostedRunner()
     return getDefaultToolCachePath()
   }
 }

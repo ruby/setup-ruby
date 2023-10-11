@@ -528,6 +528,7 @@ const GitHubHostedPlatforms = [
   'macos-11-x64',
   'macos-12-x64',
   'macos-13-x64',
+  'macos-13-arm64',
   'windows-2019-x64',
   'windows-2022-x64',
 ]
@@ -603,7 +604,7 @@ function getToolCachePath() {
     return getRunnerToolCache()
   } else {
     // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
-    // so use that path is not isSelfHostedRunner()
+    // so use that path if not isSelfHostedRunner()
     return getDefaultToolCachePath()
   }
 }
@@ -65053,10 +65054,14 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
 
 function getDownloadURL(platform, engine, version) {
   let builderPlatform = platform
-  if (platform.startsWith('windows-')) {
+  if (platform.startsWith('windows-') && os.arch() === 'x64') {
     builderPlatform = 'windows-latest'
   } else if (platform.startsWith('macos-')) {
-    builderPlatform = 'macos-latest'
+    if (os.arch() === 'x64') {
+      builderPlatform = 'macos-latest'
+    } else if (os.arch() === 'arm64') {
+      builderPlatform = 'macos-13-arm64'
+    }
   }
 
   if (common.isHeadVersion(version)) {

@@ -101,10 +101,14 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
 
 function getDownloadURL(platform, engine, version) {
   let builderPlatform = platform
-  if (platform.startsWith('windows-')) {
+  if (platform.startsWith('windows-') && os.arch() === 'x64') {
     builderPlatform = 'windows-latest'
   } else if (platform.startsWith('macos-')) {
-    builderPlatform = 'macos-latest'
+    if (os.arch() === 'x64') {
+      builderPlatform = 'macos-latest'
+    } else if (os.arch() === 'arm64') {
+      builderPlatform = 'macos-13-arm64'
+    }
   }
 
   if (common.isHeadVersion(version)) {
