@@ -292,11 +292,11 @@ __nccwpck_require__.d(__webpack_exports__, {
   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
   "drive": () => (/* binding */ drive),
   "floatVersion": () => (/* binding */ floatVersion),
+  "getOSNameVersion": () => (/* binding */ getOSNameVersion),
   "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
   "getRunnerToolCache": () => (/* binding */ getRunnerToolCache),
   "getToolCachePath": () => (/* binding */ getToolCachePath),
   "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
-  "getVirtualEnvironmentName": () => (/* binding */ getVirtualEnvironmentName),
   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
   "hashFile": () => (/* binding */ hashFile),
   "inputs": () => (/* binding */ inputs),
@@ -552,11 +552,11 @@ function selfHostedRunnerReason() {
   }
 }
 
-let virtualEnvironmentName = undefined
+let osNameVersion = undefined
 
-function getVirtualEnvironmentName() {
-  if (virtualEnvironmentName !== undefined) {
-    return virtualEnvironmentName
+function getOSNameVersion() {
+  if (osNameVersion !== undefined) {
+    return osNameVersion
   }
 
   const platform = os.platform()
@@ -576,12 +576,12 @@ function getVirtualEnvironmentName() {
     throw new Error(`Unknown platform ${platform}`)
   }
 
-  virtualEnvironmentName = `${osName}-${osVersion}`
-  return virtualEnvironmentName
+  osNameVersion = `${osName}-${osVersion}`
+  return osNameVersion
 }
 
 function getOSNameVersionArch() {
-  return `${getVirtualEnvironmentName()}-${os.arch()}`
+  return `${getOSNameVersion()}-${os.arch()}`
 }
 
 function findWindowsVersion() {
@@ -618,7 +618,7 @@ function getRunnerToolCache() {
 
 // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
 function getDefaultToolCachePath() {
-  const platform = getVirtualEnvironmentName()
+  const platform = getOSNameVersion()
   if (platform.startsWith('ubuntu-')) {
     return '/opt/hostedtoolcache'
   } else if (platform.startsWith('macos-')) {
@@ -65690,6 +65690,9 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "run": () => (/* binding */ run),
 /* harmony export */   "setupRuby": () => (/* binding */ setupRuby)
 /* harmony export */ });
+/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(3143);
+
+
 const os = __nccwpck_require__(2037)
 const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
@@ -65736,7 +65739,7 @@ async function setupRuby(options = {}) {
 
   process.chdir(inputs['working-directory'])
 
-  const platform = common.getVirtualEnvironmentName()
+  const platform = common.getOSNameVersion()
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer

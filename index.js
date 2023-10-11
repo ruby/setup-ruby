@@ -1,3 +1,5 @@
+import {getOSNameVersion} from "./common";
+
 const os = require('os')
 const fs = require('fs')
 const path = require('path')
@@ -44,7 +46,7 @@ export async function setupRuby(options = {}) {
 
   process.chdir(inputs['working-directory'])
 
-  const platform = common.getVirtualEnvironmentName()
+  const platform = common.getOSNameVersion()
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer

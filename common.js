@@ -192,11 +192,11 @@ export function selfHostedRunnerReason() {
   }
 }
 
-let virtualEnvironmentName = undefined
+let osNameVersion = undefined
 
-export function getVirtualEnvironmentName() {
-  if (virtualEnvironmentName !== undefined) {
-    return virtualEnvironmentName
+export function getOSNameVersion() {
+  if (osNameVersion !== undefined) {
+    return osNameVersion
   }
 
   const platform = os.platform()
@@ -216,12 +216,12 @@ export function getVirtualEnvironmentName() {
     throw new Error(`Unknown platform ${platform}`)
   }
 
-  virtualEnvironmentName = `${osName}-${osVersion}`
-  return virtualEnvironmentName
+  osNameVersion = `${osName}-${osVersion}`
+  return osNameVersion
 }
 
 export function getOSNameVersionArch() {
-  return `${getVirtualEnvironmentName()}-${os.arch()}`
+  return `${getOSNameVersion()}-${os.arch()}`
 }
 
 function findWindowsVersion() {
@@ -258,7 +258,7 @@ export function getRunnerToolCache() {
 
 // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
 function getDefaultToolCachePath() {
-  const platform = getVirtualEnvironmentName()
+  const platform = getOSNameVersion()
   if (platform.startsWith('ubuntu-')) {
     return '/opt/hostedtoolcache'
   } else if (platform.startsWith('macos-')) {
