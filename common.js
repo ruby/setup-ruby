@@ -173,7 +173,7 @@ const GitHubHostedPlatforms = [
   'windows-2022-x64',
 ]
 
-// Actually a self-hosted runner for which  the OS and OS version does not correspond to a GitHub-hosted runner image,
+// Actually a self-hosted runner for which the OS and OS version does not correspond to a GitHub-hosted runner image,
 export function isSelfHostedRunner() {
   if (inputs.selfHosted === undefined) {
     throw new Error('inputs.selfHosted should have been already set')

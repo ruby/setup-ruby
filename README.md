@@ -263,6 +263,9 @@ In other cases, you will need to install Ruby in the runner tool cache as shown 
 (run it so it will show you where to install Ruby).
 You could of course also not use this action and e.g. use Ruby from a system package or use a Docker image instead.
 
+See also the [`self-hosted:` input](action.yml).
+You can set it to `true` if you want to use custom-built Rubies in your self-hosted toolcache instead of prebuild Rubies.
+
 ## History
 
 This action used to be at `eregon/use-ruby-action` and was moved to the `ruby` organization.
