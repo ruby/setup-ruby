@@ -41,8 +41,6 @@ jobs:
         - { os: macos-arm-oss, ruby: '2.3' }
         - { os: macos-arm-oss, ruby: '2.4' }
         - { os: macos-arm-oss, ruby: '2.5' }
-        # Fails to compile on macos-arm-oss, https://github.com/ruby/setup-ruby/pull/494#issuecomment-1758099885
-        - { os: macos-arm-oss, ruby: '3.1' }
         # No Java available yet on macos-arm-oss images
         - { os: macos-arm-oss, ruby: 'jruby' }
         - { os: macos-arm-oss, ruby: 'jruby-head' }
