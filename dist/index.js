@@ -16,7 +16,9 @@ const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
 const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
+const io = __nccwpck_require__(7436)
 const cache = __nccwpck_require__(7799)
+const semver = __nccwpck_require__(1383)
 const common = __nccwpck_require__(3143)
 
 const DEFAULT_CACHE_VERSION = '0'
@@ -72,7 +74,7 @@ async function afterLockFile(lockFile, platform, engine, rubyVersion) {
   }
 }
 
-async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, platform, rubyPrefix, engine, rubyVersion) {
+async function installBundler(bundlerVersionInput, rubygemsInputSet, systemRubyUsed, lockFile, platform, rubyPrefix, engine, rubyVersion) {
   let bundlerVersion = bundlerVersionInput
 
   if (rubygemsInputSet && (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock')) {
@@ -93,7 +95,21 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   const floatVersion = common.floatVersion(rubyVersion)
 
   if (bundlerVersion === 'default') {
-    if (common.isBundler2dot2Default(engine, rubyVersion)) {
+    if (systemRubyUsed) {
+      if (await io.which('bundle', false)) {
+        bundlerVersion = await getBundlerVersion()
+        if (semver.lt(semver.coerce(bundlerVersion), '2.2.0')) {
+          console.log('Using latest Bundler because the system Bundler is too old')
+          bundlerVersion = 'latest'
+        } else {
+          console.log(`Using system Bundler ${bundlerVersion}`)
+          return bundlerVersion
+        }
+      } else {
+        console.log('Installing latest Bundler as we could not find a system Bundler')
+        bundlerVersion = 'latest'
+      }
+    } else if (common.isBundler2dot2Default(engine, rubyVersion)) {
       if (common.windows && engine === 'ruby' && (common.isStableVersion(engine, rubyVersion) || rubyVersion === 'head')) {
         // https://github.com/ruby/setup-ruby/issues/371
         console.log(`Installing latest Bundler for ${engine}-${rubyVersion} on Windows because bin/bundle does not work in bash otherwise`)
@@ -158,12 +174,38 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
   const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
 
-  await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
+  const args = ['install', 'bundler', ...force, '-v', bundlerVersionConstraint]
+
+  let stderr = ''
+  try {
+    await exec.exec(gem, args, {
+      listeners: {
+        stderr: (data) => (stderr += data.toString())
+      }
+    })
+  } catch (error) {
+    if (systemRubyUsed && stderr.includes('Gem::FilePermissionError')) {
+      await exec.exec('sudo', [gem, ...args]);
+    } else {
+      throw error
+    }
+  }
 
   return bundlerVersion
 }
 
-async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion) {
+async function getBundlerVersion() {
+  let bundlerVersion = ''
+  await exec.exec('bundle', ['--version'], {
+    silent: true,
+    listeners: {
+      stdout: (data) => (bundlerVersion += data.toString())
+    }
+  })
+  return bundlerVersion.replace(/^Bundler version /, '').trim()
+}
+
+async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion, systemRubyUsed) {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
@@ -196,7 +238,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
 
   // cache key
   const paths = [cachePath]
-  const baseKey = await computeBaseKey(platform, engine, rubyVersion, lockFile, cacheVersion)
+  const baseKey = await computeBaseKey(platform, engine, rubyVersion, lockFile, cacheVersion, systemRubyUsed)
   const key = `${baseKey}-${await common.hashFile(lockFile)}`
   // If only Gemfile.lock changes we can reuse part of the cache, and clean old gem versions below
   const restoreKeys = [`${baseKey}-`]
@@ -246,7 +288,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
   return true
 }
 
-async function computeBaseKey(platform, engine, version, lockFile, cacheVersion) {
+async function computeBaseKey(platform, engine, version, lockFile, cacheVersion, systemRubyUsed) {
   const cwd = process.cwd()
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
@@ -271,6 +313,19 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
       });
       key += `-ABI-${abi}`
     }
+  }
+
+  if (systemRubyUsed) {
+    let platform = ''
+    await exec.exec('ruby', ['-e', 'print RUBY_PLATFORM'], {
+      silent: true,
+      listeners: {
+        stdout: (data) => {
+          platform += data.toString();
+        }
+      }
+    });
+    key += `-platform-${platform}`
   }
 
   key += `-${lockFile}`
@@ -65745,17 +65800,22 @@ async function setupRuby(options = {}) {
   process.chdir(inputs['working-directory'])
 
   const platform = common.getOSNameVersion()
-  const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
+  const [engine, parsedVersion] = await parseRubyEngineAndVersion(inputs['ruby-version'])
+  const systemRuby = inputs['ruby-version'] === 'system'
 
-  let installer
-  if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
-    installer = __nccwpck_require__(3216)
+  let installer, version
+  if (systemRuby) {
+    version = parsedVersion
   } else {
-    installer = __nccwpck_require__(9974)
-  }
+    if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
+      installer = __nccwpck_require__(3216)
+    } else {
+      installer = __nccwpck_require__(9974)
+    }
 
-  const engineVersions = installer.getAvailableVersions(platform, engine)
-  const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
+    const engineVersions = installer.getAvailableVersions(platform, engine)
+    version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
+  }
 
   createGemRC(engine, version)
   envPreInstall()
@@ -65767,7 +65827,12 @@ async function setupRuby(options = {}) {
     await (__nccwpck_require__(3216).installJRubyTools)()
   }
 
-  const rubyPrefix = await installer.install(platform, engine, version)
+  let rubyPrefix
+  if (systemRuby) {
+    rubyPrefix = await getSystemRubyPrefix()
+  } else {
+    rubyPrefix = await installer.install(platform, engine, version)
+  }
 
   await common.measure('Print Ruby version', async () =>
     await exec.exec('ruby', ['--version']))
@@ -65790,18 +65855,18 @@ async function setupRuby(options = {}) {
 
   if (inputs['bundler'] !== 'none') {
     bundlerVersion = await common.measure('Installing Bundler', async () =>
-      bundler.installBundler(inputs['bundler'], rubygemsInputSet, lockFile, platform, rubyPrefix, engine, version))
+      bundler.installBundler(inputs['bundler'], rubygemsInputSet, systemRuby, lockFile, platform, rubyPrefix, engine, version))
   }
 
   if (inputs['bundler-cache'] === 'true') {
     await common.time('bundle install', async () =>
-      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version'], systemRuby))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
 }
 
-function parseRubyEngineAndVersion(rubyVersion) {
+async function parseRubyEngineAndVersion(rubyVersion) {
   if (rubyVersion === 'default') {
     if (fs.existsSync('.ruby-version')) {
       rubyVersion = '.ruby-version'
@@ -65809,6 +65874,17 @@ function parseRubyEngineAndVersion(rubyVersion) {
       rubyVersion = '.tool-versions'
     } else {
       throw new Error('input ruby-version needs to be specified if no .ruby-version or .tool-versions file exists')
+    }
+  } else if (rubyVersion === 'system') {
+    rubyVersion = ''
+    await exec.exec('ruby', ['-e', 'print "#{RUBY_ENGINE}-#{RUBY_VERSION}"'], {
+      silent: true,
+      listeners: {
+        stdout: (data) => (rubyVersion += data.toString())
+      }
+    })
+    if (!rubyVersion.includes('-')) {
+      throw new Error('Could not determine system Ruby engine and version')
     }
   }
 
@@ -65886,6 +65962,20 @@ function envPreInstall() {
     // bash - needed to maintain Path from Windows
     core.exportVariable('MSYS2_PATH_TYPE', 'inherit')
   }
+}
+
+async function getSystemRubyPrefix() {
+  let rubyPrefix = ''
+  await exec.exec('ruby', ['-rrbconfig', '-e', 'print RbConfig::CONFIG["prefix"]'], {
+    silent: true,
+    listeners: {
+      stdout: (data) => (rubyPrefix += data.toString())
+    }
+  })
+  if (!rubyPrefix) {
+    throw new Error('Could not determine system Ruby prefix')
+  }
+  return rubyPrefix
 }
 
 if (__filename.endsWith('index.js')) { run() }

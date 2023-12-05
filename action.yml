@@ -6,7 +6,10 @@ branding:
   icon: download
 inputs:
   ruby-version:
-    description: 'Engine and version to use, see the syntax in the README. Reads from .ruby-version or .tool-versions if unset.'
+    description: |
+      Engine and version to use. Either 'default' (the default), 'system', or a engine/version syntax described in the README.
+      For 'default', reads from .ruby-version or .tool-versions.
+      For 'system', don't install any Ruby and use the first available Ruby on the PATH.
     default: 'default'
   rubygems:
     description: |

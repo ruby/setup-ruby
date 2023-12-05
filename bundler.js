@@ -2,7 +2,9 @@ const fs = require('fs')
 const path = require('path')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
+const io = require('@actions/io')
 const cache = require('@actions/cache')
+const semver = require('semver')
 const common = require('./common')
 
 export const DEFAULT_CACHE_VERSION = '0'
@@ -58,7 +60,7 @@ async function afterLockFile(lockFile, platform, engine, rubyVersion) {
   }
 }
 
-export async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, platform, rubyPrefix, engine, rubyVersion) {
+export async function installBundler(bundlerVersionInput, rubygemsInputSet, systemRubyUsed, lockFile, platform, rubyPrefix, engine, rubyVersion) {
   let bundlerVersion = bundlerVersionInput
 
   if (rubygemsInputSet && (bundlerVersion === 'default' || bundlerVersion === 'Gemfile.lock')) {
@@ -79,7 +81,21 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   const floatVersion = common.floatVersion(rubyVersion)
 
   if (bundlerVersion === 'default') {
-    if (common.isBundler2dot2Default(engine, rubyVersion)) {
+    if (systemRubyUsed) {
+      if (await io.which('bundle', false)) {
+        bundlerVersion = await getBundlerVersion()
+        if (semver.lt(semver.coerce(bundlerVersion), '2.2.0')) {
+          console.log('Using latest Bundler because the system Bundler is too old')
+          bundlerVersion = 'latest'
+        } else {
+          console.log(`Using system Bundler ${bundlerVersion}`)
+          return bundlerVersion
+        }
+      } else {
+        console.log('Installing latest Bundler as we could not find a system Bundler')
+        bundlerVersion = 'latest'
+      }
+    } else if (common.isBundler2dot2Default(engine, rubyVersion)) {
       if (common.windows && engine === 'ruby' && (common.isStableVersion(engine, rubyVersion) || rubyVersion === 'head')) {
         // https://github.com/ruby/setup-ruby/issues/371
         console.log(`Installing latest Bundler for ${engine}-${rubyVersion} on Windows because bin/bundle does not work in bash otherwise`)
@@ -144,12 +160,38 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
   const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
 
-  await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
+  const args = ['install', 'bundler', ...force, '-v', bundlerVersionConstraint]
+
+  let stderr = ''
+  try {
+    await exec.exec(gem, args, {
+      listeners: {
+        stderr: (data) => (stderr += data.toString())
+      }
+    })
+  } catch (error) {
+    if (systemRubyUsed && stderr.includes('Gem::FilePermissionError')) {
+      await exec.exec('sudo', [gem, ...args]);
+    } else {
+      throw error
+    }
+  }
 
   return bundlerVersion
 }
 
-export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion) {
+async function getBundlerVersion() {
+  let bundlerVersion = ''
+  await exec.exec('bundle', ['--version'], {
+    silent: true,
+    listeners: {
+      stdout: (data) => (bundlerVersion += data.toString())
+    }
+  })
+  return bundlerVersion.replace(/^Bundler version /, '').trim()
+}
+
+export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion, systemRubyUsed) {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
@@ -182,7 +224,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
 
   // cache key
   const paths = [cachePath]
-  const baseKey = await computeBaseKey(platform, engine, rubyVersion, lockFile, cacheVersion)
+  const baseKey = await computeBaseKey(platform, engine, rubyVersion, lockFile, cacheVersion, systemRubyUsed)
   const key = `${baseKey}-${await common.hashFile(lockFile)}`
   // If only Gemfile.lock changes we can reuse part of the cache, and clean old gem versions below
   const restoreKeys = [`${baseKey}-`]
@@ -232,7 +274,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   return true
 }
 
-async function computeBaseKey(platform, engine, version, lockFile, cacheVersion) {
+async function computeBaseKey(platform, engine, version, lockFile, cacheVersion, systemRubyUsed) {
   const cwd = process.cwd()
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
@@ -257,6 +299,19 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
       });
       key += `-ABI-${abi}`
     }
+  }
+
+  if (systemRubyUsed) {
+    let platform = ''
+    await exec.exec('ruby', ['-e', 'print RUBY_PLATFORM'], {
+      silent: true,
+      listeners: {
+        stdout: (data) => {
+          platform += data.toString();
+        }
+      }
+    });
+    key += `-platform-${platform}`
   }
 
   key += `-${lockFile}`
