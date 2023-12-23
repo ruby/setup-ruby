@@ -12,7 +12,8 @@ inputs:
     description: |
       The version of RubyGems to use. Either 'default' (the default), 'latest', or a version number (e.g., 3.3.5).
       For 'default', no action is taken and the version of RubyGems that comes with Ruby by default is used.
-      For 'latest', `gem update --system` is run to update to the latest RubyGems version.
+      For 'latest', `gem update --system` is run to update to the latest compatible RubyGems version.
+      Ruby head/master builds and Ruby 2.2 and earlier will not be updated.
       Similarly, if a version number is given, `gem update --system <version>` is run to update to that version of RubyGems, as long as that version is newer than the one provided by default.
   bundler:
     description: |
