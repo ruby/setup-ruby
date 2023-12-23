@@ -169,15 +169,25 @@ jobs:
       - run: ruby -v
 
   testLatestRubygemsVersion:
-    name: "Test rubygems: latest upgrades the default RubyGems version"
+    name: "Ruby ${{ matrix.ruby }}: latest upgrades RubyGems"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { ruby: '3.2', expected_rubygems_version: '3.5.3'  }
+        - { ruby: '3.0', expected_rubygems_version: '3.5.3'  }
+        - { ruby: '2.7', expected_rubygems_version: '3.4.22' }
+        - { ruby: '2.6', expected_rubygems_version: '3.4.22' }
+        - { ruby: '2.5', expected_rubygems_version: '3.3.27' }
+        - { ruby: '2.3', expected_rubygems_version: '3.3.27' }
     steps:
     - uses: actions/checkout@v4
     - uses: ./
       with:
-        ruby-version: '2.6'
+        ruby-version: ${{ matrix.ruby }}
         rubygems: latest
-    - run: ruby -e "exit(Gem.rubygems_version > Gem::Version.new('3.0.3'))"
+    - run: ruby -e 'puts Gem::VERSION; exit(Gem.rubygems_version >= Gem::Version.new("${{ matrix.expected_rubygems_version }}"))'
 
   testFixedRubygemsVersionUpgrades:
     name: "Test rubygems: version upgrades RubyGems to that version if the default is older"
