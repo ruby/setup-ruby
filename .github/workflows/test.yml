@@ -169,7 +169,7 @@ jobs:
       - run: ruby -v
 
   testLatestRubygemsVersion:
-    name: "Ruby ${{ matrix.ruby }}: latest upgrades RubyGems"
+    name: "Test rubygems: latest on Ruby ${{ matrix.ruby }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
