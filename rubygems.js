@@ -45,6 +45,9 @@ async function rubygemsLatest(gem, platform, engine, rubyVersion) {
       await exec.exec(gem, ['update', '--system', '3.4.22'])
     } else if (floatVersion >= 2.3) {
       await exec.exec(gem, ['update', '--system', '3.3.27'])
+    } else if (floatVersion >= 1.9) {
+      await exec.exec(`${gem} install rubygems-update -v 2.7.11 --no-document`)
+      await exec.exec('update_rubygems')
     } else {
       console.log(`Cannot update RubyGems for Ruby version ${rubyVersion}`)
     }
