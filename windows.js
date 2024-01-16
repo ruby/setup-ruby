@@ -41,7 +41,7 @@ export function getAvailableVersions(platform, engine) {
   }
 }
 
-export async function install(platform, engine, version) {
+export async function install(platform, engine, version, installOptions) {
   const url = rubyInstallerVersions[version]
 
   // The windows-2016 and windows-2019 images have MSYS2 build tools (C:/msys64/usr)
@@ -90,7 +90,7 @@ export async function install(platform, engine, version) {
   }
 
   const ridk = `${rubyPrefix}\\bin\\ridk.cmd`
-  if (fs.existsSync(ridk)) {
+  if (fs.existsSync(ridk) && installOptions['ridk'] !== 'none') {
     await common.measure('Adding ridk env variables', async () => addRidkEnv(ridk))
   }
 

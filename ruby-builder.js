@@ -17,7 +17,7 @@ export function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions[engine]
 }
 
-export async function install(platform, engine, version) {
+export async function install(platform, engine, version, installOptions) {
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
     inToolCache = common.toolCacheFind(engine, version)

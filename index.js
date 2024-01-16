@@ -51,8 +51,10 @@ export async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
+  const installOptions = {}
   if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
     installer = require('./windows')
+    installOptions['ridk'] = inputs['ridk']
   } else {
     installer = require('./ruby-builder')
   }
@@ -70,7 +72,7 @@ export async function setupRuby(options = {}) {
     await require('./windows').installJRubyTools()
   }
 
-  const rubyPrefix = await installer.install(platform, engine, version)
+  const rubyPrefix = await installer.install(platform, engine, version, installOptions)
 
   await common.measure('Print Ruby version', async () =>
     await exec.exec('ruby', ['--version']))

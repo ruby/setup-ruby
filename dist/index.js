@@ -64970,7 +64970,7 @@ function getAvailableVersions(platform, engine) {
   return rubyBuilderVersions[engine]
 }
 
-async function install(platform, engine, version) {
+async function install(platform, engine, version, installOptions) {
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
     inToolCache = common.toolCacheFind(engine, version)
@@ -65208,7 +65208,7 @@ function getAvailableVersions(platform, engine) {
   }
 }
 
-async function install(platform, engine, version) {
+async function install(platform, engine, version, installOptions) {
   const url = rubyInstallerVersions[version]
 
   // The windows-2016 and windows-2019 images have MSYS2 build tools (C:/msys64/usr)
@@ -65257,7 +65257,7 @@ async function install(platform, engine, version) {
   }
 
   const ridk = `${rubyPrefix}\\bin\\ridk.cmd`
-  if (fs.existsSync(ridk)) {
+  if (fs.existsSync(ridk) && installOptions['ridk'] !== 'none') {
     await common.measure('Adding ridk env variables', async () => addRidkEnv(ridk))
   }
 
@@ -65782,8 +65782,10 @@ async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
+  const installOptions = {}
   if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
     installer = __nccwpck_require__(3216)
+    installOptions['ridk'] = inputs['ridk']
   } else {
     installer = __nccwpck_require__(9974)
   }
@@ -65801,7 +65803,7 @@ async function setupRuby(options = {}) {
     await (__nccwpck_require__(3216).installJRubyTools)()
   }
 
-  const rubyPrefix = await installer.install(platform, engine, version)
+  const rubyPrefix = await installer.install(platform, engine, version, installOptions)
 
   await common.measure('Print Ruby version', async () =>
     await exec.exec('ruby', ['--version']))
