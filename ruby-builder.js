@@ -58,6 +58,12 @@ export async function install(platform, engine, version) {
     }
   }
 
+  // https://github.com/oracle/truffleruby/issues/3390
+  if (engine.startsWith('truffleruby') && common.floatVersion(version) >= 24.0 && !common.isSelfHostedRunner() && common.getOSNameVersionArch() === 'macos-12-x64') {
+    console.log('Setting MACOSX_DEPLOYMENT_TARGET=11.0 to workaround bug in XCode 14.2 linker not respecting RTLD_LAZY, see https://github.com/oracle/truffleruby/issues/3390')
+    core.exportVariable('MACOSX_DEPLOYMENT_TARGET', '11.0')
+  }
+
   return rubyPrefix
 }
 
