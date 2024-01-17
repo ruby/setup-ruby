@@ -335,6 +335,19 @@ jobs:
           bundler-cache: true
       - run: bundle list | grep nokogiri
 
+  testWindowsToolchain:
+    name: "Test windows-toolchain: none"
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          ruby-version: '2.7'
+          windows-toolchain: none
+          bundler: none
+      - name: C:/msys64/mingw64/bin/gcc.exe not installed
+        run: ruby -e "abort if File.exist?('C:/msys64/mingw64/bin/gcc.exe')"
+
   lint:
     runs-on: ubuntu-20.04
     steps:
