@@ -17,6 +17,7 @@ const inputDefaults = {
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
+  'windows-toolchain': 'default',
 }
 
 // entry point when this action is run on its own

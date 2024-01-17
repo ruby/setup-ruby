@@ -341,7 +341,8 @@ export function setupPath(newPathEntries) {
 
   // Then add new path entries using core.addPath()
   let newPath
-  if (windows) {
+  const windowsToolchain = core.getInput('windows-toolchain')
+  if (windows && windowsToolchain !== 'none') {
     // main Ruby dll determines whether mingw or ucrt build
     msys2Type = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
 

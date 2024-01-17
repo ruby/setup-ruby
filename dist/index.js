@@ -701,7 +701,8 @@ function setupPath(newPathEntries) {
 
   // Then add new path entries using core.addPath()
   let newPath
-  if (windows) {
+  const windowsToolchain = core.getInput('windows-toolchain')
+  if (windows && windowsToolchain !== 'none') {
     // main Ruby dll determines whether mingw or ucrt build
     msys2Type = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
 
@@ -65232,12 +65233,17 @@ async function install(platform, engine, version) {
     rubyPrefix = `${drive}:\\${base}`
   }
 
-  let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
-
   if (!inToolCache) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
+  const windowsToolchain = core.getInput('windows-toolchain')
+  if (windowsToolchain === 'none') {
+    common.setupPath([`${rubyPrefix}\\bin`])
+    return rubyPrefix
+  }
+
+  let toolchainPaths = (version === 'mswin') ? await setupMSWin() : await setupMingw(version)
   const msys2Type = common.setupPath([`${rubyPrefix}\\bin`, ...toolchainPaths])
 
   // install msys2 tools for all Ruby versions, only install mingw or ucrt for Rubies >= 2.4
@@ -65748,6 +65754,7 @@ const inputDefaults = {
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
+  'windows-toolchain': 'default',
 }
 
 // entry point when this action is run on its own

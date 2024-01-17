@@ -36,6 +36,16 @@ inputs:
       Consider the runner as a self-hosted runner, which means not using prebuilt Ruby binaries which only work
       on GitHub-hosted runners or self-hosted runners with a very similar image to the ones used by GitHub runners.
       The default is to detect this automatically based on the OS, OS version and architecture.
+  windows-toolchain:
+    description: |
+      This input allows to override the default toolchain setup on Windows.
+      The default setting ('default') installs a toolchain based on the selected Ruby.
+      Specifically, it installs MSYS2 if not already there and installs mingw/ucrt/mswin build tools and packages.
+      It also sets environment variables using 'ridk' or 'vcvars64.bat' based on the selected Ruby.
+      At present, the only other setting than 'default' is 'none', which only adds Ruby to PATH.
+      No build tools or packages are installed, nor are any ENV setting changed to activate them.
+    default: 'default'
+
 outputs:
   ruby-prefix:
     description: 'The prefix of the installed ruby'
