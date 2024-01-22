@@ -44,7 +44,6 @@ inputs:
       It also sets environment variables using 'ridk' or 'vcvars64.bat' based on the selected Ruby.
       At present, the only other setting than 'default' is 'none', which only adds Ruby to PATH.
       No build tools or packages are installed, nor are any ENV setting changed to activate them.
-    default: 'default'
 
 outputs:
   ruby-prefix:
