@@ -43,14 +43,12 @@ jobs:
         - { os: macos-arm-oss, ruby: '2.5' }
         # Windows
         - { os: windows-2019, ruby: '1.9' }
-        - { os: windows-2019, ruby: '3.3' }
         - { os: windows-2019, ruby: debug }
         - { os: windows-2019, ruby: truffleruby }
         - { os: windows-2019, ruby: truffleruby-head }
         - { os: windows-2019, ruby: truffleruby+graalvm }
         - { os: windows-2019, ruby: truffleruby+graalvm-head }
         - { os: windows-2022, ruby: '1.9' }
-        - { os: windows-2022, ruby: '3.3' }
         - { os: windows-2022, ruby: debug }
         - { os: windows-2022, ruby: truffleruby }
         - { os: windows-2022, ruby: truffleruby-head }
