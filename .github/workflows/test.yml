@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, macos-13, macos-arm-oss, windows-2019, windows-2022 ]
+        os: [ ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, macos-13, macos-14, macos-arm-oss, windows-2019, windows-2022 ]
         ruby: [
           '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', ruby-head,
           jruby, jruby-head,
@@ -33,6 +33,14 @@ jobs:
         exclude:
         # https://github.com/ruby/setup-ruby/issues/496
         - { os: ubuntu-22.04, ruby: '2.2' }
+        # Too old, fails to compile on macos-14 (arm64)
+        - { os: macos-14, ruby: '1.9' }
+        - { os: macos-14, ruby: '2.0' }
+        - { os: macos-14, ruby: '2.1' }
+        - { os: macos-14, ruby: '2.2' }
+        - { os: macos-14, ruby: '2.3' }
+        - { os: macos-14, ruby: '2.4' }
+        - { os: macos-14, ruby: '2.5' }
         # Too old, fails to compile on macos-arm-oss
         - { os: macos-arm-oss, ruby: '1.9' }
         - { os: macos-arm-oss, ruby: '2.0' }
