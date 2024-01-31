@@ -38,7 +38,7 @@ which means Ruby ≤ 2.4 is unmaintained and considered insecure.
 
 ### Supported Platforms
 
-The action works on these [GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources) images. Runner images not listed below are not supported yet. `$OS-latest` just alias to one of these images.
+The action works on these [GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources) images. Runner images not listed below are not supported yet. `$OS-latest` just alias to one of these images.
 
 | Operating System | Supported |
 | ---------------- | --------- |
