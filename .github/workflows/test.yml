@@ -33,7 +33,7 @@ jobs:
         exclude:
         # https://github.com/ruby/setup-ruby/issues/496
         - { os: ubuntu-22.04, ruby: '2.2' }
-        # Too old, fails to compile on macos-14 (arm64)
+        # These old Rubies fail to compile on macos-arm-oss (macOS 13, arm64), which is used for ruby/ruby-builder
         - { os: macos-14, ruby: '1.9' }
         - { os: macos-14, ruby: '2.0' }
         - { os: macos-14, ruby: '2.1' }
@@ -41,7 +41,6 @@ jobs:
         - { os: macos-14, ruby: '2.3' }
         - { os: macos-14, ruby: '2.4' }
         - { os: macos-14, ruby: '2.5' }
-        # Too old, fails to compile on macos-arm-oss
         - { os: macos-arm-oss, ruby: '1.9' }
         - { os: macos-arm-oss, ruby: '2.0' }
         - { os: macos-arm-oss, ruby: '2.1' }
