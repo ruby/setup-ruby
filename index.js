@@ -49,17 +49,22 @@ export async function setupRuby(options = {}) {
   process.chdir(inputs['working-directory'])
 
   const platform = common.getOSNameVersion()
-  const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
+  const [engine, parsedVersion] = await parseRubyEngineAndVersion(inputs['ruby-version'])
+  const systemRuby = inputs['ruby-version'] === 'system'
 
-  let installer
-  if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
-    installer = require('./windows')
+  let installer, version
+  if (systemRuby) {
+    version = parsedVersion
   } else {
-    installer = require('./ruby-builder')
-  }
+    if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
+      installer = require('./windows')
+    } else {
+      installer = require('./ruby-builder')
+    }
 
-  const engineVersions = installer.getAvailableVersions(platform, engine)
-  const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
+    const engineVersions = installer.getAvailableVersions(platform, engine)
+    version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
+  }
 
   createGemRC(engine, version)
   envPreInstall()
@@ -71,7 +76,12 @@ export async function setupRuby(options = {}) {
     await require('./windows').installJRubyTools()
   }
 
-  const rubyPrefix = await installer.install(platform, engine, version)
+  let rubyPrefix
+  if (systemRuby) {
+    rubyPrefix = await getSystemRubyPrefix()
+  } else {
+    rubyPrefix = await installer.install(platform, engine, version)
+  }
 
   await common.measure('Print Ruby version', async () =>
     await exec.exec('ruby', ['--version']))
@@ -94,18 +104,18 @@ export async function setupRuby(options = {}) {
 
   if (inputs['bundler'] !== 'none') {
     bundlerVersion = await common.measure('Installing Bundler', async () =>
-      bundler.installBundler(inputs['bundler'], rubygemsInputSet, lockFile, platform, rubyPrefix, engine, version))
+      bundler.installBundler(inputs['bundler'], rubygemsInputSet, systemRuby, lockFile, platform, rubyPrefix, engine, version))
   }
 
   if (inputs['bundler-cache'] === 'true') {
     await common.time('bundle install', async () =>
-      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version'], systemRuby))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
 }
 
-function parseRubyEngineAndVersion(rubyVersion) {
+async function parseRubyEngineAndVersion(rubyVersion) {
   if (rubyVersion === 'default') {
     if (fs.existsSync('.ruby-version')) {
       rubyVersion = '.ruby-version'
@@ -113,6 +123,17 @@ function parseRubyEngineAndVersion(rubyVersion) {
       rubyVersion = '.tool-versions'
     } else {
       throw new Error('input ruby-version needs to be specified if no .ruby-version or .tool-versions file exists')
+    }
+  } else if (rubyVersion === 'system') {
+    rubyVersion = ''
+    await exec.exec('ruby', ['-e', 'print "#{RUBY_ENGINE}-#{RUBY_VERSION}"'], {
+      silent: true,
+      listeners: {
+        stdout: (data) => (rubyVersion += data.toString())
+      }
+    })
+    if (!rubyVersion.includes('-')) {
+      throw new Error('Could not determine system Ruby engine and version')
     }
   }
 
@@ -190,6 +211,20 @@ function envPreInstall() {
     // bash - needed to maintain Path from Windows
     core.exportVariable('MSYS2_PATH_TYPE', 'inherit')
   }
+}
+
+async function getSystemRubyPrefix() {
+  let rubyPrefix = ''
+  await exec.exec('ruby', ['-rrbconfig', '-e', 'print RbConfig::CONFIG["prefix"]'], {
+    silent: true,
+    listeners: {
+      stdout: (data) => (rubyPrefix += data.toString())
+    }
+  })
+  if (!rubyPrefix) {
+    throw new Error('Could not determine system Ruby prefix')
+  }
+  return rubyPrefix
 }
 
 if (__filename.endsWith('index.js')) { run() }
