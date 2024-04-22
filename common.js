@@ -265,7 +265,7 @@ function getDefaultToolCachePath() {
   if (platform.startsWith('ubuntu-')) {
     return '/opt/hostedtoolcache'
   } else if (platform.startsWith('macos-')) {
-    return '/Users/runner/hostedtoolcache'
+    return path.join(os.homedir(), 'hostedtoolcache')
   } else if (platform.startsWith('windows-')) {
     return 'C:\\hostedtoolcache\\windows'
   } else {
