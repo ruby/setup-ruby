@@ -254,7 +254,7 @@ if the [Runner Image](https://github.com/actions/runner-images) is very similar 
 * Make sure to use the same operating system and version.
 * Make sure to use the same version of libssl.
 * Make sure that the operating system has `libyaml-0` and [`libgmp`](https://stackoverflow.com/questions/26555902/ruby-v-dyld-library-not-loaded-usr-local-lib-libgmp-10-dylib) installed
-* The default tool cache directory (`/opt/hostedtoolcache` on Linux, `/Users/runner/hostedtoolcache` on macOS,
+* The default tool cache directory (`/opt/hostedtoolcache` on Linux, `$HOME/hostedtoolcache` on macOS,
   `C:/hostedtoolcache/windows` on Windows) must be writable by the `runner` user.
   This is necessary since the Ruby builds embed the install path when built and cannot be moved around.
 * `/home/runner` must be writable by the `runner` user.
