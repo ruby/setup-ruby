@@ -217,6 +217,18 @@ jobs:
         rubygems: 3.2.3
     - run: gem --version | grep -F "3.3.3"
 
+  testRubyVersionFromGemfile:
+    name: "Test RUBY VERSION from Gemfile.lock"
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/ruby-version.gemfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          ruby-version: gemfile
+      - run: ruby --version | grep -F "3.3.1"
+
   testUseBundlerFromRubyGemsUpdate:
     name: "Test rubygems: version uses the Bundler installed by the rubygems update"
     runs-on: ubuntu-latest

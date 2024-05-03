@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+
+PLATFORMS
+  arm64-darwin-23
+  ruby
+
+DEPENDENCIES
+
+RUBY VERSION
+   ruby 3.3.1p55
+
+BUNDLED WITH
+   2.5.9

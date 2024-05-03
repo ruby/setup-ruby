@@ -65844,14 +65844,29 @@ async function setupRuby(options = {}) {
   core.setOutput('ruby-prefix', rubyPrefix)
 }
 
+function readRubyVersionFromGemfileLock(lockFile) {
+  if (lockFile !== null && fs.existsSync(lockFile)) {
+    const contents = fs.readFileSync(lockFile, 'utf8')
+    const lines = contents.split(/\r?\n/)
+    const rubyVersionLine = lines.findIndex(line => /^RUBY VERSION$/.test(line.trim()))
+    if (rubyVersionLine !== -1) {
+      const nextLine = lines[rubyVersionLine+1].trim().replace(/p\d+$/, '') // Strip off patchlevel because ruby-builder can't be that precise
+      return nextLine
+    }
+  }
+  return null
+}
+
 function parseRubyEngineAndVersion(rubyVersion) {
   if (rubyVersion === 'default') {
     if (fs.existsSync('.ruby-version')) {
       rubyVersion = '.ruby-version'
     } else if (fs.existsSync('.tool-versions')) {
       rubyVersion = '.tool-versions'
+    } else if (fs.existsSync('Gemfile.lock')) {
+      rubyVersion = 'gemfile'
     } else {
-      throw new Error('input ruby-version needs to be specified if no .ruby-version or .tool-versions file exists')
+      throw new Error('input ruby-version needs to be specified if no .ruby-version, .tool-versions or Gemfile.lock file exists')
     }
   }
 
@@ -65863,18 +65878,28 @@ function parseRubyEngineAndVersion(rubyVersion) {
     const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s/.test(e))[0]
     rubyVersion = rubyLine.match(/^ruby\s+(.+)$/)[1]
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
+  } else if (rubyVersion === 'gemfile') { // Read from Gemfile.lock
+    rubyVersion = readRubyVersionFromGemfileLock('Gemfile.lock')
+    if (rubyVersion === null) {
+      throw new Error('Could not find Ruby version in Gemfile.lock')
+    }
+    console.log(`Using ${rubyVersion} as input from Gemfile.lock`)
   }
 
   let engine, version
   if (/^(\d+)/.test(rubyVersion) || common.isHeadVersion(rubyVersion)) { // X.Y.Z => ruby-X.Y.Z
     engine = 'ruby'
     version = rubyVersion
+  } else if (rubyVersion.includes(' ')) { // engine X.Y.Z
+    [engine, version] = common.partition(rubyVersion, ' ')
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
     engine = rubyVersion
     version = '' // Let the logic in validateRubyEngineAndVersion() find the version
   } else { // engine-X.Y.Z
     [engine, version] = common.partition(rubyVersion, '-')
   }
+
+  console.log(`Using ruby engine ${engine} and version ${version}`)
 
   return [engine, version]
 }
