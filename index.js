@@ -111,7 +111,7 @@ function readRubyVersionFromGemfileLock(lockFile) {
     const lines = contents.split(/\r?\n/)
     const rubyVersionLine = lines.findIndex(line => /^RUBY VERSION$/.test(line.trim()))
     if (rubyVersionLine !== -1) {
-      const nextLine = lines[bundledWithLine+1]
+      const nextLine = lines[rubyVersionLine+1]
       if (nextLine) {
         const versionLine = nextLine.trim()
         if (versionLine.includes('(')) { // Alternative engine
