@@ -113,7 +113,12 @@ function readRubyVersionFromGemfileLock(lockFile) {
     if (rubyVersionLine !== -1) {
       const nextLine = lines[bundledWithLine+1]
       if (nextLine) {
-        const rubyVersion = nextLine.trim().replace(/p\d+$/, '') // Strip off patchlevel
+        const versionLine = nextLine.trim()
+        if (versionLine.includes('(')) { // Alternative engine
+          const rubyVersion = versionLine.match(/\(([^)]+)\)/)[1].replace(' ', '-')
+        } else {
+          const rubyVersion = versionLine.replace(' ', '-').replace(/p\d+$/, '') // Strip off patchlevel
+        }
         console.log(`Using Ruby ${rubyVersion} from ${lockFile}`)
         return rubyVersion
       }
@@ -155,8 +160,6 @@ function parseRubyEngineAndVersion(rubyVersion) {
   if (/^(\d+)/.test(rubyVersion) || common.isHeadVersion(rubyVersion)) { // X.Y.Z => ruby-X.Y.Z
     engine = 'ruby'
     version = rubyVersion
-  } else if (rubyVersion.includes(' ')) { // engine X.Y.Z
-    [engine, version] = common.partition(rubyVersion, ' ')
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
     engine = rubyVersion
     version = '' // Let the logic in validateRubyEngineAndVersion() find the version

@@ -229,6 +229,18 @@ jobs:
           ruby-version: gemfile
       - run: ruby --version | grep -F "3.3.1"
 
+  testRubyEngineVersionFromGemfile:
+    name: "Test RUBY VERSION from Gemfile.lock"
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/ruby-version-engine.gemfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          ruby-version: gemfile
+      - run: ruby --version | grep -F "truffleruby 24.0.1, like ruby 3.2.2"
+
   testUseBundlerFromRubyGemsUpdate:
     name: "Test rubygems: version uses the Bundler installed by the rubygems update"
     runs-on: ubuntu-latest

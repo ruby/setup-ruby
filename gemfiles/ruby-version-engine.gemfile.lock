@@ -1,0 +1,14 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+
+PLATFORMS
+  aarch64-darwin
+
+DEPENDENCIES
+
+RUBY VERSION
+   ruby 3.2.2p0 (truffleruby 24.0.1)
+
+BUNDLED WITH
+   2.4.10
