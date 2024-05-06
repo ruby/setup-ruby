@@ -111,8 +111,12 @@ function readRubyVersionFromGemfileLock(lockFile) {
     const lines = contents.split(/\r?\n/)
     const rubyVersionLine = lines.findIndex(line => /^RUBY VERSION$/.test(line.trim()))
     if (rubyVersionLine !== -1) {
-      const nextLine = lines[rubyVersionLine+1].trim().replace(/p\d+$/, '') // Strip off patchlevel
-      return nextLine
+      const nextLine = lines[bundledWithLine+1]
+      if (nextLine) {
+        const rubyVersion = nextLine.trim().replace(/p\d+$/, '') // Strip off patchlevel
+        console.log(`Using Ruby ${rubyVersion} from ${lockFile}`)
+        return rubyVersion
+      }
     }
   }
   return null

@@ -65850,8 +65850,12 @@ function readRubyVersionFromGemfileLock(lockFile) {
     const lines = contents.split(/\r?\n/)
     const rubyVersionLine = lines.findIndex(line => /^RUBY VERSION$/.test(line.trim()))
     if (rubyVersionLine !== -1) {
-      const nextLine = lines[rubyVersionLine+1].trim().replace(/p\d+$/, '') // Strip off patchlevel because ruby-builder can't be that precise
-      return nextLine
+      const nextLine = lines[bundledWithLine+1]
+      if (nextLine) {
+        const rubyVersion = nextLine.trim().replace(/p\d+$/, '') // Strip off patchlevel
+        console.log(`Using Ruby ${rubyVersion} from ${lockFile}`)
+        return rubyVersion
+      }
     }
   }
   return null
@@ -65866,7 +65870,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
     } else if (fs.existsSync('Gemfile.lock')) {
       rubyVersion = 'gemfile'
     } else {
-      throw new Error('input ruby-version needs to be specified if no .ruby-version, .tool-versions or Gemfile.lock file exists')
+      throw new Error('input ruby-version needs to be specified if there is no Ruby version in .ruby-version, .tool-versions or Gemfile.lock')
     }
   }
 
