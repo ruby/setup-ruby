@@ -65885,7 +65885,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
   } else if (rubyVersion === 'gemfile') { // Read from Gemfile.lock
     rubyVersion = readRubyVersionFromGemfileLock('Gemfile.lock')
     if (rubyVersion === null) {
-      throw new Error('Could not find Ruby version in Gemfile.lock')
+      throw new Error('input ruby-version needs to be specified if there is no Ruby version in .ruby-version, .tool-versions or Gemfile.lock')
     }
     console.log(`Using ${rubyVersion} as input from Gemfile.lock`)
   }
