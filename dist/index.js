@@ -65845,7 +65845,7 @@ async function setupRuby(options = {}) {
 }
 
 function readRubyVersionFromGemfileLock(lockFile) {
-  const rubyVersion = null
+  let rubyVersion = null
   if (lockFile !== null && fs.existsSync(lockFile)) {
     const contents = fs.readFileSync(lockFile, 'utf8')
     const lines = contents.split(/\r?\n/)
