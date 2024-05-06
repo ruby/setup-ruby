@@ -65845,7 +65845,6 @@ async function setupRuby(options = {}) {
 }
 
 function readRubyVersionFromGemfileLock(lockFile) {
-  let rubyVersion = null
   if (lockFile !== null && fs.existsSync(lockFile)) {
     const contents = fs.readFileSync(lockFile, 'utf8')
     const lines = contents.split(/\r?\n/)
@@ -65853,17 +65852,16 @@ function readRubyVersionFromGemfileLock(lockFile) {
     if (rubyVersionLine !== -1) {
       const nextLine = lines[rubyVersionLine+1]
       if (nextLine) {
-        const versionLine = nextLine.trim()
-        if (versionLine.includes('(')) { // Alternative engine
-          rubyVersion = versionLine.match(/\(([^)]+)\)/)[1].replace(' ', '-')
+        const rubyVersion = nextLine.trim()
+        if (rubyVersion.includes('(')) { // Alternative engine
+          return rubyVersion.match(/\(([^)]+)\)/)[1].replace(' ', '-')
         } else {
-          rubyVersion = versionLine.replace(' ', '-').replace(/p\d+$/, '') // Strip off patchlevel
+          return rubyVersion.replace(' ', '-').replace(/p\d+$/, '') // Strip off patchlevel
         }
-        console.log(`Using Ruby ${rubyVersion} from ${lockFile}`)
       }
     }
   }
-  return rubyVersion
+  return null
 }
 
 function parseRubyEngineAndVersion(rubyVersion) {
