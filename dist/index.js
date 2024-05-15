@@ -525,6 +525,7 @@ async function hashFile(file) {
 const GitHubHostedPlatforms = [
   'ubuntu-20.04-x64',
   'ubuntu-22.04-x64',
+  'ubuntu-24.04-x64',
   'macos-11-x64',
   'macos-12-x64',
   'macos-13-x64',
