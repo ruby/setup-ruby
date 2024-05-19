@@ -33,7 +33,8 @@ jobs:
         exclude:
         # https://github.com/ruby/setup-ruby/issues/496
         - { os: ubuntu-22.04, ruby: '2.2' }
-        # - { os: ubuntu-24.04, ruby: '2.2' }
+        - { os: ubuntu-24.04, ruby: '1.9' }
+        - { os: ubuntu-24.04, ruby: '2.2' }
         # These old Rubies fail to compile on macos-arm-oss (macOS 13, arm64), which is used for ruby/ruby-builder
         - { os: macos-14, ruby: '1.9' }
         - { os: macos-14, ruby: '2.0' }
