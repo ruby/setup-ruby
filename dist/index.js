@@ -65008,11 +65008,7 @@ async function install(platform, engine, version) {
 
   if (!inToolCache) {
     await io.mkdirP(rubyPrefix)
-    if (engine === 'truffleruby+graalvm') {
-      await installWithRubyBuild(engine, version, rubyPrefix)
-    } else {
-      await downloadAndExtract(platform, engine, version, rubyPrefix)
-    }
+    await downloadAndExtract(platform, engine, version, rubyPrefix)
   }
 
   // https://github.com/oracle/truffleruby/issues/3390
@@ -65022,21 +65018,6 @@ async function install(platform, engine, version) {
   }
 
   return rubyPrefix
-}
-
-async function installWithRubyBuild(engine, version, rubyPrefix) {
-  const tmp = process.env['RUNNER_TEMP'] || os.tmpdir()
-  const rubyBuildDir = path.join(tmp, 'ruby-build-for-setup-ruby')
-  await common.measure('Cloning ruby-build', async () => {
-    await exec.exec('git', ['clone', 'https://github.com/rbenv/ruby-build.git', rubyBuildDir])
-  })
-
-  const rubyName = `${engine}-${version === 'head' ? 'dev' : version}`
-  await common.measure(`Installing ${engine}-${version} with ruby-build`, async () => {
-    await exec.exec(`${rubyBuildDir}/bin/ruby-build`, [rubyName, rubyPrefix])
-  })
-
-  await io.rmRF(rubyBuildDir)
 }
 
 async function downloadAndExtract(platform, engine, version, rubyPrefix) {
@@ -65082,7 +65063,11 @@ function getDownloadURL(platform, engine, version) {
 }
 
 function getLatestHeadBuildURL(platform, engine, version) {
-  return `https://github.com/ruby/${engine}-dev-builder/releases/latest/download/${engine}-${version}-${platform}.tar.gz`
+  var repo = `${engine}-dev-builder`
+  if (engine === 'truffleruby+graalvm') {
+    repo = 'truffleruby-dev-builder'
+  }
+  return `https://github.com/ruby/${repo}/releases/latest/download/${engine}-${version}-${platform}.tar.gz`
 }
 
 
