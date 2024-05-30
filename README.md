@@ -20,7 +20,7 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | `truffleruby` | 19.3.0 - 24.0.1, head |
 | `truffleruby+graalvm` | 21.2.0 - 24.0.1, head |
 
-`ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).  
+`ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).
 
 Regarding Windows ruby master builds, `mingw` is a MSYS2/MinGW build, `head` & `ucrt` are MSYS2/UCRT64
 builds, and `mswin` is a MSVC/VS 2022 build.
