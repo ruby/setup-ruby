@@ -161,14 +161,6 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
       found = latestToFirstVersion.find(v => !common.isHeadVersion(v) && v.startsWith(parsedVersion))
     }
 
-    // Well known version-platform combinations which do not work:
-    if (found && engine === 'ruby' && platform.startsWith('macos') && platform.endsWith('arm64') && common.floatVersion(found) < 2.6) {
-      throw new Error(`CRuby < 2.6 does not support macos-arm64.
-        Either use a newer Ruby version or use a macOS image running on amd64, e.g., macos-13 or macos-12.
-        Note that GitHub changed the meaning of macos-latest from macos-12 (amd64) to macos-14 (arm64):
-        https://github.blog/changelog/2024-04-01-macos-14-sonoma-is-generally-available-and-the-latest-macos-runner-image/`)
-    }
-
     if (found) {
       version = found
     } else {
@@ -176,6 +168,14 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
         available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
         Make sure you use the latest version of the action with - uses: ruby/setup-ruby@v1`)
     }
+  }
+
+  // Well known version-platform combinations which do not work:
+  if (engine === 'ruby' && platform.startsWith('macos') && os.arch() === 'arm64' && common.floatVersion(version) < 2.6) {
+    throw new Error(`CRuby < 2.6 does not support macos-arm64.
+        Either use a newer Ruby version or use a macOS image running on amd64, e.g., macos-13 or macos-12.
+        Note that GitHub changed the meaning of macos-latest from macos-12 (amd64) to macos-14 (arm64):
+        https://github.blog/changelog/2024-04-01-macos-14-sonoma-is-generally-available-and-the-latest-macos-runner-image/`)
   }
 
   return version
