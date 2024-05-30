@@ -69,7 +69,17 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     const url = getDownloadURL(platform, engine, version)
     console.log(url)
-    return await tc.downloadTool(url)
+    try {
+      return await tc.downloadTool(url)
+    } catch (error) {
+      if (error.message.endsWith('404')) {
+        throw new Error(`Unavailable version ${version} for ${engine} on ${platform}.
+          You can request it at https://github.com/ruby/setup-ruby/issues.
+          Original Error: (${error.message})`)
+      } else {
+        throw error
+      }
+    }
   })
 
   await common.measure('Extracting  Ruby', async () => {
