@@ -58,8 +58,14 @@ export async function setupRuby(options = {}) {
     installer = require('./ruby-builder')
   }
 
-  const engineVersions = installer.getAvailableVersions(platform, engine)
-  const version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
+  let version
+  if (common.isSelfHostedRunner()) {
+    // The list of available Rubies in the hostedtoolcache is unrelated to getAvailableVersions()
+    version = parsedVersion
+  } else {
+    const engineVersions = installer.getAvailableVersions(platform, engine)
+    version = validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion)
+  }
 
   createGemRC(engine, version)
   envPreInstall()
