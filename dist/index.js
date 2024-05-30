@@ -65029,9 +65029,9 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
     try {
       return await tc.downloadTool(url)
     } catch (error) {
-      if (error.message.endsWith('404')) {
-        throw new Error(`Unavailable version ${version} for ${engine} on ${platform}.
-          You can request it at https://github.com/ruby/setup-ruby/issues.
+      if (error.message.includes('404')) {
+        throw new Error(`Unavailable version ${version} for ${engine} on ${platform}
+          You can request it at https://github.com/ruby/setup-ruby/issues
           Original Error: (${error.message})`)
       } else {
         throw error
@@ -65899,8 +65899,8 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
     if (found) {
       version = found
     } else {
-      throw new Error(`Unknown version ${parsedVersion} for ${engine} on ${platform}.
-        Available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}.
+      throw new Error(`Unknown version ${parsedVersion} for ${engine} on ${platform}
+        Available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
         Make sure you use the latest version of the action with - uses: ruby/setup-ruby@v1`)
     }
   }

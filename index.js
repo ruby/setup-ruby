@@ -164,8 +164,8 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
     if (found) {
       version = found
     } else {
-      throw new Error(`Unknown version ${parsedVersion} for ${engine} on ${platform}.
-        Available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}.
+      throw new Error(`Unknown version ${parsedVersion} for ${engine} on ${platform}
+        Available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
         Make sure you use the latest version of the action with - uses: ruby/setup-ruby@v1`)
     }
   }
