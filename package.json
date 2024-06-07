@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/ruby/setup-ruby",
   "dependencies": {
-    "@actions/cache": "^3",
+    "@actions/cache": "npm:github-actions.warp-cache@1.1.16",
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.1",
     "@actions/io": "^1.1.2",
@@ -33,5 +33,6 @@
   },
   "devDependencies": {
     "@vercel/ncc": "^0.33.4"
-  }
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }
