@@ -1,17 +1,17 @@
-name: Update the v1 branch when a release is published
+name: Create a Release
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 permissions:
-  contents: read
+  contents: write # for creating release
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # for git push
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - run: git push origin HEAD:v1
+    - uses: ./
+      with:
+        ruby-version: '3.3'
+    - run: ruby release.rb
