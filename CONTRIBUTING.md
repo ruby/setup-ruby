@@ -24,3 +24,7 @@ $ cp pre-commit .git/hooks/pre-commit
 
 This is entirely automated now since [this issue](https://github.com/ruby/setup-ruby/issues/254).
 If you do not see a new version more than 24 hours after it was released feel free to file an issue.
+
+## Release
+
+Maintainers can create a release automatically by running [this workflow](https://github.com/ruby/setup-ruby/actions/workflows/release.yml).
