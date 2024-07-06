@@ -18,3 +18,7 @@ jobs:
       with:
         ruby-version: '3.3'
     - run: ruby release.rb
+    # The same as the update-v1-branch.yml workflow.
+    # That workflow is not triggered by the release created above because of
+    # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow
+    - run: git push origin HEAD:v1

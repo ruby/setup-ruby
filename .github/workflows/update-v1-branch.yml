@@ -1,4 +1,4 @@
-name: Update the v1 branch when a release is published
+name: Update the v1 branch when a release is published manually
 on:
   release:
     types: [published]
