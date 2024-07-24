@@ -70,7 +70,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.3' # Not needed with a .ruby-version file
+        ruby-version: '3.3' # Not needed with a `.ruby-version` or `.tool-versions`
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bundle exec rake
 ```
