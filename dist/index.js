@@ -17,7 +17,7 @@ const path = __nccwpck_require__(1017)
 const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const cache = __nccwpck_require__(7799)
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 
 const DEFAULT_CACHE_VERSION = '0'
 
@@ -280,98 +280,53 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
 
 /***/ }),
 
-/***/ 3143:
+/***/ 4717:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
-// ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
-
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
-  "drive": () => (/* binding */ drive),
-  "floatVersion": () => (/* binding */ floatVersion),
-  "getOSName": () => (/* binding */ getOSName),
-  "getOSNameVersion": () => (/* binding */ getOSNameVersion),
-  "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
-  "getOSVersion": () => (/* binding */ getOSVersion),
-  "getRunnerToolCache": () => (/* binding */ getRunnerToolCache),
-  "getToolCachePath": () => (/* binding */ getToolCachePath),
-  "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
-  "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
-  "hashFile": () => (/* binding */ hashFile),
-  "inputs": () => (/* binding */ inputs),
-  "isBundler1Default": () => (/* binding */ isBundler1Default),
-  "isBundler2Default": () => (/* binding */ isBundler2Default),
-  "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
-  "isHeadVersion": () => (/* binding */ isHeadVersion),
-  "isSelfHostedRunner": () => (/* binding */ isSelfHostedRunner),
-  "isStableVersion": () => (/* binding */ isStableVersion),
-  "measure": () => (/* binding */ measure),
-  "partition": () => (/* binding */ partition),
-  "selfHostedRunnerReason": () => (/* binding */ selfHostedRunnerReason),
-  "setupPath": () => (/* binding */ setupPath),
-  "shouldUseToolCache": () => (/* binding */ shouldUseToolCache),
-  "targetRubyVersion": () => (/* binding */ targetRubyVersion),
-  "time": () => (/* binding */ time),
-  "toolCacheCompleteFile": () => (/* binding */ toolCacheCompleteFile),
-  "toolCacheFind": () => (/* binding */ toolCacheFind),
-  "win2nix": () => (/* binding */ win2nix),
-  "windows": () => (/* binding */ windows)
-});
-
-;// CONCATENATED MODULE: external "node:os"
-const external_node_os_namespaceObject = require("node:os");
-;// CONCATENATED MODULE: ./node_modules/macos-release/index.js
-
-
-const nameMap = new Map([
-	[24, ['Sequoia', '15']],
-	[23, ['Sonoma', '14']],
-	[22, ['Ventura', '13']],
-	[21, ['Monterey', '12']],
-	[20, ['Big Sur', '11']],
-	[19, ['Catalina', '10.15']],
-	[18, ['Mojave', '10.14']],
-	[17, ['High Sierra', '10.13']],
-	[16, ['Sierra', '10.12']],
-	[15, ['El Capitan', '10.11']],
-	[14, ['Yosemite', '10.10']],
-	[13, ['Mavericks', '10.9']],
-	[12, ['Mountain Lion', '10.8']],
-	[11, ['Lion', '10.7']],
-	[10, ['Snow Leopard', '10.6']],
-	[9, ['Leopard', '10.5']],
-	[8, ['Tiger', '10.4']],
-	[7, ['Panther', '10.3']],
-	[6, ['Jaguar', '10.2']],
-	[5, ['Puma', '10.1']],
-]);
-
-function macosRelease(release) {
-	release = Number((release || external_node_os_namespaceObject.release()).split('.')[0]);
-
-	const [name, version] = nameMap.get(release) || ['Unknown', ''];
-
-	return {
-		name,
-		version,
-	};
-}
-
-;// CONCATENATED MODULE: ./common.js
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "windows": () => (/* binding */ windows),
+/* harmony export */   "drive": () => (/* binding */ drive),
+/* harmony export */   "inputs": () => (/* binding */ inputs),
+/* harmony export */   "partition": () => (/* binding */ partition),
+/* harmony export */   "measure": () => (/* binding */ measure),
+/* harmony export */   "time": () => (/* binding */ time),
+/* harmony export */   "isHeadVersion": () => (/* binding */ isHeadVersion),
+/* harmony export */   "isStableVersion": () => (/* binding */ isStableVersion),
+/* harmony export */   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
+/* harmony export */   "isBundler1Default": () => (/* binding */ isBundler1Default),
+/* harmony export */   "isBundler2Default": () => (/* binding */ isBundler2Default),
+/* harmony export */   "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
+/* harmony export */   "targetRubyVersion": () => (/* binding */ targetRubyVersion),
+/* harmony export */   "floatVersion": () => (/* binding */ floatVersion),
+/* harmony export */   "hashFile": () => (/* binding */ hashFile),
+/* harmony export */   "isSelfHostedRunner": () => (/* binding */ isSelfHostedRunner),
+/* harmony export */   "selfHostedRunnerReason": () => (/* binding */ selfHostedRunnerReason),
+/* harmony export */   "getOSName": () => (/* binding */ getOSName),
+/* harmony export */   "getOSVersion": () => (/* binding */ getOSVersion),
+/* harmony export */   "getOSNameVersion": () => (/* binding */ getOSNameVersion),
+/* harmony export */   "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
+/* harmony export */   "shouldUseToolCache": () => (/* binding */ shouldUseToolCache),
+/* harmony export */   "getToolCachePath": () => (/* binding */ getToolCachePath),
+/* harmony export */   "getRunnerToolCache": () => (/* binding */ getRunnerToolCache),
+/* harmony export */   "toolCacheFind": () => (/* binding */ toolCacheFind),
+/* harmony export */   "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
+/* harmony export */   "toolCacheCompleteFile": () => (/* binding */ toolCacheCompleteFile),
+/* harmony export */   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
+/* harmony export */   "win2nix": () => (/* binding */ win2nix),
+/* harmony export */   "setupPath": () => (/* binding */ setupPath)
+/* harmony export */ });
 const os = __nccwpck_require__(2037)
 const path = __nccwpck_require__(1017)
 const fs = __nccwpck_require__(7147)
 const util = __nccwpck_require__(3837)
 const stream = __nccwpck_require__(2781)
-const common_crypto = __nccwpck_require__(6113)
+const crypto = __nccwpck_require__(6113)
 const core = __nccwpck_require__(2186)
 const tc = __nccwpck_require__(7784)
 const { performance } = __nccwpck_require__(4074)
 const linuxOSInfo = __nccwpck_require__(8487)
-;
 
 const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
@@ -519,7 +474,7 @@ function floatVersion(rubyVersion) {
 
 async function hashFile(file) {
   // See https://github.com/actions/runner/blob/master/src/Misc/expressionFunc/hashFiles/src/hashFiles.ts
-  const hash = common_crypto.createHash('sha256')
+  const hash = crypto.createHash('sha256')
   const pipeline = util.promisify(stream.pipeline)
   await pipeline(fs.createReadStream(file), hash)
   return hash.digest('hex')
@@ -602,7 +557,9 @@ function getOSVersion() {
     const info = linuxOSInfo({mode: 'sync'})
     osVersion = info.version_id
   } else if (platform === 'darwin') {
-    osVersion = macosRelease().version
+    // See https://github.com/sindresorhus/macos-release/blob/main/index.js
+    const darwinVersion = parseInt(os.release().match(/^\d+/)[0])
+    osVersion = `${darwinVersion - 9}`
   } else if (platform === 'win32') {
     osVersion = findWindowsVersion()
   } else {
@@ -64993,7 +64950,7 @@ const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const io = __nccwpck_require__(7436)
 const tc = __nccwpck_require__(7784)
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 const rubyBuilderVersions = __nccwpck_require__(5959)
 
 const builderReleaseTag = 'toolcache'
@@ -65122,7 +65079,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   "rubygemsUpdate": () => (/* binding */ rubygemsUpdate)
 /* harmony export */ });
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 const path = __nccwpck_require__(1017)
 const exec = __nccwpck_require__(1514)
 const semver = __nccwpck_require__(1383)
@@ -65207,7 +65164,7 @@ const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const io = __nccwpck_require__(7436)
 const tc = __nccwpck_require__(7784)
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 const rubyInstallerVersions = __nccwpck_require__(6459)
 
 const drive = common.drive
@@ -65769,7 +65726,7 @@ const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
 const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 const rubygems = __nccwpck_require__(160)
 const bundler = __nccwpck_require__(1641)
 

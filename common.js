@@ -8,7 +8,6 @@ const core = require('@actions/core')
 const tc = require('@actions/tool-cache')
 const { performance } = require('perf_hooks')
 const linuxOSInfo = require('linux-os-info')
-import macosRelease from 'macos-release'
 
 export const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
@@ -239,7 +238,9 @@ export function getOSVersion() {
     const info = linuxOSInfo({mode: 'sync'})
     osVersion = info.version_id
   } else if (platform === 'darwin') {
-    osVersion = macosRelease().version
+    // See https://github.com/sindresorhus/macos-release/blob/main/index.js
+    const darwinVersion = parseInt(os.release().match(/^\d+/)[0])
+    osVersion = `${darwinVersion - 9}`
   } else if (platform === 'win32') {
     osVersion = findWindowsVersion()
   } else {
