@@ -325,6 +325,7 @@ const external_node_os_namespaceObject = require("node:os");
 
 
 const nameMap = new Map([
+	[24, ['Sequoia', '15']],
 	[23, ['Sonoma', '14']],
 	[22, ['Ventura', '13']],
 	[21, ['Monterey', '12']],
