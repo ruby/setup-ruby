@@ -190,6 +190,8 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
           - { os: macos-13, ruby: '2.5' }
 
         But of course you should consider dropping support for these long-EOL Rubies, which cannot even be built on recent macOS machines.`)
+  } else if (engine === 'truffleruby' && platform.startsWith('windows')) {
+    throw new Error('TruffleRuby does not currently support Windows.')
   }
 
   return version
