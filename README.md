@@ -20,6 +20,8 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | `truffleruby` | 19.3.0 - 24.1.0, head |
 | `truffleruby+graalvm` | 21.2.0 - 24.1.0, head |
 
+The combinations of the available versions and runners can be seen [here](https://github.com/ruby/ruby-builder/releases/tag/toolcache).
+
 `ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).
 
 Regarding Windows ruby master builds, `mingw` is a MSYS2/MinGW build, `head` & `ucrt` are MSYS2/UCRT64
