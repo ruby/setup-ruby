@@ -30,6 +30,7 @@ jobs:
         - { os: windows-2022, ruby: mingw }
         - { os: windows-2022, ruby: mswin }
         - { os: windows-2022, ruby: ucrt  }
+        - { os: ubuntu-24.04, ruby: asan }
         exclude:
         # https://github.com/ruby/setup-ruby/issues/496
         - { os: ubuntu-22.04, ruby: '2.2' }
