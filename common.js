@@ -66,7 +66,7 @@ export async function time(name, block) {
 }
 
 export function isHeadVersion(rubyVersion) {
-  return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
+  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan'].includes(rubyVersion)
 }
 
 export function isStableVersion(engine, rubyVersion) {
