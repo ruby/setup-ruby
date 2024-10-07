@@ -220,6 +220,18 @@ It is also possible to cache gems manually, but this is not recommended because 
 There are many concerns which means using `actions/cache` is never enough for caching gems (e.g., incomplete cache key, cleaning old gems when restoring from another key, correctly hashing the lockfile if not checked in, OS versions, ABI compatibility for `ruby-head`, etc).
 So, please use `bundler-cache: true` instead and report any issue.
 
+### ASan Debugging
+
+Ruby can be built with AddressSanitizer (ASan) for debugging memory issues. You can use the `asan` variant of Ruby for this:
+
+```yaml
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: asan
+```
+
+You should also compile your own code with ASan to get the full benefits of this feature.
+
 ## Windows
 
 Note that running CI on Windows can be quite challenging if you are not very familiar with Windows.
