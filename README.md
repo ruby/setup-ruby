@@ -22,6 +22,10 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 
 `ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).
 
+`ruby-asan` is the same as `ruby-head` but with AddressSanitizer (ASan) enabled, helpful for finding memory issues in native extensions.
+Native extensions are automatically compiled with AddressSanitizer when using `ruby-asan`.
+`ruby-asan` is currently only available on `ubuntu-24.04`.
+
 Regarding Windows ruby master builds, `mingw` is a MSYS2/MinGW build, `head` & `ucrt` are MSYS2/UCRT64
 builds, and `mswin` is a MSVC/VS 2022 build.
 
@@ -219,18 +223,6 @@ if you have already used it before.)
 It is also possible to cache gems manually, but this is not recommended because it is verbose and *very difficult* to do correctly.
 There are many concerns which means using `actions/cache` is never enough for caching gems (e.g., incomplete cache key, cleaning old gems when restoring from another key, correctly hashing the lockfile if not checked in, OS versions, ABI compatibility for `ruby-head`, etc).
 So, please use `bundler-cache: true` instead and report any issue.
-
-### ASan Debugging
-
-Ruby can be built with AddressSanitizer (ASan) for debugging memory issues. You can use the `asan` variant of Ruby for this:
-
-```yaml
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: asan
-```
-
-You should also compile your own code with ASan to get the full benefits of this feature.
 
 ## Windows
 
