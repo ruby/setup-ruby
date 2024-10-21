@@ -220,7 +220,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
   await exec.exec('bundle', ['install', '--jobs', '4'])
 
   // @actions/cache only allows to save for non-existing keys
-  if (!common.isExactKeyMatch(key, cachedKey)) {
+  if (!common.isExactCacheKeyMatch(key, cachedKey)) {
     if (cachedKey) { // existing cache but Gemfile.lock differs, clean old gems
       await exec.exec('bundle', ['clean'])
     }
@@ -299,7 +299,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   isBundler1Default: () => (/* binding */ isBundler1Default),
 /* harmony export */   isBundler2Default: () => (/* binding */ isBundler2Default),
 /* harmony export */   isBundler2dot2Default: () => (/* binding */ isBundler2dot2Default),
-/* harmony export */   isExactKeyMatch: () => (/* binding */ isExactKeyMatch),
+/* harmony export */   isExactCacheKeyMatch: () => (/* binding */ isExactCacheKeyMatch),
 /* harmony export */   isHeadVersion: () => (/* binding */ isHeadVersion),
 /* harmony export */   isSelfHostedRunner: () => (/* binding */ isSelfHostedRunner),
 /* harmony export */   isStableVersion: () => (/* binding */ isStableVersion),
@@ -734,7 +734,7 @@ async function setupJavaHome(rubyPrefix) {
 // Determines if two keys are an exact match for the purposes of cache matching
 // Specifically, this is a case-insensitive match that ignores accents
 // From actions/cache@v3 src/utils/actionUtils.ts (MIT)
-function isExactKeyMatch(key, cacheKey) {
+function isExactCacheKeyMatch(key, cacheKey) {
   return !!(
       cacheKey &&
       cacheKey.localeCompare(key, undefined, {
