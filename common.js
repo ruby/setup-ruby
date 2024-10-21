@@ -393,3 +393,15 @@ export function setupPath(newPathEntries) {
   core.addPath(newPath.join(path.delimiter))
   return msys2Type
 }
+
+// Determines if two keys are an exact match for the purposes of cache matching
+// Specifically, this is a case-insensitive match that ignores accents
+// From actions/cache@v3 src/utils/actionUtils.ts (MIT)
+export function isExactCacheKeyMatch(key, cacheKey) {
+  return !!(
+      cacheKey &&
+      cacheKey.localeCompare(key, undefined, {
+          sensitivity: 'accent'
+      }) === 0
+  );
+}
