@@ -206,7 +206,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   await exec.exec('bundle', ['install', '--jobs', '4'])
 
   // @actions/cache only allows to save for non-existing keys
-  if (!common.isExactKeyMatch(key, cachedKey)) {
+  if (!common.isExactCacheKeyMatch(key, cachedKey)) {
     if (cachedKey) { // existing cache but Gemfile.lock differs, clean old gems
       await exec.exec('bundle', ['clean'])
     }
