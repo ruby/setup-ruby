@@ -143,9 +143,14 @@ jobs:
       env:
         BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/gem_from_github.gemfile
 
-    - name: which ruby, bundle
+    - name: which ruby
       shell: bash
-      run: which -a ruby bundle
+      run: which -a ruby
+    - name: which bundle
+      shell: bash
+      run: which -a bundle
+      # https://github.com/ruby/setup-ruby/issues/658
+      if: "matrix.ruby != 'mingw' && matrix.ruby != 'mswin' && matrix.ruby != 'ucrt'"
     - name: which rake
       run: which -a rake
       if: "!startsWith(matrix.os, 'windows')"
