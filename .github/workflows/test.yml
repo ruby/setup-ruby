@@ -1,4 +1,4 @@
-# With fix
+# run with truffleruby revert
 name: Test this action
 on:
   pull_request:
