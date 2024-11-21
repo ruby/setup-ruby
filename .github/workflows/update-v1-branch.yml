@@ -1,0 +1,15 @@
+name: Update the v1 branch when a release is published manually
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write # for git push
+
+jobs:
+  update_branch:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - run: git push origin HEAD:v1

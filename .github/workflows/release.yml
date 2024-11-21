@@ -1,17 +1,24 @@
-name: Update the v1 branch when a release is published
+name: Create a Release
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 permissions:
-  contents: read
+  contents: write # for creating release
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # for git push
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - uses: ./
+      with:
+        ruby-version: '3.3'
+    - run: ruby release.rb
+    # The same as the update-v1-branch.yml workflow.
+    # That workflow is not triggered by the release created above because of
+    # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow
     - run: git push origin HEAD:v1

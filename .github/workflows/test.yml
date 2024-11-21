@@ -17,9 +17,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-20.04, ubuntu-22.04, ubuntu-24.04, macos-11, macos-12, macos-13, macos-14, macos-arm-oss, windows-2019, windows-2022 ]
+        os: [ ubuntu-20.04, ubuntu-22.04, ubuntu-24.04, macos-12, macos-13, macos-14, macos-15, windows-2019, windows-2022 ]
         ruby: [
-          '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', ruby-head,
+          '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', ruby-head,
           jruby, jruby-head,
           truffleruby, truffleruby-head,
           truffleruby+graalvm, truffleruby+graalvm-head
@@ -30,12 +30,13 @@ jobs:
         - { os: windows-2022, ruby: mingw }
         - { os: windows-2022, ruby: mswin }
         - { os: windows-2022, ruby: ucrt  }
+        - { os: ubuntu-24.04, ruby: asan }
         exclude:
         # https://github.com/ruby/setup-ruby/issues/496
         - { os: ubuntu-22.04, ruby: '2.2' }
         - { os: ubuntu-24.04, ruby: '1.9' }
         - { os: ubuntu-24.04, ruby: '2.2' }
-        # These old Rubies fail to compile on macos-arm-oss (macOS 13, arm64), which is used for ruby/ruby-builder
+        # These old Rubies fail to compile on macOS arm64
         - { os: macos-14, ruby: '1.9' }
         - { os: macos-14, ruby: '2.0' }
         - { os: macos-14, ruby: '2.1' }
@@ -43,25 +44,27 @@ jobs:
         - { os: macos-14, ruby: '2.3' }
         - { os: macos-14, ruby: '2.4' }
         - { os: macos-14, ruby: '2.5' }
-        - { os: macos-arm-oss, ruby: '1.9' }
-        - { os: macos-arm-oss, ruby: '2.0' }
-        - { os: macos-arm-oss, ruby: '2.1' }
-        - { os: macos-arm-oss, ruby: '2.2' }
-        - { os: macos-arm-oss, ruby: '2.3' }
-        - { os: macos-arm-oss, ruby: '2.4' }
-        - { os: macos-arm-oss, ruby: '2.5' }
-        # Windows
+        - { os: macos-15, ruby: '1.9' }
+        - { os: macos-15, ruby: '2.0' }
+        - { os: macos-15, ruby: '2.1' }
+        - { os: macos-15, ruby: '2.2' }
+        - { os: macos-15, ruby: '2.3' }
+        - { os: macos-15, ruby: '2.4' }
+        - { os: macos-15, ruby: '2.5' }
+        # Windows (note: previews are not available on Windows)
         - { os: windows-2019, ruby: '1.9' }
-        - { os: windows-2019, ruby: debug }
-        - { os: windows-2019, ruby: truffleruby }
-        - { os: windows-2019, ruby: truffleruby-head }
-        - { os: windows-2019, ruby: truffleruby+graalvm }
-        - { os: windows-2019, ruby: truffleruby+graalvm-head }
         - { os: windows-2022, ruby: '1.9' }
+        - { os: windows-2019, ruby: '3.4' } # 3.4.0-preview2
+        - { os: windows-2022, ruby: '3.4' } # 3.4.0-preview2
+        - { os: windows-2019, ruby: debug }
         - { os: windows-2022, ruby: debug }
+        - { os: windows-2019, ruby: truffleruby }
         - { os: windows-2022, ruby: truffleruby }
+        - { os: windows-2019, ruby: truffleruby-head }
         - { os: windows-2022, ruby: truffleruby-head }
+        - { os: windows-2019, ruby: truffleruby+graalvm }
         - { os: windows-2022, ruby: truffleruby+graalvm }
+        - { os: windows-2019, ruby: truffleruby+graalvm-head }
         - { os: windows-2022, ruby: truffleruby+graalvm-head }
 
     name: ${{ matrix.os }} ${{ matrix.ruby }}
@@ -140,9 +143,14 @@ jobs:
       env:
         BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/gem_from_github.gemfile
 
-    - name: which ruby, bundle
+    - name: which ruby
       shell: bash
-      run: which -a ruby bundle
+      run: which -a ruby
+    - name: which bundle
+      shell: bash
+      run: which -a bundle
+      # https://github.com/ruby/setup-ruby/issues/658
+      if: "matrix.ruby != 'mingw' && matrix.ruby != 'mswin' && matrix.ruby != 'ucrt'"
     - name: which rake
       run: which -a rake
       if: "!startsWith(matrix.os, 'windows')"

@@ -17,7 +17,7 @@ const path = __nccwpck_require__(1017)
 const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const cache = __nccwpck_require__(7799)
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 
 const DEFAULT_CACHE_VERSION = '0'
 
@@ -280,95 +280,53 @@ async function computeBaseKey(platform, engine, version, lockFile, cacheVersion)
 
 /***/ }),
 
-/***/ 3143:
+/***/ 4717:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
-// ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
-
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
-  "drive": () => (/* binding */ drive),
-  "floatVersion": () => (/* binding */ floatVersion),
-  "getOSNameVersion": () => (/* binding */ getOSNameVersion),
-  "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
-  "getRunnerToolCache": () => (/* binding */ getRunnerToolCache),
-  "getToolCachePath": () => (/* binding */ getToolCachePath),
-  "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
-  "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
-  "hashFile": () => (/* binding */ hashFile),
-  "inputs": () => (/* binding */ inputs),
-  "isBundler1Default": () => (/* binding */ isBundler1Default),
-  "isBundler2Default": () => (/* binding */ isBundler2Default),
-  "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
-  "isHeadVersion": () => (/* binding */ isHeadVersion),
-  "isSelfHostedRunner": () => (/* binding */ isSelfHostedRunner),
-  "isStableVersion": () => (/* binding */ isStableVersion),
-  "measure": () => (/* binding */ measure),
-  "partition": () => (/* binding */ partition),
-  "selfHostedRunnerReason": () => (/* binding */ selfHostedRunnerReason),
-  "setupPath": () => (/* binding */ setupPath),
-  "shouldUseToolCache": () => (/* binding */ shouldUseToolCache),
-  "targetRubyVersion": () => (/* binding */ targetRubyVersion),
-  "time": () => (/* binding */ time),
-  "toolCacheCompleteFile": () => (/* binding */ toolCacheCompleteFile),
-  "toolCacheFind": () => (/* binding */ toolCacheFind),
-  "win2nix": () => (/* binding */ win2nix),
-  "windows": () => (/* binding */ windows)
-});
-
-;// CONCATENATED MODULE: external "node:os"
-const external_node_os_namespaceObject = require("node:os");
-;// CONCATENATED MODULE: ./node_modules/macos-release/index.js
-
-
-const nameMap = new Map([
-	[23, ['Sonoma', '14']],
-	[22, ['Ventura', '13']],
-	[21, ['Monterey', '12']],
-	[20, ['Big Sur', '11']],
-	[19, ['Catalina', '10.15']],
-	[18, ['Mojave', '10.14']],
-	[17, ['High Sierra', '10.13']],
-	[16, ['Sierra', '10.12']],
-	[15, ['El Capitan', '10.11']],
-	[14, ['Yosemite', '10.10']],
-	[13, ['Mavericks', '10.9']],
-	[12, ['Mountain Lion', '10.8']],
-	[11, ['Lion', '10.7']],
-	[10, ['Snow Leopard', '10.6']],
-	[9, ['Leopard', '10.5']],
-	[8, ['Tiger', '10.4']],
-	[7, ['Panther', '10.3']],
-	[6, ['Jaguar', '10.2']],
-	[5, ['Puma', '10.1']],
-]);
-
-function macosRelease(release) {
-	release = Number((release || external_node_os_namespaceObject.release()).split('.')[0]);
-
-	const [name, version] = nameMap.get(release) || ['Unknown', ''];
-
-	return {
-		name,
-		version,
-	};
-}
-
-;// CONCATENATED MODULE: ./common.js
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "windows": () => (/* binding */ windows),
+/* harmony export */   "drive": () => (/* binding */ drive),
+/* harmony export */   "inputs": () => (/* binding */ inputs),
+/* harmony export */   "partition": () => (/* binding */ partition),
+/* harmony export */   "measure": () => (/* binding */ measure),
+/* harmony export */   "time": () => (/* binding */ time),
+/* harmony export */   "isHeadVersion": () => (/* binding */ isHeadVersion),
+/* harmony export */   "isStableVersion": () => (/* binding */ isStableVersion),
+/* harmony export */   "hasBundlerDefaultGem": () => (/* binding */ hasBundlerDefaultGem),
+/* harmony export */   "isBundler1Default": () => (/* binding */ isBundler1Default),
+/* harmony export */   "isBundler2Default": () => (/* binding */ isBundler2Default),
+/* harmony export */   "isBundler2dot2Default": () => (/* binding */ isBundler2dot2Default),
+/* harmony export */   "targetRubyVersion": () => (/* binding */ targetRubyVersion),
+/* harmony export */   "floatVersion": () => (/* binding */ floatVersion),
+/* harmony export */   "hashFile": () => (/* binding */ hashFile),
+/* harmony export */   "isSelfHostedRunner": () => (/* binding */ isSelfHostedRunner),
+/* harmony export */   "selfHostedRunnerReason": () => (/* binding */ selfHostedRunnerReason),
+/* harmony export */   "getOSName": () => (/* binding */ getOSName),
+/* harmony export */   "getOSVersion": () => (/* binding */ getOSVersion),
+/* harmony export */   "getOSNameVersion": () => (/* binding */ getOSNameVersion),
+/* harmony export */   "getOSNameVersionArch": () => (/* binding */ getOSNameVersionArch),
+/* harmony export */   "shouldUseToolCache": () => (/* binding */ shouldUseToolCache),
+/* harmony export */   "getToolCachePath": () => (/* binding */ getToolCachePath),
+/* harmony export */   "getRunnerToolCache": () => (/* binding */ getRunnerToolCache),
+/* harmony export */   "toolCacheFind": () => (/* binding */ toolCacheFind),
+/* harmony export */   "getToolCacheRubyPrefix": () => (/* binding */ getToolCacheRubyPrefix),
+/* harmony export */   "toolCacheCompleteFile": () => (/* binding */ toolCacheCompleteFile),
+/* harmony export */   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
+/* harmony export */   "win2nix": () => (/* binding */ win2nix),
+/* harmony export */   "setupPath": () => (/* binding */ setupPath)
+/* harmony export */ });
 const os = __nccwpck_require__(2037)
 const path = __nccwpck_require__(1017)
 const fs = __nccwpck_require__(7147)
 const util = __nccwpck_require__(3837)
 const stream = __nccwpck_require__(2781)
-const common_crypto = __nccwpck_require__(6113)
+const crypto = __nccwpck_require__(6113)
 const core = __nccwpck_require__(2186)
 const tc = __nccwpck_require__(7784)
 const { performance } = __nccwpck_require__(4074)
 const linuxOSInfo = __nccwpck_require__(8487)
-;
 
 const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
@@ -427,7 +385,7 @@ async function time(name, block) {
 }
 
 function isHeadVersion(rubyVersion) {
-  return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
+  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan'].includes(rubyVersion)
 }
 
 function isStableVersion(engine, rubyVersion) {
@@ -516,25 +474,36 @@ function floatVersion(rubyVersion) {
 
 async function hashFile(file) {
   // See https://github.com/actions/runner/blob/master/src/Misc/expressionFunc/hashFiles/src/hashFiles.ts
-  const hash = common_crypto.createHash('sha256')
+  const hash = crypto.createHash('sha256')
   const pipeline = util.promisify(stream.pipeline)
   await pipeline(fs.createReadStream(file), hash)
   return hash.digest('hex')
 }
 
+// macos is not listed explicitly, see below
 const GitHubHostedPlatforms = [
   'ubuntu-20.04-x64',
   'ubuntu-22.04-x64',
   'ubuntu-24.04-x64',
-  'macos-11-x64',
-  'macos-12-x64',
-  'macos-13-x64',
-  'macos-13-arm64',
-  'macos-14-x64',
-  'macos-14-arm64',
   'windows-2019-x64',
   'windows-2022-x64',
 ]
+
+// Precisely: whether we have builds for that platform and there are GitHub-hosted runners to test it
+function isSupportedPlatform() {
+  const platform = getOSName()
+  switch (platform) {
+    case 'ubuntu':
+      return GitHubHostedPlatforms.includes(getOSNameVersionArch())
+    case 'macos':
+      // See https://github.com/ruby/ruby-builder/blob/master/README.md#naming
+      // 13 on arm64 because of old macos-arm-oss runners
+      return (os.arch() === 'x64' && parseInt(getOSVersion()) >= 12) ||
+          (os.arch() === 'arm64' && parseInt(getOSVersion()) >= 13)
+    case 'windows':
+      return GitHubHostedPlatforms.includes(getOSNameVersionArch())
+  }
+}
 
 // Actually a self-hosted runner for which the OS and OS version does not correspond to a GitHub-hosted runner image,
 function isSelfHostedRunner() {
@@ -542,54 +511,74 @@ function isSelfHostedRunner() {
     throw new Error('inputs.selfHosted should have been already set')
   }
 
-  return inputs.selfHosted === 'true' ||
-    !GitHubHostedPlatforms.includes(getOSNameVersionArch())
+  return inputs.selfHosted === 'true' || !isSupportedPlatform()
 }
 
 function selfHostedRunnerReason() {
   if (inputs.selfHosted === 'true') {
     return 'the self-hosted input was set'
-  } else if (!GitHubHostedPlatforms.includes(getOSNameVersionArch())) {
+  } else if (!isSupportedPlatform()) {
     return 'the platform does not match a GitHub-hosted runner image (or that image is deprecated and no longer supported)'
   } else {
     return 'unknown reason'
   }
 }
 
-let osNameVersion = undefined
+let osName = undefined
+let osVersion = undefined
 
-function getOSNameVersion() {
-  if (osNameVersion !== undefined) {
-    return osNameVersion
+function getOSName() {
+  if (osName !== undefined) {
+    return osName
   }
 
   const platform = os.platform()
-  let osName
-  let osVersion
   if (platform === 'linux') {
     const info = linuxOSInfo({mode: 'sync'})
     osName = info.id
-    osVersion = info.version_id
   } else if (platform === 'darwin') {
     osName = 'macos'
-    osVersion = macosRelease().version
   } else if (platform === 'win32') {
     osName = 'windows'
+  } else {
+    throw new Error(`Unknown platform ${platform}`)
+  }
+
+  return osName
+}
+
+function getOSVersion() {
+  if (osVersion !== undefined) {
+    return osVersion
+  }
+
+  const platform = os.platform()
+  if (platform === 'linux') {
+    const info = linuxOSInfo({mode: 'sync'})
+    osVersion = info.version_id
+  } else if (platform === 'darwin') {
+    // See https://github.com/sindresorhus/macos-release/blob/main/index.js
+    const darwinVersion = parseInt(os.release().match(/^\d+/)[0])
+    osVersion = `${darwinVersion - 9}`
+  } else if (platform === 'win32') {
     osVersion = findWindowsVersion()
   } else {
     throw new Error(`Unknown platform ${platform}`)
   }
 
-  osNameVersion = `${osName}-${osVersion}`
-  return osNameVersion
+  return osVersion
+}
+
+function getOSNameVersion() {
+  return `${getOSName()}-${getOSVersion()}`
 }
 
 function getOSNameVersionArch() {
-  return `${getOSNameVersion()}-${os.arch()}`
+  return `${getOSName()}-${getOSVersion()}-${os.arch()}`
 }
 
 function findWindowsVersion() {
-  const version = os.version();
+  const version = os.version()
   const match = version.match(/^Windows Server (\d+) Datacenter/)
   if (match) {
     return match[1]
@@ -622,15 +611,14 @@ function getRunnerToolCache() {
 
 // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
 function getDefaultToolCachePath() {
-  const platform = getOSNameVersion()
-  if (platform.startsWith('ubuntu-')) {
-    return '/opt/hostedtoolcache'
-  } else if (platform.startsWith('macos-')) {
-    return '/Users/runner/hostedtoolcache'
-  } else if (platform.startsWith('windows-')) {
-    return 'C:\\hostedtoolcache\\windows'
-  } else {
-    throw new Error('Unknown platform')
+  const platform = getOSName()
+  switch (platform) {
+    case 'ubuntu':
+      return '/opt/hostedtoolcache'
+    case 'macos':
+      return '/Users/runner/hostedtoolcache'
+    case 'windows':
+      return 'C:\\hostedtoolcache\\windows'
   }
 }
 
@@ -49292,7 +49280,7 @@ const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const io = __nccwpck_require__(7436)
 const tc = __nccwpck_require__(7784)
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 const rubyBuilderVersions = __nccwpck_require__(5959)
 
 const builderReleaseTag = 'toolcache'
@@ -49421,7 +49409,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   "rubygemsUpdate": () => (/* binding */ rubygemsUpdate)
 /* harmony export */ });
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 const path = __nccwpck_require__(1017)
 const exec = __nccwpck_require__(1514)
 const semver = __nccwpck_require__(1383)
@@ -49506,7 +49494,7 @@ const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
 const io = __nccwpck_require__(7436)
 const tc = __nccwpck_require__(7784)
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 const rubyInstallerVersions = __nccwpck_require__(6459)
 
 const drive = common.drive
@@ -68557,7 +68545,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"ruby":["1.9.3-p551","2.0.0-p648","2.1.9","2.2.10","2.3.0","2.3.1","2.3.2","2.3.3","2.3.4","2.3.5","2.3.6","2.3.7","2.3.8","2.4.0","2.4.1","2.4.2","2.4.3","2.4.4","2.4.5","2.4.6","2.4.7","2.4.9","2.4.10","2.5.0","2.5.1","2.5.2","2.5.3","2.5.4","2.5.5","2.5.6","2.5.7","2.5.8","2.5.9","2.6.0","2.6.1","2.6.2","2.6.3","2.6.4","2.6.5","2.6.6","2.6.7","2.6.8","2.6.9","2.6.10","2.7.0","2.7.1","2.7.2","2.7.3","2.7.4","2.7.5","2.7.6","2.7.7","2.7.8","3.0.0-preview1","3.0.0-preview2","3.0.0-rc1","3.0.0","3.0.1","3.0.2","3.0.3","3.0.4","3.0.5","3.0.6","3.0.7","3.1.0-preview1","3.1.0","3.1.1","3.1.2","3.1.3","3.1.4","3.1.5","3.1.6","3.2.0-preview1","3.2.0-preview2","3.2.0-preview3","3.2.0-rc1","3.2.0","3.2.1","3.2.2","3.2.3","3.2.4","3.3.0-preview1","3.3.0-preview2","3.3.0-preview3","3.3.0-rc1","3.3.0","3.3.1","3.3.2","3.4.0-preview1","head","debug"],"jruby":["9.1.17.0","9.2.9.0","9.2.10.0","9.2.11.0","9.2.11.1","9.2.12.0","9.2.13.0","9.2.14.0","9.2.15.0","9.2.16.0","9.2.17.0","9.2.18.0","9.2.19.0","9.2.20.0","9.2.20.1","9.2.21.0","9.3.0.0","9.3.1.0","9.3.2.0","9.3.3.0","9.3.4.0","9.3.6.0","9.3.7.0","9.3.8.0","9.3.9.0","9.3.10.0","9.3.11.0","9.3.13.0","9.3.14.0","9.4.0.0","9.4.1.0","9.4.2.0","9.4.3.0","9.4.4.0","9.4.5.0","9.4.6.0","9.4.7.0","head"],"truffleruby":["19.3.0","19.3.1","20.0.0","20.1.0","20.2.0","20.3.0","21.0.0","21.1.0","21.2.0","21.2.0.1","21.3.0","22.0.0.2","22.1.0","22.2.0","22.3.0","22.3.1","23.0.0-preview1","23.0.0","23.1.0","23.1.1","23.1.2","24.0.0","24.0.1","head"],"truffleruby+graalvm":["21.2.0","21.3.0","22.0.0.2","22.1.0","22.2.0","22.3.0","22.3.1","23.0.0-preview1","23.0.0","23.1.0","23.1.1","23.1.2","24.0.0","24.0.1","head"]}');
+module.exports = JSON.parse('{"ruby":["1.9.3-p551","2.0.0-p648","2.1.9","2.2.10","2.3.0","2.3.1","2.3.2","2.3.3","2.3.4","2.3.5","2.3.6","2.3.7","2.3.8","2.4.0","2.4.1","2.4.2","2.4.3","2.4.4","2.4.5","2.4.6","2.4.7","2.4.9","2.4.10","2.5.0","2.5.1","2.5.2","2.5.3","2.5.4","2.5.5","2.5.6","2.5.7","2.5.8","2.5.9","2.6.0","2.6.1","2.6.2","2.6.3","2.6.4","2.6.5","2.6.6","2.6.7","2.6.8","2.6.9","2.6.10","2.7.0","2.7.1","2.7.2","2.7.3","2.7.4","2.7.5","2.7.6","2.7.7","2.7.8","3.0.0-preview1","3.0.0-preview2","3.0.0-rc1","3.0.0","3.0.1","3.0.2","3.0.3","3.0.4","3.0.5","3.0.6","3.0.7","3.1.0-preview1","3.1.0","3.1.1","3.1.2","3.1.3","3.1.4","3.1.5","3.1.6","3.2.0-preview1","3.2.0-preview2","3.2.0-preview3","3.2.0-rc1","3.2.0","3.2.1","3.2.2","3.2.3","3.2.4","3.2.5","3.2.6","3.3.0-preview1","3.3.0-preview2","3.3.0-preview3","3.3.0-rc1","3.3.0","3.3.1","3.3.2","3.3.3","3.3.4","3.3.5","3.3.6","3.4.0-preview1","3.4.0-preview2","head","debug","asan"],"jruby":["9.1.17.0","9.2.9.0","9.2.10.0","9.2.11.0","9.2.11.1","9.2.12.0","9.2.13.0","9.2.14.0","9.2.15.0","9.2.16.0","9.2.17.0","9.2.18.0","9.2.19.0","9.2.20.0","9.2.20.1","9.2.21.0","9.3.0.0","9.3.1.0","9.3.2.0","9.3.3.0","9.3.4.0","9.3.6.0","9.3.7.0","9.3.8.0","9.3.9.0","9.3.10.0","9.3.11.0","9.3.13.0","9.3.14.0","9.3.15.0","9.4.0.0","9.4.1.0","9.4.2.0","9.4.3.0","9.4.4.0","9.4.5.0","9.4.6.0","9.4.7.0","9.4.8.0","9.4.9.0","head"],"truffleruby":["19.3.0","19.3.1","20.0.0","20.1.0","20.2.0","20.3.0","21.0.0","21.1.0","21.2.0","21.2.0.1","21.3.0","22.0.0.2","22.1.0","22.2.0","22.3.0","22.3.1","23.0.0-preview1","23.0.0","23.1.0","23.1.1","23.1.2","24.0.0","24.0.1","24.0.2","24.1.0","24.1.1","head"],"truffleruby+graalvm":["21.2.0","21.3.0","22.0.0.2","22.1.0","22.2.0","22.3.0","22.3.1","23.0.0-preview1","23.0.0","23.1.0","23.1.1","23.1.2","24.0.0","24.0.1","24.0.2","24.1.0","24.1.1","head"]}');
 
 /***/ }),
 
@@ -68565,7 +68553,7 @@ module.exports = JSON.parse('{"ruby":["1.9.3-p551","2.0.0-p648","2.1.9","2.2.10"
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"2.0.0":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.0.0-p648/ruby-2.0.0-p648-x64-mingw32.7z","2.1.9":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.1.9/ruby-2.1.9-x64-mingw32.7z","2.2.6":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.2.6/ruby-2.2.6-x64-mingw32.7z","2.3.0":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.0/ruby-2.3.0-x64-mingw32.7z","2.3.1":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.1/ruby-2.3.1-x64-mingw32.7z","2.3.3":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.3/ruby-2.3.3-x64-mingw32.7z","2.4.1":"https://github.com/oneclick/rubyinstaller2/releases/download/2.4.1-2/rubyinstaller-2.4.1-2-x64.7z","2.4.2":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.2-2/rubyinstaller-2.4.2-2-x64.7z","2.4.3":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.3-2/rubyinstaller-2.4.3-2-x64.7z","2.4.4":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.4-2/rubyinstaller-2.4.4-2-x64.7z","2.4.5":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.5-1/rubyinstaller-2.4.5-1-x64.7z","2.4.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.6-1/rubyinstaller-2.4.6-1-x64.7z","2.4.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.7-1/rubyinstaller-2.4.7-1-x64.7z","2.4.9":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.9-1/rubyinstaller-2.4.9-1-x64.7z","2.4.10":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.10-1/rubyinstaller-2.4.10-1-x64.7z","2.5.0":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.0-2/rubyinstaller-2.5.0-2-x64.7z","2.5.1":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.1-2/rubyinstaller-2.5.1-2-x64.7z","2.5.3":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.3-1/rubyinstaller-2.5.3-1-x64.7z","2.5.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.5-1/rubyinstaller-2.5.5-1-x64.7z","2.5.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.6-1/rubyinstaller-2.5.6-1-x64.7z","2.5.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.7-1/rubyinstaller-2.5.7-1-x64.7z","2.5.8":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.8-2/rubyinstaller-2.5.8-2-x64.7z","2.5.9":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.9-1/rubyinstaller-2.5.9-1-x64.7z","2.6.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.0-1/rubyinstaller-2.6.0-1-x64.7z","2.6.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.1-1/rubyinstaller-2.6.1-1-x64.7z","2.6.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.2-1/rubyinstaller-2.6.2-1-x64.7z","2.6.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.3-1/rubyinstaller-2.6.3-1-x64.7z","2.6.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.4-1/rubyinstaller-2.6.4-1-x64.7z","2.6.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.5-1/rubyinstaller-2.6.5-1-x64.7z","2.6.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.6-2/rubyinstaller-2.6.6-2-x64.7z","2.6.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.7-1/rubyinstaller-2.6.7-1-x64.7z","2.6.8":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.8-1/rubyinstaller-2.6.8-1-x64.7z","2.6.9":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.9-1/rubyinstaller-2.6.9-1-x64.7z","2.6.10":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.10-1/rubyinstaller-2.6.10-1-x64.7z","2.7.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.0-1/rubyinstaller-2.7.0-1-x64.7z","2.7.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.1-1/rubyinstaller-2.7.1-1-x64.7z","2.7.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.2-1/rubyinstaller-2.7.2-1-x64.7z","2.7.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.3-1/rubyinstaller-2.7.3-1-x64.7z","2.7.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.4-1/rubyinstaller-2.7.4-1-x64.7z","2.7.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.5-1/rubyinstaller-2.7.5-1-x64.7z","2.7.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.6-1/rubyinstaller-2.7.6-1-x64.7z","2.7.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.7-1/rubyinstaller-2.7.7-1-x64.7z","2.7.8":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.8-1/rubyinstaller-2.7.8-1-x64.7z","3.0.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.0-1/rubyinstaller-3.0.0-1-x64.7z","3.0.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.1-1/rubyinstaller-3.0.1-1-x64.7z","3.0.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.2-1/rubyinstaller-3.0.2-1-x64.7z","3.0.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.3-1/rubyinstaller-3.0.3-1-x64.7z","3.0.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.4-1/rubyinstaller-3.0.4-1-x64.7z","3.0.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.5-1/rubyinstaller-3.0.5-1-x64.7z","3.0.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.6-1/rubyinstaller-3.0.6-1-x64.7z","3.0.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.7-1/rubyinstaller-3.0.7-1-x64.7z","3.1.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.0-1/rubyinstaller-3.1.0-1-x64.7z","3.1.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.1-1/rubyinstaller-3.1.1-1-x64.7z","3.1.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-3.1.2-1-x64.7z","3.1.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.3-1/rubyinstaller-3.1.3-1-x64.7z","3.1.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.4-1/rubyinstaller-3.1.4-1-x64.7z","3.1.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.5-1/rubyinstaller-3.1.5-1-x64.7z","3.1.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.6-1/rubyinstaller-3.1.6-1-x64.7z","3.2.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.0-1/rubyinstaller-3.2.0-1-x64.7z","3.2.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.1-1/rubyinstaller-3.2.1-1-x64.7z","3.2.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.2-1/rubyinstaller-3.2.2-1-x64.7z","3.2.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.3-1/rubyinstaller-3.2.3-1-x64.7z","3.2.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.4-1/rubyinstaller-3.2.4-1-x64.7z","3.3.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.0-1/rubyinstaller-3.3.0-1-x64.7z","3.3.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.1-1/rubyinstaller-3.3.1-1-x64.7z","3.3.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.2-1/rubyinstaller-3.3.2-1-x64.7z","head":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-x64.7z","mingw":"https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mingw.7z","mswin":"https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mswin.7z","ucrt":"https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-ucrt.7z"}');
+module.exports = JSON.parse('{"2.0.0":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.0.0-p648/ruby-2.0.0-p648-x64-mingw32.7z","2.1.9":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.1.9/ruby-2.1.9-x64-mingw32.7z","2.2.6":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.2.6/ruby-2.2.6-x64-mingw32.7z","2.3.0":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.0/ruby-2.3.0-x64-mingw32.7z","2.3.1":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.1/ruby-2.3.1-x64-mingw32.7z","2.3.3":"https://github.com/oneclick/rubyinstaller/releases/download/ruby-2.3.3/ruby-2.3.3-x64-mingw32.7z","2.4.1":"https://github.com/oneclick/rubyinstaller2/releases/download/2.4.1-2/rubyinstaller-2.4.1-2-x64.7z","2.4.2":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.2-2/rubyinstaller-2.4.2-2-x64.7z","2.4.3":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.3-2/rubyinstaller-2.4.3-2-x64.7z","2.4.4":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.4-2/rubyinstaller-2.4.4-2-x64.7z","2.4.5":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.4.5-1/rubyinstaller-2.4.5-1-x64.7z","2.4.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.6-1/rubyinstaller-2.4.6-1-x64.7z","2.4.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.7-1/rubyinstaller-2.4.7-1-x64.7z","2.4.9":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.9-1/rubyinstaller-2.4.9-1-x64.7z","2.4.10":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.4.10-1/rubyinstaller-2.4.10-1-x64.7z","2.5.0":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.0-2/rubyinstaller-2.5.0-2-x64.7z","2.5.1":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.1-2/rubyinstaller-2.5.1-2-x64.7z","2.5.3":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-2.5.3-1/rubyinstaller-2.5.3-1-x64.7z","2.5.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.5-1/rubyinstaller-2.5.5-1-x64.7z","2.5.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.6-1/rubyinstaller-2.5.6-1-x64.7z","2.5.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.7-1/rubyinstaller-2.5.7-1-x64.7z","2.5.8":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.8-2/rubyinstaller-2.5.8-2-x64.7z","2.5.9":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.9-1/rubyinstaller-2.5.9-1-x64.7z","2.6.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.0-1/rubyinstaller-2.6.0-1-x64.7z","2.6.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.1-1/rubyinstaller-2.6.1-1-x64.7z","2.6.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.2-1/rubyinstaller-2.6.2-1-x64.7z","2.6.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.3-1/rubyinstaller-2.6.3-1-x64.7z","2.6.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.4-1/rubyinstaller-2.6.4-1-x64.7z","2.6.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.5-1/rubyinstaller-2.6.5-1-x64.7z","2.6.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.6-2/rubyinstaller-2.6.6-2-x64.7z","2.6.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.7-1/rubyinstaller-2.6.7-1-x64.7z","2.6.8":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.8-1/rubyinstaller-2.6.8-1-x64.7z","2.6.9":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.9-1/rubyinstaller-2.6.9-1-x64.7z","2.6.10":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.10-1/rubyinstaller-2.6.10-1-x64.7z","2.7.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.0-1/rubyinstaller-2.7.0-1-x64.7z","2.7.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.1-1/rubyinstaller-2.7.1-1-x64.7z","2.7.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.2-1/rubyinstaller-2.7.2-1-x64.7z","2.7.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.3-1/rubyinstaller-2.7.3-1-x64.7z","2.7.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.4-1/rubyinstaller-2.7.4-1-x64.7z","2.7.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.5-1/rubyinstaller-2.7.5-1-x64.7z","2.7.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.6-1/rubyinstaller-2.7.6-1-x64.7z","2.7.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.7-1/rubyinstaller-2.7.7-1-x64.7z","2.7.8":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.7.8-1/rubyinstaller-2.7.8-1-x64.7z","3.0.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.0-1/rubyinstaller-3.0.0-1-x64.7z","3.0.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.1-1/rubyinstaller-3.0.1-1-x64.7z","3.0.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.2-1/rubyinstaller-3.0.2-1-x64.7z","3.0.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.3-1/rubyinstaller-3.0.3-1-x64.7z","3.0.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.4-1/rubyinstaller-3.0.4-1-x64.7z","3.0.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.5-1/rubyinstaller-3.0.5-1-x64.7z","3.0.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.6-1/rubyinstaller-3.0.6-1-x64.7z","3.0.7":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.7-1/rubyinstaller-3.0.7-1-x64.7z","3.1.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.0-1/rubyinstaller-3.1.0-1-x64.7z","3.1.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.1-1/rubyinstaller-3.1.1-1-x64.7z","3.1.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-3.1.2-1-x64.7z","3.1.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.3-1/rubyinstaller-3.1.3-1-x64.7z","3.1.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.4-1/rubyinstaller-3.1.4-1-x64.7z","3.1.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.5-1/rubyinstaller-3.1.5-1-x64.7z","3.1.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.6-1/rubyinstaller-3.1.6-1-x64.7z","3.2.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.0-1/rubyinstaller-3.2.0-1-x64.7z","3.2.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.1-1/rubyinstaller-3.2.1-1-x64.7z","3.2.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.2-1/rubyinstaller-3.2.2-1-x64.7z","3.2.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.3-1/rubyinstaller-3.2.3-1-x64.7z","3.2.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.4-1/rubyinstaller-3.2.4-1-x64.7z","3.2.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.5-1/rubyinstaller-3.2.5-1-x64.7z","3.2.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.6-1/rubyinstaller-3.2.6-1-x64.7z","3.3.0":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.0-1/rubyinstaller-3.3.0-1-x64.7z","3.3.1":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.1-1/rubyinstaller-3.3.1-1-x64.7z","3.3.2":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.2-1/rubyinstaller-3.3.2-1-x64.7z","3.3.3":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.3-1/rubyinstaller-3.3.3-1-x64.7z","3.3.4":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.4-1/rubyinstaller-3.3.4-1-x64.7z","3.3.5":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.5-1/rubyinstaller-3.3.5-1-x64.7z","3.3.6":"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.6-2/rubyinstaller-3.3.6-2-x64.7z","head":"https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-x64.7z","mingw":"https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mingw.7z","mswin":"https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mswin.7z","ucrt":"https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-ucrt.7z"}');
 
 /***/ })
 
@@ -68649,7 +68637,7 @@ const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
 const core = __nccwpck_require__(2186)
 const exec = __nccwpck_require__(1514)
-const common = __nccwpck_require__(3143)
+const common = __nccwpck_require__(4717)
 const rubygems = __nccwpck_require__(160)
 const bundler = __nccwpck_require__(1641)
 
@@ -68821,7 +68809,23 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
     throw new Error(`CRuby < 2.6 does not support macos-arm64.
         Either use a newer Ruby version or use a macOS image running on amd64, e.g., macos-13 or macos-12.
         Note that GitHub changed the meaning of macos-latest from macos-12 (amd64) to macos-14 (arm64):
-        https://github.blog/changelog/2024-04-01-macos-14-sonoma-is-generally-available-and-the-latest-macos-runner-image/`)
+        https://github.blog/changelog/2024-04-01-macos-14-sonoma-is-generally-available-and-the-latest-macos-runner-image/
+
+        If you are using a matrix of Ruby versions, a good solution is to run only < 2.6 on amd64, like so:
+        matrix:
+          ruby: ['2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3']
+          os: [ ubuntu-latest, macos-latest ]
+          # CRuby < 2.6 does not support macos-arm64, so test those on amd64 instead
+          exclude:
+          - { os: macos-latest, ruby: '2.4' }
+          - { os: macos-latest, ruby: '2.5' }
+          include:
+          - { os: macos-13, ruby: '2.4' }
+          - { os: macos-13, ruby: '2.5' }
+
+        But of course you should consider dropping support for these long-EOL Rubies, which cannot even be built on recent macOS machines.`)
+  } else if (engine === 'truffleruby' && platform.startsWith('windows')) {
+    throw new Error('TruffleRuby does not currently support Windows.')
   }
 
   return version

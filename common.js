@@ -8,7 +8,6 @@ const core = require('@actions/core')
 const tc = require('@actions/tool-cache')
 const { performance } = require('perf_hooks')
 const linuxOSInfo = require('linux-os-info')
-import macosRelease from 'macos-release'
 
 export const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
@@ -67,7 +66,7 @@ export async function time(name, block) {
 }
 
 export function isHeadVersion(rubyVersion) {
-  return ['head', 'debug',  'mingw', 'mswin', 'ucrt'].includes(rubyVersion)
+  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan'].includes(rubyVersion)
 }
 
 export function isStableVersion(engine, rubyVersion) {
@@ -162,19 +161,30 @@ export async function hashFile(file) {
   return hash.digest('hex')
 }
 
+// macos is not listed explicitly, see below
 const GitHubHostedPlatforms = [
   'ubuntu-20.04-x64',
   'ubuntu-22.04-x64',
   'ubuntu-24.04-x64',
-  'macos-11-x64',
-  'macos-12-x64',
-  'macos-13-x64',
-  'macos-13-arm64',
-  'macos-14-x64',
-  'macos-14-arm64',
   'windows-2019-x64',
   'windows-2022-x64',
 ]
+
+// Precisely: whether we have builds for that platform and there are GitHub-hosted runners to test it
+function isSupportedPlatform() {
+  const platform = getOSName()
+  switch (platform) {
+    case 'ubuntu':
+      return GitHubHostedPlatforms.includes(getOSNameVersionArch())
+    case 'macos':
+      // See https://github.com/ruby/ruby-builder/blob/master/README.md#naming
+      // 13 on arm64 because of old macos-arm-oss runners
+      return (os.arch() === 'x64' && parseInt(getOSVersion()) >= 12) ||
+          (os.arch() === 'arm64' && parseInt(getOSVersion()) >= 13)
+    case 'windows':
+      return GitHubHostedPlatforms.includes(getOSNameVersionArch())
+  }
+}
 
 // Actually a self-hosted runner for which the OS and OS version does not correspond to a GitHub-hosted runner image,
 export function isSelfHostedRunner() {
@@ -182,54 +192,74 @@ export function isSelfHostedRunner() {
     throw new Error('inputs.selfHosted should have been already set')
   }
 
-  return inputs.selfHosted === 'true' ||
-    !GitHubHostedPlatforms.includes(getOSNameVersionArch())
+  return inputs.selfHosted === 'true' || !isSupportedPlatform()
 }
 
 export function selfHostedRunnerReason() {
   if (inputs.selfHosted === 'true') {
     return 'the self-hosted input was set'
-  } else if (!GitHubHostedPlatforms.includes(getOSNameVersionArch())) {
+  } else if (!isSupportedPlatform()) {
     return 'the platform does not match a GitHub-hosted runner image (or that image is deprecated and no longer supported)'
   } else {
     return 'unknown reason'
   }
 }
 
-let osNameVersion = undefined
+let osName = undefined
+let osVersion = undefined
 
-export function getOSNameVersion() {
-  if (osNameVersion !== undefined) {
-    return osNameVersion
+export function getOSName() {
+  if (osName !== undefined) {
+    return osName
   }
 
   const platform = os.platform()
-  let osName
-  let osVersion
   if (platform === 'linux') {
     const info = linuxOSInfo({mode: 'sync'})
     osName = info.id
-    osVersion = info.version_id
   } else if (platform === 'darwin') {
     osName = 'macos'
-    osVersion = macosRelease().version
   } else if (platform === 'win32') {
     osName = 'windows'
+  } else {
+    throw new Error(`Unknown platform ${platform}`)
+  }
+
+  return osName
+}
+
+export function getOSVersion() {
+  if (osVersion !== undefined) {
+    return osVersion
+  }
+
+  const platform = os.platform()
+  if (platform === 'linux') {
+    const info = linuxOSInfo({mode: 'sync'})
+    osVersion = info.version_id
+  } else if (platform === 'darwin') {
+    // See https://github.com/sindresorhus/macos-release/blob/main/index.js
+    const darwinVersion = parseInt(os.release().match(/^\d+/)[0])
+    osVersion = `${darwinVersion - 9}`
+  } else if (platform === 'win32') {
     osVersion = findWindowsVersion()
   } else {
     throw new Error(`Unknown platform ${platform}`)
   }
 
-  osNameVersion = `${osName}-${osVersion}`
-  return osNameVersion
+  return osVersion
+}
+
+export function getOSNameVersion() {
+  return `${getOSName()}-${getOSVersion()}`
 }
 
 export function getOSNameVersionArch() {
-  return `${getOSNameVersion()}-${os.arch()}`
+  return `${getOSName()}-${getOSVersion()}-${os.arch()}`
 }
 
 function findWindowsVersion() {
-  const version = os.version();
+  const version = os.version()
   const match = version.match(/^Windows Server (\d+) Datacenter/)
   if (match) {
     return match[1]
@@ -262,15 +292,14 @@ export function getRunnerToolCache() {
 
 // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
 function getDefaultToolCachePath() {
-  const platform = getOSNameVersion()
-  if (platform.startsWith('ubuntu-')) {
-    return '/opt/hostedtoolcache'
-  } else if (platform.startsWith('macos-')) {
-    return '/Users/runner/hostedtoolcache'
-  } else if (platform.startsWith('windows-')) {
-    return 'C:\\hostedtoolcache\\windows'
-  } else {
-    throw new Error('Unknown platform')
+  const platform = getOSName()
+  switch (platform) {
+    case 'ubuntu':
+      return '/opt/hostedtoolcache'
+    case 'macos':
+      return '/Users/runner/hostedtoolcache'
+    case 'windows':
+      return 'C:\\hostedtoolcache\\windows'
   }
 }
 
