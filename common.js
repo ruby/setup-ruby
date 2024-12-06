@@ -179,7 +179,7 @@ function isSupportedPlatform() {
     case 'macos':
       // See https://github.com/ruby/ruby-builder/blob/master/README.md#naming
       // 13 on arm64 because of old macos-arm-oss runners
-      return (os.arch() === 'x64' && parseInt(getOSVersion()) >= 12) ||
+      return (os.arch() === 'x64' && parseInt(getOSVersion()) >= 13) ||
           (os.arch() === 'arm64' && parseInt(getOSVersion()) >= 13)
     case 'windows':
       return GitHubHostedPlatforms.includes(getOSNameVersionArch())
