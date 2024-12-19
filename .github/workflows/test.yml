@@ -190,8 +190,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { ruby: '3.2', expected_rubygems_version: '3.5.3'  }
-        - { ruby: '3.0', expected_rubygems_version: '3.5.3'  }
+        - { ruby: '3.2', expected_rubygems_version: '3.6.1'  }
+        - { ruby: '3.0', expected_rubygems_version: '3.5.23' }
         - { ruby: '2.7', expected_rubygems_version: '3.4.22' }
         - { ruby: '2.6', expected_rubygems_version: '3.4.22' }
         - { ruby: '2.5', expected_rubygems_version: '3.3.27' }
