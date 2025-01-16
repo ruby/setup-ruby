@@ -336,6 +336,8 @@ jobs:
           ruby-version: '2.6'
           bundler-cache: true
       - run: bundle exec rails --version
+        env:
+          RUBYOPT: '-rlogger' # Rails 6 is missing a require 'logger' in active_support/logger_thread_safe_level.rb
 
   testTruffleRubyNokogiri:
     name: "Test installing a Gemfile with nokogiri on TruffleRuby"
