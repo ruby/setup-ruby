@@ -484,7 +484,9 @@ async function hashFile(file) {
 const GitHubHostedPlatforms = [
   'ubuntu-20.04-x64',
   'ubuntu-22.04-x64',
+  'ubuntu-22.04-arm64',
   'ubuntu-24.04-x64',
+  'ubuntu-24.04-arm64',
   'windows-2019-x64',
   'windows-2022-x64',
   'windows-2025-x64',
@@ -74085,7 +74087,7 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
 }
 
 function getDownloadURL(platform, engine, version) {
-  let builderPlatform = platform
+  let builderPlatform = null
   if (platform.startsWith('windows-') && os.arch() === 'x64') {
     builderPlatform = 'windows-latest'
   } else if (platform.startsWith('macos-')) {
@@ -74094,6 +74096,16 @@ function getDownloadURL(platform, engine, version) {
     } else if (os.arch() === 'arm64') {
       builderPlatform = 'macos-13-arm64'
     }
+  } else if (platform.startsWith('ubuntu-')) {
+    if (os.arch() === 'x64') {
+      builderPlatform = platform
+    } else if (os.arch() === 'arm64') {
+      builderPlatform = `${platform}-arm64`
+    }
+  }
+
+  if (builderPlatform === null) {
+    throw new Error(`Unknown download URL for platform ${platform}`)
   }
 
   if (common.isHeadVersion(version)) {
