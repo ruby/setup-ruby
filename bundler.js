@@ -232,6 +232,14 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   return true
 }
 
+export async function addPlatform(lockFile) {
+  if (fs.existsSync(lockFile)) {
+    const output = (await exec.getExecOutput('ruby', ['-e', 'p Gem::Platform.local.to_s'])).stdout
+    const platform = output.slice(1, output.length - 2)
+    await exec.getExecOutput('bundle', ['lock', '--add-platform', platform, `--lockfile=${lockFile}`])
+  }
+}
+
 async function computeBaseKey(platform, engine, version, lockFile, cacheVersion) {
   const cwd = process.cwd()
   const bundleWith = process.env['BUNDLE_WITH'] || ''

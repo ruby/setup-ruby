@@ -10,7 +10,8 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "DEFAULT_CACHE_VERSION": () => (/* binding */ DEFAULT_CACHE_VERSION),
 /* harmony export */   "detectGemfiles": () => (/* binding */ detectGemfiles),
 /* harmony export */   "installBundler": () => (/* binding */ installBundler),
-/* harmony export */   "bundleInstall": () => (/* binding */ bundleInstall)
+/* harmony export */   "bundleInstall": () => (/* binding */ bundleInstall),
+/* harmony export */   "addPlatform": () => (/* binding */ addPlatform)
 /* harmony export */ });
 const fs = __nccwpck_require__(7147)
 const path = __nccwpck_require__(1017)
@@ -244,6 +245,14 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
   }
 
   return true
+}
+
+async function addPlatform(lockFile) {
+  if (fs.existsSync(lockFile)) {
+    const output = (await exec.getExecOutput('ruby', ['-e', 'p Gem::Platform.local.to_s'])).stdout
+    const platform = output.slice(1, output.length - 2)
+    await exec.getExecOutput('bundle', ['lock', '--add-platform', platform, `--lockfile=${lockFile}`])
+  }
 }
 
 async function computeBaseKey(platform, engine, version, lockFile, cacheVersion) {
@@ -74810,6 +74819,7 @@ const inputDefaults = {
   'rubygems': 'default',
   'bundler': 'Gemfile.lock',
   'bundler-cache': 'false',
+  'add-platform': 'false',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
@@ -74900,6 +74910,10 @@ async function setupRuby(options = {}) {
   }
 
   if (inputs['bundler-cache'] === 'true') {
+    if (inputs['add-platform'] === 'true') {
+      await bundler.addPlatform(lockFile)
+    }
+    
     await common.time('bundle install', async () =>
       bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
   }
