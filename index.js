@@ -135,7 +135,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
   } else if (rubyVersion === 'mise.toml') { // Read from mise.toml
     const toolVersions = fs.readFileSync('mise.toml', 'utf8').trim()
     const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s=\s/.test(e))[0]
-    rubyVersion = rubyLine.match(/^ruby\s=\s"(.+)"$/)[1]
+    rubyVersion = rubyLine.match(/^ruby\s=\s['"](.+)['"]$/)[1]
     console.log(`Using ${rubyVersion} as input from file mise.toml`)
   }
 
