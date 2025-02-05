@@ -14,6 +14,7 @@ const inputDefaults = {
   'rubygems': 'default',
   'bundler': 'Gemfile.lock',
   'bundler-cache': 'false',
+  'add-platform': 'false',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
@@ -104,6 +105,10 @@ export async function setupRuby(options = {}) {
   }
 
   if (inputs['bundler-cache'] === 'true') {
+    if (inputs['add-platform'] === 'true') {
+      await bundler.addPlatform(lockFile)
+    }
+    
     await common.time('bundle install', async () =>
       bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
   }

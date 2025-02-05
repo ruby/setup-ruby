@@ -25,6 +25,9 @@ inputs:
   bundler-cache:
     description: 'Run "bundle install", and cache the result automatically. Either true or false.'
     default: 'false'
+  add-platform:
+    description: 'Run "bundle lock --add-platform" before "bundle install" when using "bundler-cache"'
+    default: 'false'
   working-directory:
     description: 'The working directory to use for resolving paths for .ruby-version, .tool-versions, mise.toml and Gemfile.lock.'
   cache-version:
