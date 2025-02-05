@@ -117,6 +117,8 @@ function parseRubyEngineAndVersion(rubyVersion) {
       rubyVersion = '.ruby-version'
     } else if (fs.existsSync('.tool-versions')) {
       rubyVersion = '.tool-versions'
+    } else if (fs.existsSync('mise.toml')) {
+      rubyVersion = 'mise.toml'
     } else {
       throw new Error('input ruby-version needs to be specified if no .ruby-version or .tool-versions file exists')
     }
@@ -130,6 +132,11 @@ function parseRubyEngineAndVersion(rubyVersion) {
     const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s/.test(e))[0]
     rubyVersion = rubyLine.match(/^ruby\s+(.+)$/)[1]
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
+  } else if (rubyVersion === 'mise.toml') { // Read from mise.toml
+    const toolVersions = fs.readFileSync('mise.toml', 'utf8').trim()
+    const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s*=\s*/.test(e))[0]
+    rubyVersion = rubyLine.match(/^ruby\s*=\s*['"](.+)['"]$/)[1]
+    console.log(`Using ${rubyVersion} as input from file mise.toml`)
   }
 
   let engine, version

@@ -74,7 +74,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.3' # Not needed with a `.ruby-version` or `.tool-versions`
+        ruby-version: '3.3' # Not needed with a `.ruby-version`, `.tool-versions` or `mise.toml`
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bundle exec rake
 ```
@@ -139,11 +139,12 @@ and the [condition and expression syntax](https://help.github.com/en/actions/ref
 * engine only like `ruby` and `truffleruby`, uses the latest stable release of that implementation
 * `.ruby-version` reads from the project's `.ruby-version` file
 * `.tool-versions` reads from the project's `.tool-versions` file
-* If the `ruby-version` input is not specified, `.ruby-version` is tried first, followed by `.tool-versions`
+* `mise.toml` reads from the project's `mise.toml` file
+* If the `ruby-version` input is not specified, `.ruby-version` is tried first, followed by `.tool-versions`, followed by `mise.toml`
 
 ### Working Directory
 
-The `working-directory` input can be set to resolve `.ruby-version`, `.tool-versions` and `Gemfile.lock`
+The `working-directory` input can be set to resolve `.ruby-version`, `.tool-versions`, `mise.toml` and `Gemfile.lock`
 if they are not at the root of the repository, see [action.yml](action.yml) for details.
 
 ### RubyGems
