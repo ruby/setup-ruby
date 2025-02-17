@@ -74842,6 +74842,8 @@ async function setupRuby(options = {}) {
   }
   common.inputs.selfHosted = inputs['self-hosted']
 
+  console.log(await core.platform.getDetails())
+
   process.chdir(inputs['working-directory'])
 
   const platform = common.getOSNameVersion()
