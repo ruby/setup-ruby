@@ -66,7 +66,8 @@ export async function time(name, block) {
 }
 
 export function isHeadVersion(rubyVersion) {
-  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan'].includes(rubyVersion)
+  // 3.4-asan counts as "head" because the version cannot be selected -- you can only get whatever's latest
+  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan', '3.4-asan'].includes(rubyVersion)
 }
 
 export function isStableVersion(engine, rubyVersion) {

@@ -26,6 +26,9 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 Native extensions are automatically compiled with AddressSanitizer when using `ruby-asan`.
 `ruby-asan` is currently only available on `ubuntu-24.04`.
 
+`ruby-3.4-asan` is similar to `ruby-asan` but built from the latest stable 3.4 release tag.
+Like `ruby-asan`, it's currently only available on `ubuntu-24.04`.
+
 Regarding Windows ruby master builds, `mingw` is a MSYS2/MinGW build, `head` & `ucrt` are MSYS2/UCRT64
 builds, and `mswin` is a MSVC/VS 2022 build.
 

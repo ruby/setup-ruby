@@ -34,6 +34,7 @@ jobs:
         - { os: windows-2025, ruby: mswin }
         - { os: windows-2025, ruby: ucrt  }
         - { os: ubuntu-24.04, ruby: asan }
+        - { os: ubuntu-24.04, ruby: 3.4-asan }
         exclude:
         # https://github.com/ruby/setup-ruby/issues/496
         - { os: ubuntu-22.04, ruby: '2.2' }
