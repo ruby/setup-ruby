@@ -128,6 +128,8 @@ export function targetRubyVersion(engine, rubyVersion) {
       return 2.5
     } else if (version === 9.3) {
       return 2.6
+    } else if (version === 9.4) {
+      return 3.1
     }
   } else if (engine.startsWith('truffleruby')) {
     if (version < 21.0) {
@@ -136,6 +138,10 @@ export function targetRubyVersion(engine, rubyVersion) {
       return 2.7
     } else if (version < 23.0) {
       return 3.0
+    } else if (version < 23.1) {
+      return 3.1
+    } else if (version < 24.2) {
+      return 3.2
     }
   }
 
