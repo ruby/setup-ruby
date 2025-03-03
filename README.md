@@ -278,7 +278,7 @@ You can set it to `true` if you want to use custom-built Rubies in your self-hos
 ## History
 
 This action used to be at `eregon/use-ruby-action` and was moved to the `ruby` organization.
-Please [update](https://github.com/ruby/setup-ruby/releases/tag/v1.13.0) if you are using `eregon/use-ruby-action`.
+Please [update](https://github.com/szabonick/setup-ruby/releases/tag/v1.13.0) if you are using `eregon/use-ruby-action`.
 
 ## Credits
 
