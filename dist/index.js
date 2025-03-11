@@ -727,7 +727,7 @@ function setupPath(newPathEntries) {
 function setupJavaHome() {
   core.startGroup(`Modifying JAVA_HOME for JRuby`)
   let arch = os.arch();
-  if (arch == "x64") {
+  if (arch == "x64" || os.platform() != "darwin") {
     arch = "X64"
   }
   let newHomeVar = `JAVA_HOME_21_${arch}`;
