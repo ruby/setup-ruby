@@ -318,10 +318,6 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "setupPath": () => (/* binding */ setupPath),
 /* harmony export */   "setupJavaHome": () => (/* binding */ setupJavaHome)
 /* harmony export */ });
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(1514);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_exec__WEBPACK_IMPORTED_MODULE_0__);
-
-
 const os = __nccwpck_require__(2037)
 const path = __nccwpck_require__(1017)
 const fs = __nccwpck_require__(7147)
@@ -330,6 +326,7 @@ const stream = __nccwpck_require__(2781)
 const crypto = __nccwpck_require__(6113)
 const core = __nccwpck_require__(2186)
 const tc = __nccwpck_require__(7784)
+const exec = __nccwpck_require__(1514)
 const { performance } = __nccwpck_require__(4074)
 const linuxOSInfo = __nccwpck_require__(8487)
 
@@ -733,7 +730,7 @@ async function setupJavaHome() {
 
   console.log("attempting to run with existing JAVA_HOME")
 
-  let ret = await _actions_exec__WEBPACK_IMPORTED_MODULE_0___default().exec('ruby', ['--version'])
+  let ret = await exec.exec('ruby', ['--version'])
 
   if (ret === 0) {
     console.log("JRuby successfully starts, using existing JAVA_HOME")
@@ -74796,18 +74793,6 @@ module.exports = JSON.parse('{"2.0.0":"https://github.com/oneclick/rubyinstaller
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports

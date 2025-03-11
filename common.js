@@ -1,5 +1,3 @@
-import exec from "@actions/exec";
-
 const os = require('os')
 const path = require('path')
 const fs = require('fs')
@@ -8,6 +6,7 @@ const stream = require('stream')
 const crypto = require('crypto')
 const core = require('@actions/core')
 const tc = require('@actions/tool-cache')
+const exec = require('@actions/exec')
 const { performance } = require('perf_hooks')
 const linuxOSInfo = require('linux-os-info')
 
