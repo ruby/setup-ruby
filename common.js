@@ -405,5 +405,10 @@ export function setupPath(newPathEntries) {
 }
 
 export function setupJavaHome() {
-  core.exportVariable("JAVA_HOME", process.env[`JAVA_HOME_21_${os.arch().toUpperCase()}`]);
+  core.startGroup(`Modifying JAVA_HOME for JRuby`)
+  let newHomeVar = `JAVA_HOME_21_${os.arch().toUpperCase()}`;
+  let newHome = process.env[newHomeVar];
+  console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
+  core.exportVariable("JAVA_HOME", newHome);
+  core.endGroup()
 }
