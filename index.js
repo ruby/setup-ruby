@@ -79,8 +79,8 @@ export async function setupRuby(options = {}) {
 
   const rubyPrefix = await installer.install(platform, engine, version)
 
-  if (engine == "jruby") {
-    await common.setupJavaHome();
+  if (engine === "jruby") {
+    await common.setupJavaHome()
   }
 
   await common.measure('Print Ruby version', async () =>
