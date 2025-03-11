@@ -315,7 +315,8 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "toolCacheCompleteFile": () => (/* binding */ toolCacheCompleteFile),
 /* harmony export */   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
 /* harmony export */   "win2nix": () => (/* binding */ win2nix),
-/* harmony export */   "setupPath": () => (/* binding */ setupPath)
+/* harmony export */   "setupPath": () => (/* binding */ setupPath),
+/* harmony export */   "setupJavaHome": () => (/* binding */ setupJavaHome)
 /* harmony export */ });
 const os = __nccwpck_require__(2037)
 const path = __nccwpck_require__(1017)
@@ -721,6 +722,15 @@ function setupPath(newPathEntries) {
 
   core.addPath(newPath.join(path.delimiter))
   return msys2Type
+}
+
+function setupJavaHome() {
+  core.startGroup(`Modifying JAVA_HOME for JRuby`)
+  let newHomeVar = `JAVA_HOME_21_${os.arch().toUpperCase()}`;
+  let newHome = process.env[newHomeVar];
+  console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
+  core.exportVariable("JAVA_HOME", newHome);
+  core.endGroup()
 }
 
 
@@ -74051,6 +74061,10 @@ async function install(platform, engine, version) {
 
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
   common.setupPath([path.join(rubyPrefix, 'bin')])
+
+  if (engine == "jruby") {
+    common.setupJavaHome();
+  }
 
   if (!inToolCache) {
     await io.mkdirP(rubyPrefix)
