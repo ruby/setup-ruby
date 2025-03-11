@@ -726,7 +726,11 @@ function setupPath(newPathEntries) {
 
 function setupJavaHome() {
   core.startGroup(`Modifying JAVA_HOME for JRuby`)
-  let newHomeVar = `JAVA_HOME_21_${os.arch().toUpperCase()}`;
+  let arch = os.arch();
+  if (arch == "x64") {
+    arch = "X64"
+  }
+  let newHomeVar = `JAVA_HOME_21_${arch}`;
   let newHome = process.env[newHomeVar];
   console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
   core.exportVariable("JAVA_HOME", newHome);
