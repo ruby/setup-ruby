@@ -204,7 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "nodejs 16.0.0\nruby   3.4.0" > .tool-versions
+      - run: echo -e "nodejs 16.0.0\nruby   3.4.0" > .tool-versions
       - uses: ./
       - run: ruby -v | grep -F "ruby 3.4.0"
 
@@ -213,7 +213,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "[tools]\nnode = '18'\nruby = '3.4.0'" > mise.toml
+      - run: echo -e "[tools]\nnode = '18'\nruby = '3.4.0'" > mise.toml
       - uses: ./
       - run: ruby -v | grep -F "ruby 3.4.0"
 
