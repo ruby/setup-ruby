@@ -74932,13 +74932,15 @@ function parseRubyEngineAndVersion(rubyVersion) {
     console.log(`Using ${rubyVersion} as input from file .ruby-version`)
   } else if (rubyVersion === '.tool-versions') { // Read from .tool-versions
     const toolVersions = fs.readFileSync('.tool-versions', 'utf8').trim()
-    const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s/.test(e))[0]
-    rubyVersion = rubyLine.split(/\s+/)[1]
+    const regexp = /^ruby\s+(\S+)/
+    const rubyLine = toolVersions.split(/\r?\n/).filter(e => regexp.test(e))[0]
+    rubyVersion = rubyLine.match(regexp)[1]
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
   } else if (rubyVersion === 'mise.toml') { // Read from mise.toml
     const toolVersions = fs.readFileSync('mise.toml', 'utf8').trim()
-    const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s*=\s*/.test(e))[0]
-    rubyVersion = rubyLine.match(/^ruby\s*=\s*['"](.+)['"]$/)[1]
+    const regexp = /^ruby\s*=\s*['"](.+)['"]$/
+    const rubyLine = toolVersions.split(/\r?\n/).filter(e => regexp.test(e))[0]
+    rubyVersion = rubyLine.match(regexp)[1]
     console.log(`Using ${rubyVersion} as input from file mise.toml`)
   }
 

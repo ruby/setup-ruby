@@ -190,6 +190,33 @@ jobs:
       if: startsWith(matrix.os, 'windows') && matrix.ruby == 'jruby'
       run: gem install sassc
 
+  testDotRubyVersion:
+    name: "Test .ruby-version"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "ruby-3.4.0" > .ruby-version
+      - uses: ./
+      - run: ruby -v | grep -F "ruby 3.4.0"
+
+  testToolVersions:
+    name: "Test .tool-versions"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "nodejs 16.0.0\nruby   3.4.0" > .tool-versions
+      - uses: ./
+      - run: ruby -v | grep -F "ruby 3.4.0"
+
+  testMise:
+    name: "Test mise.toml"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "[tools]\nnode = '18'\nruby = '3.4.0'" > mise.toml
+      - uses: ./
+      - run: ruby -v | grep -F "ruby 3.4.0"
+
   testNoGemfile:
     name: "Test with no Gemfile"
     runs-on: ubuntu-latest
