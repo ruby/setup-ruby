@@ -1,3 +1,5 @@
+import exec from "@actions/exec";
+
 const os = require('os')
 const path = require('path')
 const fs = require('fs')
@@ -404,15 +406,29 @@ export function setupPath(newPathEntries) {
   return msys2Type
 }
 
-export function setupJavaHome() {
+export async function setupJavaHome() {
   core.startGroup(`Modifying JAVA_HOME for JRuby`)
-  let arch = os.arch();
-  if (arch == "x64" || os.platform() != "darwin") {
-    arch = "X64"
+
+  console.log("attempting to run with existing JAVA_HOME")
+  let ret = await exec.exec('ruby', ['--version']);
+
+  if (ret === 0) {
+    console.log("JRuby successfully starts, using existing JAVA_HOME")
+  } else {
+    console.log("JRuby failed to start, try Java 21 envs")
+    let arch = os.arch();
+    if (arch == "x64" || os.platform() != "darwin") {
+      arch = "X64"
+    }
+    let newHomeVar = `JAVA_HOME_21_${arch}`;
+    let newHome = process.env[newHomeVar];
+
+    if (newHome === "undefined") {
+      throw new Error(`JAVA_HOME is not Java 21+ needed for JRuby and \$${newHomeVar} is not defined`)
+    }
+    console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
+    core.exportVariable("JAVA_HOME", newHome)
   }
-  let newHomeVar = `JAVA_HOME_21_${arch}`;
-  let newHome = process.env[newHomeVar];
-  console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
-  core.exportVariable("JAVA_HOME", newHome);
+
   core.endGroup()
 }

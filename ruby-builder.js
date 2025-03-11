@@ -49,10 +49,6 @@ export async function install(platform, engine, version) {
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
   common.setupPath([path.join(rubyPrefix, 'bin')])
 
-  if (engine == "jruby") {
-    common.setupJavaHome();
-  }
-
   if (!inToolCache) {
     await io.mkdirP(rubyPrefix)
     await downloadAndExtract(platform, engine, version, rubyPrefix)

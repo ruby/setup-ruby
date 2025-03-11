@@ -318,6 +318,10 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "setupPath": () => (/* binding */ setupPath),
 /* harmony export */   "setupJavaHome": () => (/* binding */ setupJavaHome)
 /* harmony export */ });
+/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(1514);
+/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_exec__WEBPACK_IMPORTED_MODULE_0__);
+
+
 const os = __nccwpck_require__(2037)
 const path = __nccwpck_require__(1017)
 const fs = __nccwpck_require__(7147)
@@ -724,16 +728,30 @@ function setupPath(newPathEntries) {
   return msys2Type
 }
 
-function setupJavaHome() {
+async function setupJavaHome() {
   core.startGroup(`Modifying JAVA_HOME for JRuby`)
-  let arch = os.arch();
-  if (arch == "x64" || os.platform() != "darwin") {
-    arch = "X64"
+
+  console.log("attempting to run with existing JAVA_HOME")
+  let ret = await _actions_exec__WEBPACK_IMPORTED_MODULE_0___default().exec('ruby', ['--version']);
+
+  if (ret === 0) {
+    console.log("JRuby successfully starts, using existing JAVA_HOME")
+  } else {
+    console.log("JRuby failed to start, try Java 21 envs")
+    let arch = os.arch();
+    if (arch == "x64" || os.platform() != "darwin") {
+      arch = "X64"
+    }
+    let newHomeVar = `JAVA_HOME_21_${arch}`;
+    let newHome = process.env[newHomeVar];
+
+    if (newHome === "undefined") {
+      throw new Error(`JAVA_HOME is not Java 21+ needed for JRuby and \$${newHomeVar} is not defined`)
+    }
+    console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
+    core.exportVariable("JAVA_HOME", newHome)
   }
-  let newHomeVar = `JAVA_HOME_21_${arch}`;
-  let newHome = process.env[newHomeVar];
-  console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
-  core.exportVariable("JAVA_HOME", newHome);
+
   core.endGroup()
 }
 
@@ -74066,10 +74084,6 @@ async function install(platform, engine, version) {
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
   common.setupPath([path.join(rubyPrefix, 'bin')])
 
-  if (engine == "jruby") {
-    common.setupJavaHome();
-  }
-
   if (!inToolCache) {
     await io.mkdirP(rubyPrefix)
     await downloadAndExtract(platform, engine, version, rubyPrefix)
@@ -74777,6 +74791,18 @@ module.exports = JSON.parse('{"2.0.0":"https://github.com/oneclick/rubyinstaller
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -74899,6 +74925,10 @@ async function setupRuby(options = {}) {
   }
 
   const rubyPrefix = await installer.install(platform, engine, version)
+
+  if (engine == "jruby") {
+    await common.setupJavaHome();
+  }
 
   await common.measure('Print Ruby version', async () =>
     await exec.exec('ruby', ['--version']))
