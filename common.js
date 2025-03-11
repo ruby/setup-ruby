@@ -403,3 +403,7 @@ export function setupPath(newPathEntries) {
   core.addPath(newPath.join(path.delimiter))
   return msys2Type
 }
+
+export function setupJavaHome() {
+  core.exportVariable("JAVA_HOME", process.env[`JAVA_HOME_21_${os.arch().toUpperCase()}`]);
+}
