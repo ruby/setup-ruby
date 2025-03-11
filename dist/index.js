@@ -74933,7 +74933,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
   } else if (rubyVersion === '.tool-versions') { // Read from .tool-versions
     const toolVersions = fs.readFileSync('.tool-versions', 'utf8').trim()
     const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s/.test(e))[0]
-    rubyVersion = rubyLine.split(/\s/)[1]
+    rubyVersion = rubyLine.split(/\s+/)[1]
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
   } else if (rubyVersion === 'mise.toml') { // Read from mise.toml
     const toolVersions = fs.readFileSync('mise.toml', 'utf8').trim()
