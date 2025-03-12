@@ -737,7 +737,7 @@ async function setupJavaHome() {
   } else {
     console.log("JRuby failed to start, try Java 21 envs")
 
-    let arch = os.arch();
+    let arch = os.arch()
     if (arch === "x64" || os.platform() !== "darwin") {
       arch = "X64"
     }
