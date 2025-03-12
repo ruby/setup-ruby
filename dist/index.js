@@ -327,7 +327,6 @@ const crypto = __nccwpck_require__(6113)
 const core = __nccwpck_require__(2186)
 const tc = __nccwpck_require__(7784)
 const exec = __nccwpck_require__(1514)
-const common = __nccwpck_require__(4717)
 const { performance } = __nccwpck_require__(4074)
 const linuxOSInfo = __nccwpck_require__(8487)
 
@@ -727,7 +726,7 @@ function setupPath(newPathEntries) {
 }
 
 async function setupJavaHome() {
-  common.measure("Modifying JAVA_HOME for JRuby", async () => {
+  await measure("Modifying JAVA_HOME for JRuby", async () => {
     console.log("attempting to run with existing JAVA_HOME")
 
     let ret = await exec.exec('ruby', ['--version'])

@@ -7,7 +7,6 @@ const crypto = require('crypto')
 const core = require('@actions/core')
 const tc = require('@actions/tool-cache')
 const exec = require('@actions/exec')
-const common = require('./common')
 const { performance } = require('perf_hooks')
 const linuxOSInfo = require('linux-os-info')
 
@@ -407,7 +406,7 @@ export function setupPath(newPathEntries) {
 }
 
 export async function setupJavaHome() {
-  common.measure("Modifying JAVA_HOME for JRuby", async () => {
+  await measure("Modifying JAVA_HOME for JRuby", async () => {
     console.log("attempting to run with existing JAVA_HOME")
 
     let ret = await exec.exec('ruby', ['--version'])
