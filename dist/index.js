@@ -315,7 +315,8 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   "toolCacheCompleteFile": () => (/* binding */ toolCacheCompleteFile),
 /* harmony export */   "createToolCacheCompleteFile": () => (/* binding */ createToolCacheCompleteFile),
 /* harmony export */   "win2nix": () => (/* binding */ win2nix),
-/* harmony export */   "setupPath": () => (/* binding */ setupPath)
+/* harmony export */   "setupPath": () => (/* binding */ setupPath),
+/* harmony export */   "setupJavaHome": () => (/* binding */ setupJavaHome)
 /* harmony export */ });
 const os = __nccwpck_require__(2037)
 const path = __nccwpck_require__(1017)
@@ -325,6 +326,7 @@ const stream = __nccwpck_require__(2781)
 const crypto = __nccwpck_require__(6113)
 const core = __nccwpck_require__(2186)
 const tc = __nccwpck_require__(7784)
+const exec = __nccwpck_require__(1514)
 const { performance } = __nccwpck_require__(4074)
 const linuxOSInfo = __nccwpck_require__(8487)
 
@@ -721,6 +723,36 @@ function setupPath(newPathEntries) {
 
   core.addPath(newPath.join(path.delimiter))
   return msys2Type
+}
+
+async function setupJavaHome() {
+  await measure("Modifying JAVA_HOME for JRuby", async () => {
+    console.log("attempting to run with existing JAVA_HOME")
+
+    let ret = await exec.exec('ruby', ['--version'])
+
+    if (ret === 0) {
+      console.log("JRuby successfully starts, using existing JAVA_HOME")
+    } else {
+      console.log("JRuby failed to start, try Java 21 envs")
+
+      let arch = os.arch()
+      if (arch === "x64" || os.platform() !== "darwin") {
+        arch = "X64"
+      }
+
+      let newHomeVar = `JAVA_HOME_21_${arch}`
+      let newHome = process.env[newHomeVar]
+
+      if (newHome === "undefined") {
+        throw new Error(`JAVA_HOME is not Java 21+ needed for JRuby and \$${newHomeVar} is not defined`)
+      }
+
+      console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
+
+      core.exportVariable("JAVA_HOME", newHome)
+    }
+  })
 }
 
 
@@ -74055,6 +74087,11 @@ async function install(platform, engine, version) {
   if (!inToolCache) {
     await io.mkdirP(rubyPrefix)
     await downloadAndExtract(platform, engine, version, rubyPrefix)
+  }
+
+  // Ensure JRuby has minimum Java version to run
+  if (engine === "jruby") {
+    await common.setupJavaHome()
   }
 
   return rubyPrefix

@@ -54,6 +54,11 @@ export async function install(platform, engine, version) {
     await downloadAndExtract(platform, engine, version, rubyPrefix)
   }
 
+  // Ensure JRuby has minimum Java version to run
+  if (engine === "jruby") {
+    await common.setupJavaHome()
+  }
+
   return rubyPrefix
 }
 
