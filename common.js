@@ -409,7 +409,7 @@ export async function setupJavaHome() {
   await measure("Modifying JAVA_HOME for JRuby", async () => {
     console.log("attempting to run with existing JAVA_HOME")
 
-    let ret = await exec.exec('ruby', ['--version'])
+    let ret = await exec.exec('ruby', ['--version'], {ignoreReturnCode: true})
 
     if (ret === 0) {
       console.log("JRuby successfully starts, using existing JAVA_HOME")
