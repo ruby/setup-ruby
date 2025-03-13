@@ -405,11 +405,11 @@ export function setupPath(newPathEntries) {
   return msys2Type
 }
 
-export async function setupJavaHome() {
+export async function setupJavaHome(rubyPrefix) {
   await measure("Modifying JAVA_HOME for JRuby", async () => {
     console.log("attempting to run with existing JAVA_HOME")
 
-    let ret = await exec.exec('ruby', ['--version'], {ignoreReturnCode: true})
+    let ret = await exec.exec('java', ['-jar', path.join(rubyPrefix, 'lib/jruby.jar'), '--version'], {ignoreReturnCode: true})
 
     if (ret === 0) {
       console.log("JRuby successfully starts, using existing JAVA_HOME")
