@@ -729,7 +729,9 @@ async function setupJavaHome(rubyPrefix) {
   await measure("Modifying JAVA_HOME for JRuby", async () => {
     console.log("attempting to run with existing JAVA_HOME")
 
-    let ret = await exec.exec('java', ['-jar', path.join(rubyPrefix, 'lib/jruby.jar'), '--version'], {ignoreReturnCode: true})
+    const javaHome = process.env['JAVA_HOME']
+    let java = javaHome ? path.join(javaHome, 'bin/java') : 'java'
+    let ret = await exec.exec(java, ['-jar', path.join(rubyPrefix, 'lib/jruby.jar'), '--version'], {ignoreReturnCode: true})
 
     if (ret === 0) {
       console.log("JRuby successfully starts, using existing JAVA_HOME")
