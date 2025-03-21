@@ -117,6 +117,8 @@ function parseRubyEngineAndVersion(rubyVersion) {
       rubyVersion = '.ruby-version'
     } else if (fs.existsSync('.tool-versions')) {
       rubyVersion = '.tool-versions'
+    } else if (fs.existsSync('mise.toml')) {
+      rubyVersion = 'mise.toml'
     } else {
       throw new Error('input ruby-version needs to be specified if no .ruby-version or .tool-versions file exists')
     }
@@ -127,9 +129,16 @@ function parseRubyEngineAndVersion(rubyVersion) {
     console.log(`Using ${rubyVersion} as input from file .ruby-version`)
   } else if (rubyVersion === '.tool-versions') { // Read from .tool-versions
     const toolVersions = fs.readFileSync('.tool-versions', 'utf8').trim()
-    const rubyLine = toolVersions.split(/\r?\n/).filter(e => /^ruby\s/.test(e))[0]
-    rubyVersion = rubyLine.match(/^ruby\s+(.+)$/)[1]
+    const regexp = /^ruby\s+(\S+)/
+    const rubyLine = toolVersions.split(/\r?\n/).filter(e => regexp.test(e))[0]
+    rubyVersion = rubyLine.match(regexp)[1]
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
+  } else if (rubyVersion === 'mise.toml') { // Read from mise.toml
+    const toolVersions = fs.readFileSync('mise.toml', 'utf8').trim()
+    const regexp = /^ruby\s*=\s*['"](.+)['"]$/
+    const rubyLine = toolVersions.split(/\r?\n/).filter(e => regexp.test(e))[0]
+    rubyVersion = rubyLine.match(regexp)[1]
+    console.log(`Using ${rubyVersion} as input from file mise.toml`)
   }
 
   let engine, version
@@ -173,7 +182,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   // Well known version-platform combinations which do not work:
   if (engine === 'ruby' && platform.startsWith('macos') && os.arch() === 'arm64' && common.floatVersion(version) < 2.6) {
     throw new Error(`CRuby < 2.6 does not support macos-arm64.
-        Either use a newer Ruby version or use a macOS image running on amd64, e.g., macos-13 or macos-12.
+        Either use a newer Ruby version or use a macOS image running on amd64, e.g., macos-13.
         Note that GitHub changed the meaning of macos-latest from macos-12 (amd64) to macos-14 (arm64):
         https://github.blog/changelog/2024-04-01-macos-14-sonoma-is-generally-available-and-the-latest-macos-runner-image/
 

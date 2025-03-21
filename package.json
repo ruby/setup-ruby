@@ -1,6 +1,6 @@
 {
   "name": "setup-ruby",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Download a prebuilt Ruby and add it to the PATH in 5 seconds",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/ruby/setup-ruby",
   "dependencies": {
-    "@actions/cache": "npm:github-actions.warp-cache@1.4.0",
+    "@actions/cache": "npm:github-actions.warp-cache@1.4.3",
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.1",
     "@actions/io": "^1.1.2",
