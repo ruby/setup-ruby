@@ -54,10 +54,9 @@ export async function install(platform, engine, version) {
     await downloadAndExtract(platform, engine, version, rubyPrefix)
   }
 
-  // https://github.com/oracle/truffleruby/issues/3390
-  if (engine.startsWith('truffleruby') && common.floatVersion(version) >= 24.0 && !common.isSelfHostedRunner() && common.getOSNameVersionArch() === 'macos-12-x64') {
-    console.log('Setting MACOSX_DEPLOYMENT_TARGET=11.0 to workaround bug in XCode 14.2 linker not respecting RTLD_LAZY, see https://github.com/oracle/truffleruby/issues/3390')
-    core.exportVariable('MACOSX_DEPLOYMENT_TARGET', '11.0')
+  // Ensure JRuby has minimum Java version to run
+  if (engine === "jruby") {
+    await common.setupJavaHome(rubyPrefix)
   }
 
   return rubyPrefix
@@ -97,7 +96,7 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
 }
 
 function getDownloadURL(platform, engine, version) {
-  let builderPlatform = platform
+  let builderPlatform = null
   if (platform.startsWith('windows-') && os.arch() === 'x64') {
     builderPlatform = 'windows-latest'
   } else if (platform.startsWith('macos-')) {
@@ -106,6 +105,16 @@ function getDownloadURL(platform, engine, version) {
     } else if (os.arch() === 'arm64') {
       builderPlatform = 'macos-13-arm64'
     }
+  } else if (platform.startsWith('ubuntu-')) {
+    if (os.arch() === 'x64') {
+      builderPlatform = platform
+    } else if (os.arch() === 'arm64') {
+      builderPlatform = `${platform}-arm64`
+    }
+  }
+
+  if (builderPlatform === null) {
+    throw new Error(`Unknown download URL for platform ${platform}`)
   }
 
   if (common.isHeadVersion(version)) {
