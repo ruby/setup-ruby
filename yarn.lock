@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@actions/cache@npm:github-actions.warp-cache@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/github-actions.warp-cache/-/github-actions.warp-cache-1.4.3.tgz#f0ebec9c0fffeaf3128f992981224157d74865f4"
-  integrity sha512-78PwiWEIrfsOmK2m+j1d9qffIf/WyD6rQZr1NGJWyY/EnNyK28CHXAlLqvCl6ljo+S/yLo65BElNUBoG9hJ0Rw==
+"@actions/cache@npm:github-actions.warp-cache@1.4.5":
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/github-actions.warp-cache/-/github-actions.warp-cache-1.4.5.tgz#cd876eb29f96e96ac8170f7f702109318e64813b"
+  integrity sha512-soTIk/9slFpK+InPtBSFFN8JAXOCKTBWQkP+gdylLCmtbZyMsaUAxUxAnsI7G4CsfAqE1IcPlyqDw0ZAtIIFrQ==
   dependencies:
     "@actions/core" "^1.10.0"
     "@actions/exec" "^1.0.1"
