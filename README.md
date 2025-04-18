@@ -53,8 +53,8 @@ The action works on these [GitHub-hosted runners](https://docs.github.com/en/act
 | macOS   | `macos-13` and newer versions |
 | Windows | `windows-2019`, `windows-2022` |
 
-Not all combinations of runner image and versions are supported.
-The list of available Ruby versions per runner image can be seen in [ruby-builder-versions.json](ruby-builder-versions.json) for Ubuntu and macOS
+Not all combinations of runner images and versions are supported.
+The list of available Ruby versions can be seen in [ruby-builder-versions.json](ruby-builder-versions.json) for Ubuntu and macOS
 (although some combinations are not available, see [the full list](https://github.com/ruby/ruby-builder/releases/tag/toolcache))
 and in [windows-versions.json](windows-versions.json) for Windows.
 
