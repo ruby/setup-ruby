@@ -286,7 +286,7 @@ jobs:
 
   testFixedBundlerVersionForOldRuby:
     name: "Test bundler: 1.x for old Ruby"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: ./
@@ -411,7 +411,7 @@ jobs:
         run: ruby -e "abort if File.exist?('C:/msys64/mingw64/bin/gcc.exe')"
 
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - run: yarn install
