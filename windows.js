@@ -4,6 +4,7 @@
 // OpenSSL version detection is needed in installGCCTools and installJRubyTools
 
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 const cp = require('child_process')
 const core = require('@actions/core')
@@ -17,16 +18,18 @@ const drive = common.drive
 
 const msys2GCCReleaseURI  = 'https://github.com/ruby/setup-msys2-gcc/releases/download'
 
-const msys2BasePath = process.env['GHCUP_MSYS2']
+const msys2BasePath = process.env['GHCUP_MSYS2'] || 'C:\\msys64'
 const vcPkgBasePath = process.env['VCPKG_INSTALLATION_ROOT']
 
 // needed for Ruby 2.0-2.3, cert file used by Git for Windows
-let certFile = 'C:\\Program Files\\Git\\mingw64\\etc\\ssl\\cert.pem'
-if (!fs.existsSync(certFile)) {
-  certFile = 'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem'
-  if (!fs.existsSync(certFile)) {
-    throw new Error("Cannot find Git's cert file")
-  }
+const certFile = [
+  'C:\\Program Files\\Git\\mingw64\\etc\\ssl\\cert.pem',
+  'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem',
+  'C:\\Program Files\\Git\\clangarm64\\etc\\ssl\\cert.pem',
+  'C:\\Program Files\\Git\\clangarm64\\ssl\\cert.pem'
+].find(file => fs.existsSync(file))
+if (certFile === undefined) {
+  throw new Error("Cannot find Git's cert file")
 }
 
 // location & path for old RubyInstaller DevKit (MSYS1), used with Ruby 2.0-2.3
@@ -35,14 +38,14 @@ const msysPathEntries = [`${msys1}\\mingw\\x86_64-w64-mingw32\\bin`, `${msys1}\\
 
 export function getAvailableVersions(platform, engine) {
   if (engine === 'ruby') {
-    return Object.keys(rubyInstallerVersions)
+    return Object.keys(rubyInstallerVersions).filter(version => os.arch() in rubyInstallerVersions[version])
   } else {
     return undefined
   }
 }
 
 export async function install(platform, engine, version) {
-  const url = rubyInstallerVersions[version]
+  const url = rubyInstallerVersions[version][os.arch()]
 
   // The windows-2016 and windows-2019 images have MSYS2 build tools (C:/msys64/usr)
   // and MinGW build tools installed.  The windows-2022 image has neither.
@@ -129,7 +132,9 @@ async function installGCCTools(type, version) {
 // A subset of the MSYS2 base-devel group
 async function installMSYS2Tools() {
   const downloadPath = await common.measure(`Downloading msys2 build tools`, async () => {
-    let url = `${msys2GCCReleaseURI}/msys2-gcc-pkgs/msys2.7z`
+    const suffix = os.arch() === 'arm64' ? '-arm64' : ''
+
+    let url = `${msys2GCCReleaseURI}/msys2-gcc-pkgs/msys2${suffix}.7z`
     console.log(url)
     return await tc.downloadTool(url)
   })
@@ -146,8 +151,7 @@ async function installMSYS2Tools() {
 // windows-2022 and later images
 export async function installJRubyTools() {
   await installMSYS2Tools()
-  // Will need to add OpenSSL version detection when JRuby uses OpenSSL 3.0 ?
-  await installGCCTools('mingw64', '2.7')
+  await installGCCTools(os.arch() === 'arm64' ? 'clangarm64' : 'mingw64', '3.4')
 }
 
 // Install vcpkg files needed to build mswin Ruby

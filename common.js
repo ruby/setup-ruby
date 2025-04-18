@@ -178,6 +178,7 @@ const GitHubHostedPlatforms = [
   'windows-2019-x64',
   'windows-2022-x64',
   'windows-2025-x64',
+  'windows-11-arm64'
 ]
 
 // Precisely: whether we have builds for that platform and there are GitHub-hosted runners to test it
@@ -270,7 +271,7 @@ export function getOSNameVersionArch() {
 
 function findWindowsVersion() {
   const version = os.version()
-  const match = version.match(/^Windows Server (\d+) Datacenter/)
+  const match = version.match(/^Windows(?: Server)? (\d+) (?:Datacenter|Enterprise)/)
   if (match) {
     return match[1]
   } else {
@@ -386,7 +387,9 @@ export function setupPath(newPathEntries) {
   const windowsToolchain = core.getInput('windows-toolchain')
   if (windows && windowsToolchain !== 'none') {
     // main Ruby dll determines whether mingw or ucrt build
-    msys2Type = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+    msys2Type = os.arch() === 'arm64'
+      ? 'clangarm64'
+      : rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
 
     // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
     const msys2 = [`C:\\msys64\\${msys2Type}\\bin`, 'C:\\msys64\\usr\\bin']
