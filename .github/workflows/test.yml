@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-20.04, ubuntu-22.04, ubuntu-24.04, ubuntu-22.04-arm, ubuntu-24.04-arm, macos-13, macos-14, macos-15, windows-2019, windows-2022, windows-2025 ]
+        os: [ ubuntu-22.04, ubuntu-24.04, ubuntu-22.04-arm, ubuntu-24.04-arm, macos-13, macos-14, macos-15, windows-2019, windows-2022, windows-2025 ]
         ruby: [
           '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', ruby-head,
           jruby, jruby-head,
@@ -286,7 +286,7 @@ jobs:
 
   testFixedBundlerVersionForOldRuby:
     name: "Test bundler: 1.x for old Ruby"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: ./
@@ -411,7 +411,7 @@ jobs:
         run: ruby -e "abort if File.exist?('C:/msys64/mingw64/bin/gcc.exe')"
 
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - run: yarn install
