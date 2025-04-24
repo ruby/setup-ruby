@@ -291,7 +291,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          ruby-version: '2.2'
+          ruby-version: '2.3'
           bundler: 1.16.6
       - run: bundle --version | grep -F "1.16.6" # And not 1.17.x from ~> 1
 
