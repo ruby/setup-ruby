@@ -171,7 +171,6 @@ export async function hashFile(file) {
 
 // macos is not listed explicitly, see below
 const GitHubHostedPlatforms = [
-  'ubuntu-20.04-x64',
   'ubuntu-22.04-x64',
   'ubuntu-22.04-arm64',
   'ubuntu-24.04-x64',
