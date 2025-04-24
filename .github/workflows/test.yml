@@ -369,7 +369,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gemfile: [ rails5, rails6 ]
+        gemfile: [ rails7, rails8 ]
     name: "Test with ${{ matrix.gemfile }} gemfile"
     runs-on: ubuntu-latest
     env:
@@ -378,11 +378,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          ruby-version: '2.6'
+          ruby-version: '3.2'
           bundler-cache: true
       - run: bundle exec rails --version
-        env:
-          RUBYOPT: '-rlogger' # Rails 6 is missing a require 'logger' in active_support/logger_thread_safe_level.rb
 
   testTruffleRubyNokogiri:
     name: "Test installing a Gemfile with nokogiri on TruffleRuby"
