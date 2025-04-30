@@ -89,7 +89,7 @@ export async function install(platform, engine, version) {
 
   // windows 2016 and 2019 need ucrt64 installed, 2022 and future images need
   // ucrt64 or mingw64 installed, depending on Ruby version
-  if (((msys2Type === 'ucrt64') || !hasMSYS2PreInstalled) && common.floatVersion(version) >= 2.4) {
+  if ((msys2Type === 'ucrt64') || (common.floatVersion(version) >= 2.4)) {
     await installGCCTools(msys2Type, version)
   }
 
