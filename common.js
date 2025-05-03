@@ -12,7 +12,7 @@ const linuxOSInfo = require('linux-os-info')
 
 export const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
-export const drive = (windows ? (process.env['GITHUB_WORKSPACE'] || 'C')[0] : undefined)
+export const drive = (windows ? (process.env['RUNNER_TEMP'] || 'C')[0] : undefined)
 
 export const inputs = {
   selfHosted: undefined
@@ -334,7 +334,7 @@ function engineToToolCacheName(engine) {
   }[engine]
 }
 
-export function getToolCacheRubyPrefix(platform, engine, version) {
+export function getToolCacheRubyPrefix(_platform, engine, version) {
   const toolCache = getToolCachePath()
   return path.join(toolCache, engineToToolCacheName(engine), version, os.arch())
 }
@@ -356,15 +356,7 @@ export function win2nix(path) {
   return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
 }
 
-// JRuby is installed after setupPath is called, so folder doesn't exist
-function rubyIsUCRT(path) {
-  return !!(fs.existsSync(path) &&
-    fs.readdirSync(path, { withFileTypes: true }).find(dirent =>
-      dirent.isFile() && dirent.name.match(/^x64-(ucrt|vcruntime\d{3})-ruby\d{3}\.dll$/)))
-}
-
 export function setupPath(newPathEntries) {
-  let msys2Type = null
   const envPath = windows ? 'Path' : 'PATH'
   const originalPath = process.env[envPath].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
@@ -382,29 +374,13 @@ export function setupPath(newPathEntries) {
     core.exportVariable(envPath, cleanPath.join(path.delimiter))
   }
 
-  // Then add new path entries using core.addPath()
-  let newPath
-  const windowsToolchain = core.getInput('windows-toolchain')
-  if (windows && windowsToolchain !== 'none') {
-    // main Ruby dll determines whether mingw or ucrt build
-    msys2Type = os.arch() === 'arm64'
-      ? 'clangarm64'
-      : rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
-
-    // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
-    const msys2 = [`C:\\msys64\\${msys2Type}\\bin`, 'C:\\msys64\\usr\\bin']
-    newPath = [...newPathEntries, ...msys2]
-  } else {
-    newPath = newPathEntries
-  }
   console.log(`Entries added to ${envPath} to use selected Ruby:`)
-  for (const entry of newPath) {
+  for (const entry of newPathEntries) {
     console.log(`  ${entry}`)
   }
   core.endGroup()
 
-  core.addPath(newPath.join(path.delimiter))
-  return msys2Type
+  core.addPath(newPathEntries.join(path.delimiter))
 }
 
 export async function setupJavaHome(rubyPrefix) {

@@ -134,7 +134,7 @@ jobs:
             echo 'ridk is unavailable'
           }
         } elseif ($plat.Contains('mswin')) {
-          &"$env:VCPKG_INSTALLATION_ROOT\vcpkg" list
+          Get-ChildItem "$env:VCPKG_INSTALLATION_ROOT\installed\vcpkg\info"
         }
     - name: RbConfig::CONFIG
       run: ruby -rrbconfig -rpp -e 'pp RbConfig::CONFIG'
