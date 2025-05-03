@@ -70,13 +70,6 @@ export async function setupRuby(options = {}) {
   createGemRC(engine, version)
   envPreInstall()
 
-  // JRuby can use compiled extension code, so make sure gcc exists.
-  // As of Jan-2022, JRuby compiles against msvcrt.
-  if (platform.startsWith('windows') && engine === 'jruby' &&
-    !fs.existsSync('C:\\msys64\\mingw64\\bin\\gcc.exe')) {
-    await require('./windows').installJRubyTools()
-  }
-
   const rubyPrefix = await installer.install(platform, engine, version)
 
   await common.measure('Print Ruby version', async () =>
