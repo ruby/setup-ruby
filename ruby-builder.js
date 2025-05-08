@@ -46,8 +46,15 @@ export async function install(platform, engine, version) {
     rubyPrefix = path.join(os.homedir(), '.rubies', `${engine}-${version}`)
   }
 
+  const paths = [path.join(rubyPrefix, 'bin')]
+
+  // JRuby can use compiled extension code via ffi, so make sure gcc exists.
+  if (platform.startsWith('windows') && engine === 'jruby') {
+    paths.push(...await require('./windows').installJRubyTools())
+  }
+
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
-  common.setupPath([path.join(rubyPrefix, 'bin')])
+  common.setupPath(paths)
 
   if (!inToolCache) {
     await io.mkdirP(rubyPrefix)
