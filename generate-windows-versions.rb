@@ -50,7 +50,7 @@ versions['ucrt'] = {
 
 File.binwrite 'windows-versions.json', "#{JSON.pretty_generate(versions)}\n"
 
-base_url = 'https://github.com/ntkme/setup-msys2-gcc/releases/latest/download/windows-toolchain.json'
+base_url = 'https://github.com/ruby/setup-msys2-gcc/releases/latest/download/windows-toolchain.json'
 windows_toolchain = JSON.parse(URI.open(base_url, &:read), symbolize_names: true)
 
 versions.each do |raw_version, archs|
