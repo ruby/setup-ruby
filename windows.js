@@ -120,6 +120,17 @@ async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
   await common.measure('Extracting  msys2 build tools', async () =>
     exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${extractPath}`], { silent: true }))
 
+  // https://github.com/oneclick/rubyinstaller2/blob/HEAD/lib/ruby_installer/build/msys2_installation.rb
+  //
+  // ri2 searches for msys64 in the following order:
+  // - ENV["MSYS2_PATH"]
+  // - File.join(RbConfig::TOPDIR, "msys64")
+  // - File.join(File.dirname(RbConfig::TOPDIR), "msys64")
+  // - "C:\msys64"
+  // - ...
+  //
+  // The first option ENV["MSYS2_PATH"] is only supported in ruby >=3.0.7.
+  // Therefore we use the second option to avoid conflict with existing "C:\msys64"
   const msys2Path = path.join(rubyPrefix, 'msys64')
   if (extractPath !== msys2Path) {
     fs.symlinkSync(extractPath, msys2Path, 'junction')

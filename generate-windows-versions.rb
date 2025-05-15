@@ -5,7 +5,7 @@ require 'json'
 min_requirements = ['~> 2.0.0', '~> 2.1.9', '>= 2.2.6'].map { |req| Gem::Requirement.new(req) }
 
 url = 'https://raw.githubusercontent.com/oneclick/rubyinstaller.org-website/master/_data/downloads.yaml'
-entries = YAML.load(URI.open(url) { |f| f.read }, symbolize_names: true)
+entries = YAML.load(URI.open(url, &:read), symbolize_names: true)
 
 versions = entries.select { |entry|
   entry[:filetype] == 'rubyinstaller7z' and
@@ -51,7 +51,7 @@ versions['ucrt'] = {
 File.binwrite 'windows-versions.json', "#{JSON.pretty_generate(versions)}\n"
 
 base_url = 'https://github.com/ntkme/setup-msys2-gcc/releases/latest/download/windows-toolchain.json'
-windows_toolchain = JSON.parse(URI.open(base_url) { |f| f.read }, symbolize_names: true)
+windows_toolchain = JSON.parse(URI.open(base_url, &:read), symbolize_names: true)
 
 versions.each do |raw_version, archs|
   version = Gem::Version.correct?(raw_version) ? Gem::Version.new(raw_version) : head_version
@@ -59,23 +59,24 @@ versions.each do |raw_version, archs|
   archs.each_key do |raw_arch|
     arch = raw_arch == 'arm64' ? 'aarch64' : raw_arch
 
-    platform = case raw_version
-               when 'head', 'ucrt'
-                 "#{arch}-mingw-ucrt"
-               when 'mingw'
-                 "#{arch}-mingw32"
-               when 'mswin'
-                 "#{arch}-mswin64"
-               else
-                 if version >= Gem::Version.new('3.1.0.dev')
-                   "#{arch}-mingw-ucrt"
-                 else
-                   "#{arch}-mingw32"
-                 end
-               end
+    platform =
+      case raw_version
+      when 'head', 'ucrt'
+        "#{arch}-mingw-ucrt"
+      when 'mingw'
+        "#{arch}-mingw32"
+      when 'mswin'
+        "#{arch}-mswin64"
+      else
+        if version >= Gem::Version.new('3.1.0.dev')
+          "#{arch}-mingw-ucrt"
+        else
+          "#{arch}-mingw32"
+        end
+      end
 
-    toolchain = windows_toolchain
-      .select do |pkg|
+    toolchain =
+      windows_toolchain.select do |pkg|
         pkg[:platform] == platform && pkg[:required_ruby_version].any? do |requirement|
           Gem::Requirement.new(requirement).satisfied_by?(version)
         end
