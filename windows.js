@@ -138,7 +138,7 @@ async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
 
   const ridk = `${rubyPrefix}\\bin\\ridk.cmd`
   if (fs.existsSync(ridk)) {
-    await common.measure('Setting up ridk environment', async () => exportCommandEnv(`set MAKE=make && "${ridk}" enable`))
+    await common.measure('Setting up ridk environment', async () => exportCommandEnv(`set "MAKE=make" && "${ridk}" enable`))
   }
 
   // Examples:
@@ -212,7 +212,7 @@ async function installVCPKG(url) {
       throw new Error(`Missing vcVars file: ${vcVars}`)
     }
 
-    return exportCommandEnv(`set MAKE=nmake && "${vcVars}"`)
+    return exportCommandEnv(`set "MAKE=nmake" && "${vcVars}"`)
   })
 }
 
