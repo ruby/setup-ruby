@@ -182,7 +182,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
 
   // cache key
   const paths = [cachePath]
-  const baseKey = await computeBaseKey(platform, engine, rubyVersion, lockFile, cacheVersion)
+  const baseKey = await computeBaseKey(engine, rubyVersion, lockFile, cacheVersion)
   const key = `${baseKey}-${await common.hashFile(lockFile)}`
   // If only Gemfile.lock changes we can reuse part of the cache, and clean old gem versions below
   const restoreKeys = [`${baseKey}-`]
@@ -232,7 +232,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   return true
 }
 
-async function computeBaseKey(platform, engine, version, lockFile, cacheVersion) {
+async function computeBaseKey(engine, version, lockFile, cacheVersion) {
   const cwd = process.cwd()
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
