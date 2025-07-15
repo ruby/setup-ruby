@@ -495,7 +495,6 @@ const GitHubHostedPlatforms = [
   'ubuntu-22.04-arm64',
   'ubuntu-24.04-x64',
   'ubuntu-24.04-arm64',
-  'windows-2019-x64',
   'windows-2022-x64',
   'windows-2025-x64',
   'windows-11-arm64'
