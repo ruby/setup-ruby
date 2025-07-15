@@ -51,7 +51,7 @@ The action works on these [GitHub-hosted runners](https://docs.github.com/en/act
 | ---------------- | --------- |
 | Ubuntu  | `ubuntu-22.04`, `ubuntu-24.04`, `ubuntu-22.04-arm`, `ubuntu-24.04-arm` |
 | macOS   | `macos-13` and newer versions |
-| Windows | `windows-2019`, `windows-2022`, `windows-2025`, `windows-11-arm` |
+| Windows | `windows-2022`, `windows-2025`, `windows-11-arm` |
 
 Not all combinations of runner images and versions are supported.
 The list of available Ruby versions can be seen in [ruby-builder-versions.json](ruby-builder-versions.json) for Ubuntu and macOS
@@ -243,7 +243,7 @@ It is recommended to first get your build working on Ubuntu and macOS before try
 * For Ruby < 2.4, the DevKit MSYS tools are installed and prepended to the `Path`.
 * Use JRuby 9.2.20+ on Windows (older versions have [bugs](https://github.com/ruby/setup-ruby/issues/18#issuecomment-889072695)).
 * JRuby on Windows has multiple issues ([jruby/jruby#7106](https://github.com/jruby/jruby/issues/7106), [jruby/jruby#7182](https://github.com/jruby/jruby/issues/7182)).
-* When compiling extension code, note that the packages required to build Ruby are included when using Windows 2022, but that Windows 2019 does not include all of them, and may require installing package(s).  This can be done with [setup-ruby-pkgs](https://github.com/ruby/setup-ruby-pkgs) or via MSYS2's pacman.  These packages may be required when installing or updating Ruby std-lib extension gems.
+* When compiling extension code, note that the packages required to build Ruby are included when using Windows 2022. Additional packages can be installed with [setup-ruby-pkgs](https://github.com/ruby/setup-ruby-pkgs) or via MSYS2's `pacman`. These packages may be required when installing or updating Ruby stdlib extension gems.
 
 ## Versioning
 
