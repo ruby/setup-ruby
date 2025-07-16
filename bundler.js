@@ -137,13 +137,11 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   }
 
   const gem = path.join(rubyPrefix, 'bin', 'gem')
-  // and for https://github.com/oracle/truffleruby/issues/2780
-  const force = engine === 'truffleruby' ? ['--force'] : []
 
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
   const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
 
-  await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
+  await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint])
 
   return bundlerVersion
 }
