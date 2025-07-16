@@ -71454,8 +71454,10 @@ async function rubygemsLatest(gem, platform, engine, rubyVersion) {
     const floatVersion = common.floatVersion(rubyVersion)
     if (common.isHeadVersion(rubyVersion)) {
       console.log('Ruby master builds use included RubyGems')
-    } else if (floatVersion >= 3.1) {
+    } else if (floatVersion >= 3.2) {
       await exec.exec(gem, ['update', '--system'])
+    } else if (floatVersion >= 3.1) {
+      await exec.exec(gem, ['update', '--system', '3.6.9'])
     } else if (floatVersion >= 3.0) {
       await exec.exec(gem, ['update', '--system', '3.5.23'])
     } else if (floatVersion >= 2.6) {
