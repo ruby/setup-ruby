@@ -151,9 +151,8 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   }
 
   const gem = path.join(rubyPrefix, 'bin', 'gem')
-  // Workaround for https://github.com/rubygems/rubygems/issues/5245
   // and for https://github.com/oracle/truffleruby/issues/2780
-  const force = ((platform.startsWith('windows-') && engine === 'ruby' && floatVersion >= 3.1) || (engine === 'truffleruby')) ? ['--force'] : []
+  const force = engine === 'truffleruby' ? ['--force'] : []
 
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
   const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
