@@ -99,6 +99,9 @@ export async function setupRuby(options = {}) {
   if (inputs['bundler-cache'] === 'true') {
     await common.time('bundle install', async () =>
       bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+
+    await core.group(`Print lockfile`, async () =>
+      await exec.exec('cat', [lockFile]))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
