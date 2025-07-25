@@ -677,24 +677,23 @@ function setupPath(newPathEntries) {
   const originalPath = process.env[envPath].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
-  core.startGroup(`Modifying ${envPath}`)
-
-  // First remove the conflicting path entries
-  if (cleanPath.length !== originalPath.length) {
-    console.log(`Entries removed from ${envPath} to avoid conflicts with default Ruby:`)
-    for (const entry of originalPath) {
-      if (!cleanPath.includes(entry)) {
-        console.log(`  ${entry}`)
+  core.group(`Modifying ${envPath}`, async () => {
+    // First remove the conflicting path entries
+    if (cleanPath.length !== originalPath.length) {
+      console.log(`Entries removed from ${envPath} to avoid conflicts with default Ruby:`)
+      for (const entry of originalPath) {
+        if (!cleanPath.includes(entry)) {
+          console.log(`  ${entry}`)
+        }
       }
+      core.exportVariable(envPath, cleanPath.join(path.delimiter))
     }
-    core.exportVariable(envPath, cleanPath.join(path.delimiter))
-  }
 
-  console.log(`Entries added to ${envPath} to use selected Ruby:`)
-  for (const entry of newPathEntries) {
-    console.log(`  ${entry}`)
-  }
-  core.endGroup()
+    console.log(`Entries added to ${envPath} to use selected Ruby:`)
+    for (const entry of newPathEntries) {
+      console.log(`  ${entry}`)
+    }
+  })
 
   core.addPath(newPathEntries.join(path.delimiter))
 }
