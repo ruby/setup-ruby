@@ -100,7 +100,7 @@ export async function setupRuby(options = {}) {
     await common.time('bundle install', async () =>
       bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
 
-    if (fs.existsSync(lockFile)) {
+    if (lockFile !== null && fs.existsSync(lockFile)) {
       await core.group(`Print lockfile`, async () =>
         await exec.exec('cat', [lockFile]))
     }
