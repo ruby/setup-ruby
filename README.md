@@ -16,9 +16,9 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 | Interpreter | Versions |
 | ----------- | -------- |
 | `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 3.5.0-preview1, head, debug, mingw, mswin, ucrt |
-| `jruby` | 9.1.17.0 - 10.0.0.0, head |
-| `truffleruby` | 19.3.0 - 24.2.0, head |
-| `truffleruby+graalvm` | 21.2.0 - 24.2.0, head |
+| `jruby` | 9.1.17.0 - 10.0.1.0, head |
+| `truffleruby` | 19.3.0 - 24.2.1, head |
+| `truffleruby+graalvm` | 21.2.0 - 24.2.1, head |
 
 `ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).
 
@@ -45,13 +45,13 @@ which means Ruby ≤ 2.4 is unmaintained and considered insecure.
 
 ### Supported Platforms
 
-The action works on these [GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources) images. Runner images not listed below are not supported yet. `$OS-latest` just alias to one of these images.
+The action works on these [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) images. Runner images not listed below are not supported yet. `$OS-latest` just alias to one of these images.
 
 | Operating System | Supported |
 | ---------------- | --------- |
-| Ubuntu  | `ubuntu-20.04`, `ubuntu-22.04`, `ubuntu-24.04`, `ubuntu-22.04-arm`, `ubuntu-24.04-arm` |
+| Ubuntu  | `ubuntu-22.04`, `ubuntu-24.04`, `ubuntu-22.04-arm`, `ubuntu-24.04-arm` |
 | macOS   | `macos-13` and newer versions |
-| Windows | `windows-2019`, `windows-2022` |
+| Windows | `windows-2022`, `windows-2025`, `windows-11-arm` |
 
 Not all combinations of runner images and versions are supported.
 The list of available Ruby versions can be seen in [ruby-builder-versions.json](ruby-builder-versions.json) for Ubuntu and macOS
@@ -79,7 +79,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.3' # Not needed with a .ruby-version, .tool-versions or mise.toml
+        ruby-version: '3.4' # Not needed with a .ruby-version, .tool-versions or mise.toml
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: bundle exec rake
 ```
@@ -98,7 +98,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['2.7', '3.0', '3.1', '3.2', '3.3', head, jruby, jruby-head, truffleruby, truffleruby-head]
+        ruby: ['2.7', '3.0', '3.1', '3.2', '3.3', '3.4', head, jruby, jruby-head, truffleruby, truffleruby-head]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -119,7 +119,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gemfile: [ rails5, rails6 ]
+        gemfile: [ rails7, rails8 ]
     runs-on: ubuntu-latest
     env: # $BUNDLE_GEMFILE must be set at the job level, so it is set for all steps
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
@@ -127,7 +127,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3'
+          ruby-version: '3.4'
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - run: bundle exec rake
 ```
@@ -243,7 +243,7 @@ It is recommended to first get your build working on Ubuntu and macOS before try
 * For Ruby < 2.4, the DevKit MSYS tools are installed and prepended to the `Path`.
 * Use JRuby 9.2.20+ on Windows (older versions have [bugs](https://github.com/ruby/setup-ruby/issues/18#issuecomment-889072695)).
 * JRuby on Windows has multiple issues ([jruby/jruby#7106](https://github.com/jruby/jruby/issues/7106), [jruby/jruby#7182](https://github.com/jruby/jruby/issues/7182)).
-* When compiling extension code, note that the packages required to build Ruby are included when using Windows 2022, but that Windows 2019 does not include all of them, and may require installing package(s).  This can be done with [setup-ruby-pkgs](https://github.com/ruby/setup-ruby-pkgs) or via MSYS2's pacman.  These packages may be required when installing or updating Ruby std-lib extension gems.
+* When compiling extension code, note that the packages required to build Ruby are included when using Windows 2022. Additional packages can be installed with [setup-ruby-pkgs](https://github.com/ruby/setup-ruby-pkgs) or via MSYS2's `pacman`. These packages may be required when installing or updating Ruby stdlib extension gems.
 
 ## Versioning
 

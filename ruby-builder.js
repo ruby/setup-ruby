@@ -46,8 +46,15 @@ export async function install(platform, engine, version) {
     rubyPrefix = path.join(os.homedir(), '.rubies', `${engine}-${version}`)
   }
 
+  const paths = [path.join(rubyPrefix, 'bin')]
+
+  // JRuby can use compiled extension code via ffi, so make sure gcc exists.
+  if (platform.startsWith('windows') && engine === 'jruby') {
+    paths.push(...await require('./windows').installJRubyTools())
+  }
+
   // Set the PATH now, so the MSYS2 'tar' is in Path on Windows
-  common.setupPath([path.join(rubyPrefix, 'bin')])
+  common.setupPath(paths)
 
   if (!inToolCache) {
     await io.mkdirP(rubyPrefix)
@@ -97,8 +104,12 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
 
 function getDownloadURL(platform, engine, version) {
   let builderPlatform = null
-  if (platform.startsWith('windows-') && os.arch() === 'x64') {
-    builderPlatform = 'windows-latest'
+  if (platform.startsWith('windows-')) {
+    if (os.arch() === 'x64') {
+      builderPlatform = 'windows-latest'
+    } else if (os.arch() === 'arm64') {
+      builderPlatform = 'windows-arm64'
+    }
   } else if (platform.startsWith('macos-')) {
     if (os.arch() === 'x64') {
       builderPlatform = 'macos-latest'

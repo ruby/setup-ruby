@@ -137,14 +137,11 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   }
 
   const gem = path.join(rubyPrefix, 'bin', 'gem')
-  // Workaround for https://github.com/rubygems/rubygems/issues/5245
-  // and for https://github.com/oracle/truffleruby/issues/2780
-  const force = ((platform.startsWith('windows-') && engine === 'ruby' && floatVersion >= 3.1) || (engine === 'truffleruby')) ? ['--force'] : []
 
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
   const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
 
-  await exec.exec(gem, ['install', 'bundler', ...force, '-v', bundlerVersionConstraint])
+  await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint])
 
   return bundlerVersion
 }
@@ -182,7 +179,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
 
   // cache key
   const paths = [cachePath]
-  const baseKey = await computeBaseKey(platform, engine, rubyVersion, lockFile, cacheVersion)
+  const baseKey = await computeBaseKey(engine, rubyVersion, lockFile, cacheVersion)
   const key = `${baseKey}-${await common.hashFile(lockFile)}`
   // If only Gemfile.lock changes we can reuse part of the cache, and clean old gem versions below
   const restoreKeys = [`${baseKey}-`]
@@ -209,7 +206,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   await exec.exec('bundle', ['install', '--jobs', '4'])
 
   // @actions/cache only allows to save for non-existing keys
-  if (cachedKey !== key) {
+  if (!common.isExactCacheKeyMatch(key, cachedKey)) {
     if (cachedKey) { // existing cache but Gemfile.lock differs, clean old gems
       await exec.exec('bundle', ['clean'])
     }
@@ -232,7 +229,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   return true
 }
 
-async function computeBaseKey(platform, engine, version, lockFile, cacheVersion) {
+async function computeBaseKey(engine, version, lockFile, cacheVersion) {
   const cwd = process.cwd()
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
