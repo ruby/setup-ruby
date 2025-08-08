@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-20.04, ubuntu-22.04, ubuntu-24.04, ubuntu-22.04-arm, ubuntu-24.04-arm, macos-13, macos-14, macos-15, windows-2019, windows-2022, windows-2025 ]
+        os: [ ubuntu-22.04, ubuntu-24.04, ubuntu-22.04-arm, ubuntu-24.04-arm, macos-13, macos-14, macos-15, windows-2022, windows-2025, windows-11-arm ]
         ruby: [
           '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', ruby-head,
           jruby, jruby-head,
@@ -25,8 +25,6 @@ jobs:
           truffleruby+graalvm, truffleruby+graalvm-head
         ]
         include:
-        - { os: windows-2019, ruby: mingw }
-        - { os: windows-2019, ruby: mswin }
         - { os: windows-2022, ruby: mingw }
         - { os: windows-2022, ruby: mswin }
         - { os: windows-2022, ruby: ucrt  }
@@ -64,25 +62,39 @@ jobs:
         - { os: ubuntu-24.04-arm, ruby: '2.0' }
         - { os: ubuntu-24.04-arm, ruby: '2.1' }
         - { os: ubuntu-24.04-arm, ruby: '2.2' }
-        # Windows (note: previews are not available on Windows)
-        - { os: windows-2019, ruby: '1.9' }
+        # RubyInstaller windows-arm64 builds only exist for Ruby 3.4+
+        - { os: windows-11-arm, ruby: '2.0' }
+        - { os: windows-11-arm, ruby: '2.1' }
+        - { os: windows-11-arm, ruby: '2.2' }
+        - { os: windows-11-arm, ruby: '2.3' }
+        - { os: windows-11-arm, ruby: '2.4' }
+        - { os: windows-11-arm, ruby: '2.5' }
+        - { os: windows-11-arm, ruby: '2.6' }
+        - { os: windows-11-arm, ruby: '2.7' }
+        - { os: windows-11-arm, ruby: '3.0' }
+        - { os: windows-11-arm, ruby: '3.1' }
+        - { os: windows-11-arm, ruby: '3.2' }
+        - { os: windows-11-arm, ruby: '3.3' }
+        # https://github.com/ruby/jruby-dev-builder/pull/14#issuecomment-2829841247
+        - { os: windows-11-arm, ruby: jruby }
+        - { os: windows-11-arm, ruby: jruby-head }
+        # RubyInstaller has no 64-bit builds of 1.9 on Windows
         - { os: windows-2022, ruby: '1.9' }
         - { os: windows-2025, ruby: '1.9' }
-        - { os: windows-2019, ruby: debug }
-        - { os: windows-2022, ruby: debug }
-        - { os: windows-2025, ruby: debug }
-        - { os: windows-2019, ruby: truffleruby }
+        - { os: windows-11-arm, ruby: '1.9' }
+        # TruffleRuby does not support Windows
         - { os: windows-2022, ruby: truffleruby }
         - { os: windows-2025, ruby: truffleruby }
-        - { os: windows-2019, ruby: truffleruby-head }
+        - { os: windows-11-arm, ruby: truffleruby }
         - { os: windows-2022, ruby: truffleruby-head }
         - { os: windows-2025, ruby: truffleruby-head }
-        - { os: windows-2019, ruby: truffleruby+graalvm }
+        - { os: windows-11-arm, ruby: truffleruby-head }
         - { os: windows-2022, ruby: truffleruby+graalvm }
         - { os: windows-2025, ruby: truffleruby+graalvm }
-        - { os: windows-2019, ruby: truffleruby+graalvm-head }
+        - { os: windows-11-arm, ruby: truffleruby+graalvm }
         - { os: windows-2022, ruby: truffleruby+graalvm-head }
         - { os: windows-2025, ruby: truffleruby+graalvm-head }
+        - { os: windows-11-arm, ruby: truffleruby+graalvm-head }
 
     name: ${{ matrix.os }} ${{ matrix.ruby }}
     runs-on: ${{ matrix.os }}
@@ -115,7 +127,7 @@ jobs:
             echo 'ridk is unavailable'
           }
         } elseif ($plat.Contains('mswin')) {
-          &"$env:VCPKG_INSTALLATION_ROOT\vcpkg" list
+          Get-ChildItem "$env:VCPKG_INSTALLATION_ROOT\installed\vcpkg\info"
         }
     - name: RbConfig::CONFIG
       run: ruby -rrbconfig -rpp -e 'pp RbConfig::CONFIG'
@@ -228,6 +240,18 @@ jobs:
           ruby-version: '2.6'
       - run: ruby -v
 
+  testNoGemfileWithBundlerCache:
+    name: "Test with no Gemfile but with bundler-cache"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rm Gemfile
+      - uses: ./
+        with:
+          ruby-version: '2.6'
+          bundler-cache: true
+      - run: ruby -v
+
   testLatestRubygemsVersion:
     name: "Test rubygems: latest on ${{ matrix.ruby }}"
     runs-on: ubuntu-latest
@@ -286,12 +310,12 @@ jobs:
 
   testFixedBundlerVersionForOldRuby:
     name: "Test bundler: 1.x for old Ruby"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          ruby-version: '2.2'
+          ruby-version: '2.3'
           bundler: 1.16.6
       - run: bundle --version | grep -F "1.16.6" # And not 1.17.x from ~> 1
 
@@ -369,7 +393,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gemfile: [ rails5, rails6 ]
+        gemfile: [ rails7, rails8 ]
     name: "Test with ${{ matrix.gemfile }} gemfile"
     runs-on: ubuntu-latest
     env:
@@ -378,11 +402,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          ruby-version: '2.6'
+          ruby-version: '3.2'
           bundler-cache: true
       - run: bundle exec rails --version
-        env:
-          RUBYOPT: '-rlogger' # Rails 6 is missing a require 'logger' in active_support/logger_thread_safe_level.rb
 
   testTruffleRubyNokogiri:
     name: "Test installing a Gemfile with nokogiri on TruffleRuby"
@@ -411,7 +433,7 @@ jobs:
         run: ruby -e "abort if File.exist?('C:/msys64/mingw64/bin/gcc.exe')"
 
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - run: yarn install

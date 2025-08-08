@@ -12,7 +12,7 @@ const linuxOSInfo = require('linux-os-info')
 
 export const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
-export const drive = (windows ? (process.env['GITHUB_WORKSPACE'] || 'C')[0] : undefined)
+export const drive = (windows ? (process.env['RUNNER_TEMP'] || 'C')[0] : undefined)
 
 export const inputs = {
   selfHosted: undefined
@@ -171,14 +171,13 @@ export async function hashFile(file) {
 
 // macos is not listed explicitly, see below
 const GitHubHostedPlatforms = [
-  'ubuntu-20.04-x64',
   'ubuntu-22.04-x64',
   'ubuntu-22.04-arm64',
   'ubuntu-24.04-x64',
   'ubuntu-24.04-arm64',
-  'windows-2019-x64',
   'windows-2022-x64',
   'windows-2025-x64',
+  'windows-11-arm64'
 ]
 
 // Precisely: whether we have builds for that platform and there are GitHub-hosted runners to test it
@@ -271,7 +270,7 @@ export function getOSNameVersionArch() {
 
 function findWindowsVersion() {
   const version = os.version()
-  const match = version.match(/^Windows Server (\d+) Datacenter/)
+  const match = version.match(/^Windows(?: Server)? (\d+) (?:Datacenter|Enterprise)/)
   if (match) {
     return match[1]
   } else {
@@ -334,7 +333,7 @@ function engineToToolCacheName(engine) {
   }[engine]
 }
 
-export function getToolCacheRubyPrefix(platform, engine, version) {
+export function getToolCacheRubyPrefix(_platform, engine, version) {
   const toolCache = getToolCachePath()
   return path.join(toolCache, engineToToolCacheName(engine), version, os.arch())
 }
@@ -356,53 +355,30 @@ export function win2nix(path) {
   return path.replace(/\\/g, '/').replace(/ /g, '\\ ')
 }
 
-// JRuby is installed after setupPath is called, so folder doesn't exist
-function rubyIsUCRT(path) {
-  return !!(fs.existsSync(path) &&
-    fs.readdirSync(path, { withFileTypes: true }).find(dirent =>
-      dirent.isFile() && dirent.name.match(/^x64-(ucrt|vcruntime\d{3})-ruby\d{3}\.dll$/)))
-}
-
 export function setupPath(newPathEntries) {
-  let msys2Type = null
   const envPath = windows ? 'Path' : 'PATH'
   const originalPath = process.env[envPath].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
-  core.startGroup(`Modifying ${envPath}`)
-
-  // First remove the conflicting path entries
-  if (cleanPath.length !== originalPath.length) {
-    console.log(`Entries removed from ${envPath} to avoid conflicts with default Ruby:`)
-    for (const entry of originalPath) {
-      if (!cleanPath.includes(entry)) {
-        console.log(`  ${entry}`)
+  core.group(`Modifying ${envPath}`, async () => {
+    // First remove the conflicting path entries
+    if (cleanPath.length !== originalPath.length) {
+      console.log(`Entries removed from ${envPath} to avoid conflicts with default Ruby:`)
+      for (const entry of originalPath) {
+        if (!cleanPath.includes(entry)) {
+          console.log(`  ${entry}`)
+        }
       }
+      core.exportVariable(envPath, cleanPath.join(path.delimiter))
     }
-    core.exportVariable(envPath, cleanPath.join(path.delimiter))
-  }
 
-  // Then add new path entries using core.addPath()
-  let newPath
-  const windowsToolchain = core.getInput('windows-toolchain')
-  if (windows && windowsToolchain !== 'none') {
-    // main Ruby dll determines whether mingw or ucrt build
-    msys2Type = rubyIsUCRT(newPathEntries[0]) ? 'ucrt64' : 'mingw64'
+    console.log(`Entries added to ${envPath} to use selected Ruby:`)
+    for (const entry of newPathEntries) {
+      console.log(`  ${entry}`)
+    }
+  })
 
-    // add MSYS2 in path for all Rubies on Windows, as it provides a better bash shell and a native toolchain
-    const msys2 = [`C:\\msys64\\${msys2Type}\\bin`, 'C:\\msys64\\usr\\bin']
-    newPath = [...newPathEntries, ...msys2]
-  } else {
-    newPath = newPathEntries
-  }
-  console.log(`Entries added to ${envPath} to use selected Ruby:`)
-  for (const entry of newPath) {
-    console.log(`  ${entry}`)
-  }
-  core.endGroup()
-
-  core.addPath(newPath.join(path.delimiter))
-  return msys2Type
+  core.addPath(newPathEntries.join(path.delimiter))
 }
 
 export async function setupJavaHome(rubyPrefix) {
@@ -435,4 +411,16 @@ export async function setupJavaHome(rubyPrefix) {
       core.exportVariable("JAVA_HOME", newHome)
     }
   })
+}
+
+// Determines if two keys are an exact match for the purposes of cache matching
+// Specifically, this is a case-insensitive match that ignores accents
+// From actions/cache@v3 src/utils/actionUtils.ts (MIT)
+export function isExactCacheKeyMatch(key, cacheKey) {
+  return !!(
+      cacheKey &&
+      cacheKey.localeCompare(key, undefined, {
+          sensitivity: 'accent'
+      }) === 0
+  );
 }
