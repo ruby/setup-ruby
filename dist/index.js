@@ -713,10 +713,15 @@ async function setupJavaHome(rubyPrefix) {
       console.log("JRuby failed to start, try Java 21 envs")
 
       let arch = os.arch()
-      if (arch === "x64" || os.platform() !== "darwin") {
+      if (arch === "arm64" && os.platform() === "win32") {
+        arch = "AARCH64"
+      } else if (arch === "x64" || os.platform() !== "darwin") {
         arch = "X64"
       }
 
+      // JAVA_HOME_21_AARCH64 - https://github.com/actions/partner-runner-images/blob/main/images/arm-windows-11-image.md#java
+      // JAVA_HOME_21_arm64 - https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md#java
+      // JAVA_HOME_21_X64 - https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#java
       let newHomeVar = `JAVA_HOME_21_${arch}`
       let newHome = process.env[newHomeVar]
 
