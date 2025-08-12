@@ -75,9 +75,6 @@ jobs:
         - { os: windows-11-arm, ruby: '3.1' }
         - { os: windows-11-arm, ruby: '3.2' }
         - { os: windows-11-arm, ruby: '3.3' }
-        # https://github.com/ruby/jruby-dev-builder/pull/14#issuecomment-2829841247
-        - { os: windows-11-arm, ruby: jruby }
-        - { os: windows-11-arm, ruby: jruby-head }
         # RubyInstaller has no 64-bit builds of 1.9 on Windows
         - { os: windows-2022, ruby: '1.9' }
         - { os: windows-2025, ruby: '1.9' }
