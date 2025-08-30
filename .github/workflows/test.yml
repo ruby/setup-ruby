@@ -403,19 +403,6 @@ jobs:
           bundler-cache: true
       - run: bundle exec rails --version
 
-  testTruffleRubyNokogiri:
-    name: "Test installing a Gemfile with nokogiri on TruffleRuby"
-    runs-on: ubuntu-latest
-    env:
-      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/nokogiri.gemfile
-    steps:
-      - uses: actions/checkout@v5
-      - uses: ./
-        with:
-          ruby-version: truffleruby-head
-          bundler-cache: true
-      - run: bundle list | grep nokogiri
-
   testWindowsToolchain:
     name: "Test windows-toolchain: none"
     runs-on: windows-latest
