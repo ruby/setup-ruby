@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Download a prebuilt Ruby and add it to the PATH in 5 seconds",
   "main": "index.js",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "license": "MIT",
   "scripts": {
     "package": "ncc build index.js -o dist"
