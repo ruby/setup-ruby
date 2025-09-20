@@ -20,7 +20,7 @@ jobs:
         os: [ ubuntu-22.04, ubuntu-24.04, ubuntu-22.04-arm, ubuntu-24.04-arm, macos-13, macos-14, macos-15, windows-2022, windows-2025, windows-11-arm ]
         ruby: [
           '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', ruby-head,
-          jruby, jruby-head,
+          jruby-9.4, jruby, jruby-head,
           truffleruby, truffleruby-head,
           truffleruby+graalvm, truffleruby+graalvm-head
         ]
@@ -195,8 +195,7 @@ jobs:
       shell: bash
       run: echo ~ && bundle install
     - name: Windows JRuby
-      # Should be startsWith(matrix.ruby, 'jruby') but broken on jruby-head: https://github.com/jruby/jruby/issues/8623
-      if: startsWith(matrix.os, 'windows') && matrix.ruby == 'jruby'
+      if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
       run: gem install sassc
 
   testDotRubyVersion:
