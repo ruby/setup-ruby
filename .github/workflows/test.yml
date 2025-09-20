@@ -195,8 +195,7 @@ jobs:
       shell: bash
       run: echo ~ && bundle install
     - name: Windows JRuby
-      # Should be startsWith(matrix.ruby, 'jruby') but broken on jruby-head: https://github.com/jruby/jruby/issues/8623
-      if: startsWith(matrix.os, 'windows') && matrix.ruby == 'jruby'
+      if: startsWith(matrix.os, 'windows') && startsWith(matrix.ruby, 'jruby')
       run: gem install sassc
 
   testDotRubyVersion:
