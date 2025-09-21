@@ -71269,7 +71269,6 @@ const tc = __nccwpck_require__(3472)
 const common = __nccwpck_require__(7211)
 const rubyBuilderVersions = __nccwpck_require__(1942)
 
-const builderReleaseTag = 'toolcache'
 const releasesURL = 'https://github.com/ruby/ruby-builder/releases'
 
 const windows = common.windows
@@ -71366,33 +71365,21 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
 function getDownloadURL(platform, engine, version) {
   let builderPlatform = null
   if (platform.startsWith('windows-')) {
-    if (os.arch() === 'x64') {
-      builderPlatform = 'windows-latest'
-    } else if (os.arch() === 'arm64') {
-      builderPlatform = 'windows-arm64'
-    }
+    builderPlatform = `windows-${os.arch()}`
   } else if (platform.startsWith('macos-')) {
-    if (os.arch() === 'x64') {
-      builderPlatform = 'macos-latest'
-    } else if (os.arch() === 'arm64') {
-      builderPlatform = 'macos-13-arm64'
-    }
+    builderPlatform = `darwin-${os.arch()}`
   } else if (platform.startsWith('ubuntu-')) {
-    if (os.arch() === 'x64') {
-      builderPlatform = platform
-    } else if (os.arch() === 'arm64') {
-      builderPlatform = `${platform}-arm64`
-    }
+    builderPlatform = `${platform}-${os.arch()}`
   }
 
-  if (builderPlatform === null) {
-    throw new Error(`Unknown download URL for platform ${platform}`)
+  if (builderPlatform === null || !['x64', 'arm64'].includes(os.arch())) {
+    throw new Error(`Unknown download URL for platform ${platform}-${os.arch()}`)
   }
 
   if (common.isHeadVersion(version)) {
     return getLatestHeadBuildURL(builderPlatform, engine, version)
   } else {
-    return `${releasesURL}/download/${builderReleaseTag}/${engine}-${version}-${builderPlatform}.tar.gz`
+    return `${releasesURL}/download/${engine}-${version}/${engine}-${version}-${builderPlatform}.tar.gz`
   }
 }
 
