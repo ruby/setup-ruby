@@ -165,6 +165,9 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
     await exec.exec('bundle', ['lock'], envOptions)
   }
 
+  await core.group(`Print lockfile`, async () =>
+    await exec.exec('cat', [lockFile]))
+
   // cache key
   const paths = [cachePath]
   const baseKey = await computeBaseKey(engine, rubyVersion, lockFile, cacheVersion)

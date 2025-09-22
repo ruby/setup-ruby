@@ -179,6 +179,9 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
     await exec.exec('bundle', ['lock'], envOptions)
   }
 
+  await core.group(`Print lockfile`, async () =>
+    await exec.exec('cat', [lockFile]))
+
   // cache key
   const paths = [cachePath]
   const baseKey = await computeBaseKey(engine, rubyVersion, lockFile, cacheVersion)
@@ -85343,11 +85346,6 @@ async function setupRuby(options = {}) {
   if (inputs['bundler-cache'] === 'true') {
     await common.time('bundle install', async () =>
       bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
-
-    if (lockFile !== null && fs.existsSync(lockFile)) {
-      await core.group(`Print lockfile`, async () =>
-        await exec.exec('cat', [lockFile]))
-    }
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
