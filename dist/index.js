@@ -232,7 +232,8 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
   await exec.exec('bundle', ['install', '--jobs', `${jobs}`])
 
   // @actions/cache only allows to save for non-existing keys
-  if (!common.isExactCacheKeyMatch(key, cachedKey)) {
+  // Also, skip saving cache for merge_group event
+  if (!common.isExactCacheKeyMatch(key, cachedKey) && process.env['GITHUB_EVENT_NAME'] !== 'merge_group') {
     if (cachedKey) { // existing cache but Gemfile.lock differs, clean old gems
       await exec.exec('bundle', ['clean'])
     }
