@@ -211,7 +211,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
   // Number of jobs should scale with runner, up to a point
   const jobs = Math.min(os.availableParallelism(), 8)
   // Always run 'bundle install' to list the gems
-  await exec.exec('bundle', ['install', '--jobs', jobs])
+  await exec.exec('bundle', ['install', '--jobs', `${jobs}`])
 
   // @actions/cache only allows to save for non-existing keys
   if (!common.isExactCacheKeyMatch(key, cachedKey)) {
