@@ -19,7 +19,7 @@ jobs:
       matrix:
         os: [ ubuntu-22.04, ubuntu-24.04, ubuntu-22.04-arm, ubuntu-24.04-arm, macos-13, macos-14, macos-15, macos-15-intel, windows-2022, windows-2025, windows-11-arm ]
         ruby: [
-          '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', ruby-head,
+          '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '4.0', ruby-head,
           jruby-9.4, jruby, jruby-head,
           truffleruby, truffleruby-head,
           truffleruby+graalvm, truffleruby+graalvm-head
@@ -79,6 +79,10 @@ jobs:
         - { os: windows-2022, ruby: '1.9' }
         - { os: windows-2025, ruby: '1.9' }
         - { os: windows-11-arm, ruby: '1.9' }
+        # No preview builds on Windows
+        - { os: windows-2022, ruby: '4.0' }
+        - { os: windows-2025, ruby: '4.0' }
+        - { os: windows-11-arm, ruby: '4.0' }
         # TruffleRuby does not support Windows
         - { os: windows-2022, ruby: truffleruby }
         - { os: windows-2025, ruby: truffleruby }
