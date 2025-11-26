@@ -137,7 +137,28 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   return bundlerVersion
 }
 
-export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion) {
+async function applyBundleConfig(configOptions, envOptions = {}) {
+  // Apply bundle config settings based on input options
+  // This function makes it easy to add new bundle config options in the future
+  const configs = []
+  
+  if (configOptions.frozen === 'true') {
+    configs.push({ name: 'frozen', value: 'true', description: 'frozen' })
+  }
+  
+  // Add more config options here as needed in the future
+  // Example:
+  // if (configOptions.jobs) {
+  //   configs.push({ name: 'jobs', value: configOptions.jobs, description: 'jobs' })
+  // }
+  
+  for (const config of configs) {
+    console.log(`Setting bundle config ${config.description} to ${config.value}`)
+    await exec.exec('bundle', ['config', '--local', config.name, config.value], envOptions)
+  }
+}
+
+export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion, bundleFrozen = 'false') {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
@@ -157,6 +178,9 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   const bundleCachePath = path.join(process.cwd(), cachePath)
 
   await exec.exec('bundle', ['config', '--local', 'path', bundleCachePath], envOptions)
+
+  // Apply bundle config options
+  await applyBundleConfig({ frozen: bundleFrozen }, envOptions)
 
   if (fs.existsSync(lockFile)) {
     await exec.exec('bundle', ['config', '--local', 'deployment', 'true'], envOptions)
@@ -196,6 +220,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
 
   // Number of jobs should scale with runner, up to a point
   const jobs = Math.min(os.availableParallelism(), 8)
+  
   // Always run 'bundle install' to list the gems
   await exec.exec('bundle', ['install', '--jobs', `${jobs}`])
 

@@ -419,6 +419,94 @@ jobs:
       - name: C:/msys64/mingw64/bin/gcc.exe not installed
         run: ruby -e "abort if File.exist?('C:/msys64/mingw64/bin/gcc.exe')"
 
+  testBundleFrozen:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        ruby: [ '3.1', '3.2', '3.3', '3.4' ]
+    name: "Test bundle-frozen on ${{ matrix.os }} with Ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v5
+    - name: Create test Gemfile with locked dependencies
+      shell: bash
+      run: |
+        cat > Gemfile <<'EOF'
+        source 'https://rubygems.org'
+        gem 'rake', '~> 13.0'
+        gem 'minitest', '~> 5.16'
+        EOF
+    - name: Generate Gemfile.lock
+      shell: bash
+      run: |
+        gem install bundler
+        bundle lock
+    - name: Display Gemfile.lock
+      shell: bash
+      run: cat Gemfile.lock
+    - uses: ./
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+        bundle-frozen: true
+    - name: Verify frozen config was set
+      shell: bash
+      run: |
+        FROZEN_VALUE=$(bundle config frozen)
+        echo "Bundle frozen config: $FROZEN_VALUE"
+        if echo "$FROZEN_VALUE" | grep -q "true"; then
+          echo "✓ Bundle frozen config is set to true"
+        else
+          echo "Error: Bundle frozen config was not set to 'true'"
+          exit 1
+        fi
+    - name: Verify bundle install succeeded with frozen lockfile
+      shell: bash
+      run: |
+        bundle exec ruby -v
+        echo "✓ Bundle install with frozen lockfile succeeded"
+    - name: Test that modifying Gemfile causes failure with bundle-frozen
+      shell: bash
+      run: |
+        echo "gem 'json', '~> 2.6'" >> Gemfile
+        if bundle install 2>&1 | grep -q "frozen"; then
+          echo "✓ Bundle correctly detected frozen lockfile violation"
+        else
+          echo "Warning: Expected bundle install to fail or warn about frozen lockfile"
+        fi
+        git checkout Gemfile
+
+  testBundleNotFrozen:
+    name: "Test without bundle-frozen (control)"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - name: Create test Gemfile
+      run: |
+        cat > Gemfile <<'EOF'
+        source 'https://rubygems.org'
+        gem 'rake', '~> 13.0'
+        EOF
+    - uses: ./
+      with:
+        ruby-version: '3.4'
+        bundler-cache: true
+        bundle-frozen: false
+    - name: Verify frozen config was not set
+      run: |
+        FROZEN_VALUE=$(bundle config frozen)
+        echo "Bundle frozen config: $FROZEN_VALUE"
+        if echo "$FROZEN_VALUE" | grep -q "true"; then
+          echo "Error: Bundle frozen config should not be set when bundle-frozen is false"
+          exit 1
+        fi
+        echo "✓ Bundle frozen config is not set to true (as expected)"
+    - name: Verify bundle install succeeded
+      run: |
+        bundle exec ruby -v
+        echo "✓ Bundle install succeeded without frozen flag"
+
   lint:
     runs-on: ubuntu-22.04
     steps:

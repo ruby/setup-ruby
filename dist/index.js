@@ -151,7 +151,28 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   return bundlerVersion
 }
 
-async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion) {
+async function applyBundleConfig(configOptions, envOptions = {}) {
+  // Apply bundle config settings based on input options
+  // This function makes it easy to add new bundle config options in the future
+  const configs = []
+  
+  if (configOptions.frozen === 'true') {
+    configs.push({ name: 'frozen', value: 'true', description: 'frozen' })
+  }
+  
+  // Add more config options here as needed in the future
+  // Example:
+  // if (configOptions.jobs) {
+  //   configs.push({ name: 'jobs', value: configOptions.jobs, description: 'jobs' })
+  // }
+  
+  for (const config of configs) {
+    console.log(`Setting bundle config ${config.description} to ${config.value}`)
+    await exec.exec('bundle', ['config', '--local', config.name, config.value], envOptions)
+  }
+}
+
+async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion, bundleFrozen = 'false') {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
@@ -171,6 +192,9 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
   const bundleCachePath = path.join(process.cwd(), cachePath)
 
   await exec.exec('bundle', ['config', '--local', 'path', bundleCachePath], envOptions)
+
+  // Apply bundle config options
+  await applyBundleConfig({ frozen: bundleFrozen }, envOptions)
 
   if (fs.existsSync(lockFile)) {
     await exec.exec('bundle', ['config', '--local', 'deployment', 'true'], envOptions)
@@ -210,6 +234,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
 
   // Number of jobs should scale with runner, up to a point
   const jobs = Math.min(os.availableParallelism(), 8)
+  
   // Always run 'bundle install' to list the gems
   await exec.exec('bundle', ['install', '--jobs', `${jobs}`])
 
@@ -85264,6 +85289,7 @@ const inputDefaults = {
   'rubygems': 'default',
   'bundler': 'Gemfile.lock',
   'bundler-cache': 'false',
+  'bundle-frozen': 'false',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
@@ -85347,8 +85373,13 @@ async function setupRuby(options = {}) {
   }
 
   if (inputs['bundler-cache'] === 'true') {
+    // Note: To add new bundle config options in the future:
+    // 1. Add the input to action.yml
+    // 2. Add it to inputDefaults above
+    // 3. Pass it to bundleInstall (or create a bundleConfig object to pass multiple options)
+    // 4. Update the applyBundleConfig function in bundler.js
     await common.time('bundle install', async () =>
-      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version'], inputs['bundle-frozen']))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)
