@@ -14,6 +14,7 @@ const inputDefaults = {
   'rubygems': 'default',
   'bundler': 'Gemfile.lock',
   'bundler-cache': 'false',
+  'bundle-frozen': 'false',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
@@ -97,8 +98,13 @@ export async function setupRuby(options = {}) {
   }
 
   if (inputs['bundler-cache'] === 'true') {
+    // Note: To add new bundle config options in the future:
+    // 1. Add the input to action.yml
+    // 2. Add it to inputDefaults above
+    // 3. Pass it to bundleInstall (or create a bundleConfig object to pass multiple options)
+    // 4. Update the applyBundleConfig function in bundler.js
     await common.time('bundle install', async () =>
-      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version'], inputs['bundle-frozen']))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)

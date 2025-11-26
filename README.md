@@ -190,6 +190,20 @@ This caching speeds up installing gems significantly and avoids too many request
 It needs a `Gemfile` (or `$BUNDLE_GEMFILE` or `gems.rb`) under the [`working-directory`](#working-directory).  
 If there is a `Gemfile.lock` (or `$BUNDLE_GEMFILE.lock` or `gems.locked`), `bundle config --local deployment true` is used.
 
+#### bundle-frozen
+
+When using `bundler-cache: true`, you can optionally set `bundle-frozen: true` to enforce that the `Gemfile.lock` is not modified during `bundle install`:
+```yaml
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4'
+        bundler-cache: true
+        bundle-frozen: true
+```
+
+This runs `bundle config --local frozen true` before bundle install, which disallows changes to the Gemfile.lock.
+This is useful in CI to ensure the lockfile is up to date and prevents accidental modifications.
+
 To use a `Gemfile` which is not at the root or has a different name, set `BUNDLE_GEMFILE` in the `env` at the job level
 as shown in the [example](#matrix-of-gemfiles).
 
