@@ -437,14 +437,6 @@ jobs:
         gem 'rake', '~> 13.0'
         gem 'minitest', '~> 5.16'
         EOF
-    - name: Generate Gemfile.lock
-      shell: bash
-      run: |
-        gem install bundler
-        bundle lock
-    - name: Display Gemfile.lock
-      shell: bash
-      run: cat Gemfile.lock
     - uses: ./
       with:
         ruby-version: ${{ matrix.ruby }}
