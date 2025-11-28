@@ -168,7 +168,7 @@ should be able to fix them by setting `rubygems: 3.0.0` or higher.
 
 By default, Bundler is installed as follows:
 
-* If there is a `Gemfile.lock` file (or `$BUNDLE_GEMFILE.lock` or `gems.locked`) with a `BUNDLED WITH` section,
+* If there is a `Gemfile.lock` file (or `$BUNDLE_LOCKFILE`, `$BUNDLE_GEMFILE.lock`, or `gems.locked`) with a `BUNDLED WITH` section,
   that version of Bundler will be installed and used.
 * If the Ruby ships with Bundler 2.2+ (as a default gem), that version is used.
 * Otherwise, the latest compatible Bundler version is installed (Bundler 2 on Ruby >= 2.3, Bundler 1 on Ruby < 2.3).
@@ -188,7 +188,7 @@ Note that any step doing `bundle install` (for the root `Gemfile`) or `gem insta
 
 This caching speeds up installing gems significantly and avoids too many requests to RubyGems.org.  
 It needs a `Gemfile` (or `$BUNDLE_GEMFILE` or `gems.rb`) under the [`working-directory`](#working-directory).  
-If there is a `Gemfile.lock` (or `$BUNDLE_GEMFILE.lock` or `gems.locked`), `bundle config --local deployment true` is used.
+If there is a `Gemfile.lock` (or `$BUNDLE_LOCKFILE`, `$BUNDLE_GEMFILE.lock`, or `gems.locked`), `bundle config --local deployment true` is used.
 
 To use a `Gemfile` which is not at the root or has a different name, set `BUNDLE_GEMFILE` in the `env` at the job level
 as shown in the [example](#matrix-of-gemfiles).
