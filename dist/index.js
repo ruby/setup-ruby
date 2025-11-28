@@ -29,14 +29,16 @@ function isValidBundlerVersion(bundlerVersion) {
 // The returned gemfile is guaranteed to exist, the lockfile might not exist
 function detectGemfiles() {
   const gemfilePath = process.env['BUNDLE_GEMFILE'] || 'Gemfile'
+  const lockfilePath = process.env['BUNDLE_LOCKFILE']
+
   if (fs.existsSync(gemfilePath)) {
-    return [gemfilePath, `${gemfilePath}.lock`]
+    return [gemfilePath, lockfilePath || `${gemfilePath}.lock`]
   } else if (process.env['BUNDLE_GEMFILE']) {
     throw new Error(`$BUNDLE_GEMFILE is set to ${gemfilePath} but does not exist`)
   }
 
   if (fs.existsSync("gems.rb")) {
-    return ["gems.rb", "gems.locked"]
+    return ["gems.rb", lockfilePath || "gems.locked"]
   }
 
   return [null, null]
