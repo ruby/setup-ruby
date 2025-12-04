@@ -80,7 +80,7 @@ export function isStableVersion(engine, rubyVersion) {
 }
 
 export function hasBundlerDefaultGem(engine, rubyVersion) {
-  return isBundler1Default(engine, rubyVersion) || isBundler2Default(engine, rubyVersion)
+  return isBundler1Default(engine, rubyVersion) || isBundler2PlusDefault(engine, rubyVersion)
 }
 
 export function isBundler1Default(engine, rubyVersion) {
@@ -95,7 +95,7 @@ export function isBundler1Default(engine, rubyVersion) {
   }
 }
 
-export function isBundler2Default(engine, rubyVersion) {
+export function isBundler2PlusDefault(engine, rubyVersion) {
   if (engine === 'ruby') {
     return floatVersion(rubyVersion) >= 2.7
   } else if (engine.startsWith('truffleruby')) {
@@ -107,7 +107,7 @@ export function isBundler2Default(engine, rubyVersion) {
   }
 }
 
-export function isBundler2dot2Default(engine, rubyVersion) {
+export function isBundler2dot2PlusDefault(engine, rubyVersion) {
   if (engine === 'ruby') {
     return floatVersion(rubyVersion) >= 3.0
   } else if (engine.startsWith('truffleruby')) {
@@ -117,6 +117,13 @@ export function isBundler2dot2Default(engine, rubyVersion) {
   } else {
     return false
   }
+}
+
+const UNKNOWN_TARGET_RUBY_VERSION = 9.9
+
+export function isBundler4PlusDefault(engine, rubyVersion) {
+  const version = targetRubyVersion(engine, rubyVersion)
+  return version != UNKNOWN_TARGET_RUBY_VERSION && version >= 4.0
 }
 
 export function targetRubyVersion(engine, rubyVersion) {
@@ -132,6 +139,8 @@ export function targetRubyVersion(engine, rubyVersion) {
       return 2.6
     } else if (version === 9.4) {
       return 3.1
+    } else if (version === 10.0) {
+      return 3.4
     }
   } else if (engine.startsWith('truffleruby')) {
     if (version < 21.0) {
@@ -147,11 +156,11 @@ export function targetRubyVersion(engine, rubyVersion) {
     }
   }
 
-  return 9.9 // unknown, assume recent
+  return UNKNOWN_TARGET_RUBY_VERSION // unknown, assume recent
 }
 
 export function floatVersion(rubyVersion) {
-  const match = rubyVersion.match(/^\d+\.\d+/)
+  const match = rubyVersion.match(/^\d+(\.\d+|$)/)
   if (match) {
     return parseFloat(match[0])
   } else if (isHeadVersion(rubyVersion)) {
