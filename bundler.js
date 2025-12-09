@@ -4,6 +4,7 @@ const path = require('path')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
 const cache = require('@actions/cache')
+const github = require('@actions/github')
 const common = require('./common')
 
 export const DEFAULT_CACHE_VERSION = '0'
@@ -218,7 +219,8 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   await exec.exec('bundle', ['install', '--jobs', `${jobs}`])
 
   // @actions/cache only allows to save for non-existing keys
-  if (!common.isExactCacheKeyMatch(key, cachedKey)) {
+  // Also, skip saving cache for merge_group event
+  if (!common.isExactCacheKeyMatch(key, cachedKey) && github.context.eventName !== 'merge_group') {
     if (cachedKey) { // existing cache but Gemfile.lock differs, clean old gems
       await exec.exec('bundle', ['clean'])
     }
