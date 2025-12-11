@@ -175,7 +175,7 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   // Well known version-platform combinations which do not work:
   if (engine === 'ruby' && platform.startsWith('macos') && os.arch() === 'arm64' && common.floatVersion(version) < 2.6) {
     throw new Error(`CRuby < 2.6 does not support macos-arm64.
-        Either use a newer Ruby version or use a macOS image running on amd64, e.g., macos-13.
+        Either use a newer Ruby version or use a macOS image running on amd64, e.g., macos-15-intel.
         Note that GitHub changed the meaning of macos-latest from macos-12 (amd64) to macos-14 (arm64):
         https://github.blog/changelog/2024-04-01-macos-14-sonoma-is-generally-available-and-the-latest-macos-runner-image/
 
@@ -188,8 +188,8 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
           - { os: macos-latest, ruby: '2.4' }
           - { os: macos-latest, ruby: '2.5' }
           include:
-          - { os: macos-13, ruby: '2.4' }
-          - { os: macos-13, ruby: '2.5' }
+          - { os: macos-15-intel, ruby: '2.4' }
+          - { os: macos-15-intel, ruby: '2.5' }
 
         But of course you should consider dropping support for these long-EOL Rubies, which cannot even be built on recent macOS machines.`)
   } else if (engine === 'truffleruby' && platform.startsWith('windows')) {
