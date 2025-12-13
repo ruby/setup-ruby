@@ -13,6 +13,7 @@ const linuxOSInfo = require('linux-os-info')
 export const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
 export const drive = (windows ? (process.env['RUNNER_TEMP'] || 'C')[0] : undefined)
+const PATH_ENV_VAR = windows ? 'Path' : 'PATH'
 
 export const inputs = {
   selfHosted: undefined
@@ -365,23 +366,22 @@ export function win2nix(path) {
 }
 
 export function setupPath(newPathEntries) {
-  const envPath = windows ? 'Path' : 'PATH'
-  const originalPath = process.env[envPath].split(path.delimiter)
+  const originalPath = process.env[PATH_ENV_VAR].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
-  core.group(`Modifying ${envPath}`, async () => {
+  core.group(`Modifying ${PATH_ENV_VAR}`, async () => {
     // First remove the conflicting path entries
     if (cleanPath.length !== originalPath.length) {
-      console.log(`Entries removed from ${envPath} to avoid conflicts with default Ruby:`)
+      console.log(`Entries removed from ${PATH_ENV_VAR} to avoid conflicts with default Ruby:`)
       for (const entry of originalPath) {
         if (!cleanPath.includes(entry)) {
           console.log(`  ${entry}`)
         }
       }
-      core.exportVariable(envPath, cleanPath.join(path.delimiter))
+      core.exportVariable(PATH_ENV_VAR, cleanPath.join(path.delimiter))
     }
 
-    console.log(`Entries added to ${envPath} to use selected Ruby:`)
+    console.log(`Entries added to ${PATH_ENV_VAR} to use selected Ruby:`)
     for (const entry of newPathEntries) {
       console.log(`  ${entry}`)
     }
@@ -415,14 +415,17 @@ export async function setupJavaHome(rubyPrefix) {
       // JAVA_HOME_21_X64 - https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#java
       let newHomeVar = `JAVA_HOME_21_${arch}`
       let newHome = process.env[newHomeVar]
+      let bin = path.join(newHome, 'bin')
 
       if (newHome === "undefined") {
         throw new Error(`JAVA_HOME is not Java 21+ needed for JRuby and \$${newHomeVar} is not defined`)
       }
 
       console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
-
       core.exportVariable("JAVA_HOME", newHome)
+
+      console.log(`Adding ${bin} to ${PATH_ENV_VAR}`)
+      core.addPath(bin)
     }
   })
 }
