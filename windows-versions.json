@@ -268,8 +268,8 @@
     "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.7-1/rubyinstaller-3.4.7-1-x64.7z"
   },
   "3.4.8": {
-    "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/untagged-d58bac3a74941c8b0ccb/rubyinstaller-3.4.8-1-arm.7z",
-    "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/untagged-d58bac3a74941c8b0ccb/rubyinstaller-3.4.8-1-x64.7z"
+    "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.8-1/rubyinstaller-3.4.8-1-arm.7z",
+    "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.8-1/rubyinstaller-3.4.8-1-x64.7z"
   },
   "head": {
     "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-arm.7z",
