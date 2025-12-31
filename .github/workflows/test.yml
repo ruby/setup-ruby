@@ -352,6 +352,19 @@ jobs:
         bundler: 2.2.3
     - run: bundle --version | grep -F "Bundler version 2.2.3"
 
+  # https://github.com/ruby/setup-ruby/issues/845
+  testOlderBundlerVersion:
+    name: "Test with an older Bundler version than the one of the default gem"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: ./
+      with:
+        ruby-version: '4.0'
+        bundler: 2.7.2
+        bundler-cache: true
+    - run: bundle --version | grep -F "Bundler version 2.7.2"
+
   testBundlerPre:
     name: "Test with a Bundler pre/rc version"
     runs-on: ubuntu-latest
