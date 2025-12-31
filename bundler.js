@@ -162,10 +162,10 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   }
 
   let envOptions = {}
-  if (bundlerVersion.startsWith('1') && common.isBundler2PlusDefault(engine, rubyVersion)) {
-    // If Bundler 1 is specified on Rubies which ship with Bundler 2+,
-    // we need to specify which Bundler version to use explicitly until the lockfile exists.
-    console.log(`Setting BUNDLER_VERSION=${bundlerVersion} for "bundle config|lock" commands below to ensure Bundler 1 is used`)
+  if (bundlerVersion.match(/^\d+/)) {
+    // If a specific Bundler version is given or determined, we need to specify the version to use explicitly until the lockfile exists.
+    // Otherwise, a newer version of Bundler might be used.
+    console.log(`Setting BUNDLER_VERSION=${bundlerVersion} for "bundle config|lock" commands below to ensure Bundler ${bundlerVersion} is used`)
     envOptions = { env: { ...process.env, BUNDLER_VERSION: bundlerVersion } }
   }
 
