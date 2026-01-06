@@ -152,6 +152,23 @@ and the [condition and expression syntax](https://help.github.com/en/actions/ref
 The `working-directory` input can be set to resolve `.ruby-version`, `.tool-versions`, `mise.toml` and `Gemfile.lock`
 if they are not at the root of the repository, see [action.yml](action.yml) for details.
 
+### Authentication Token
+
+By default, this action uses `${{ github.token }}` to authenticate when downloading Ruby release assets from GitHub.
+This helps avoid rate limiting issues.
+
+If you're running this action on a GitHub Enterprise Server (GHES) instance, or if you're experiencing rate limiting,
+you can provide a custom token:
+
+```yaml
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4'
+        token: ${{ secrets.MY_GITHUB_TOKEN }}
+```
+
+In most cases, you don't need to set this input as the default value is sufficient for use on github.com.
+
 ### RubyGems
 
 By default, the default RubyGems version that comes with each Ruby is used.

@@ -16,7 +16,8 @@ export const drive = (windows ? (process.env['RUNNER_TEMP'] || 'C')[0] : undefin
 const PATH_ENV_VAR = windows ? 'Path' : 'PATH'
 
 export const inputs = {
-  selfHosted: undefined
+  selfHosted: undefined,
+  token: undefined
 }
 
 export function partition(string, separator) {

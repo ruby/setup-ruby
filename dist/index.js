@@ -348,7 +348,8 @@ const drive = (windows ? (process.env['RUNNER_TEMP'] || 'C')[0] : undefined)
 const PATH_ENV_VAR = windows ? 'Path' : 'PATH'
 
 const inputs = {
-  selfHosted: undefined
+  selfHosted: undefined,
+  token: undefined
 }
 
 function partition(string, separator) {
@@ -71373,8 +71374,9 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     const url = getDownloadURL(platform, engine, version)
     console.log(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
     try {
-      return await tc.downloadTool(url)
+      return await tc.downloadTool(url, undefined, auth)
     } catch (error) {
       if (error.message.includes('404')) {
         throw new Error(`Unavailable version ${version} for ${engine} on ${platform}
@@ -71599,7 +71601,8 @@ async function install(platform, engine, version) {
 async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
+    return await tc.downloadTool(url, undefined, auth)
   })
 
   const extractPath = process.env.RUNNER_TEMP
@@ -71631,7 +71634,8 @@ async function installJRubyTools() {
 async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
   const downloadPath = await common.measure('Downloading msys2 build tools', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
+    return await tc.downloadTool(url, undefined, auth)
   })
 
   const extractPath = path.join(process.env.RUNNER_TEMP, 'msys64')
@@ -71678,7 +71682,8 @@ async function installMSYS1(url) {
 
   const downloadPath = await common.measure('Downloading msys1 build tools', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
+    return await tc.downloadTool(url, undefined, auth)
   })
 
   const msys1Path = `${common.drive}:\\DevKit64`
@@ -71714,7 +71719,8 @@ async function installMSYS1(url) {
 async function installVCPKG(url) {
   const downloadPath = await common.measure('Downloading mswin vcpkg packages', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
+    return await tc.downloadTool(url, undefined, auth)
   })
 
   const extractPath = process.env.VCPKG_INSTALLATION_ROOT
@@ -85300,6 +85306,7 @@ const inputDefaults = {
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
   'windows-toolchain': 'default',
+  'token': '',
 }
 
 // entry point when this action is run on its own
@@ -85327,6 +85334,7 @@ async function setupRuby(options = {}) {
     }
   }
   common.inputs.selfHosted = inputs['self-hosted']
+  common.inputs.token = inputs['token']
 
   process.chdir(inputs['working-directory'])
 

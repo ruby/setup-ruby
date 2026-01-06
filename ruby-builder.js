@@ -74,8 +74,9 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     const url = getDownloadURL(platform, engine, version)
     console.log(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
     try {
-      return await tc.downloadTool(url)
+      return await tc.downloadTool(url, undefined, auth)
     } catch (error) {
       if (error.message.includes('404')) {
         throw new Error(`Unavailable version ${version} for ${engine} on ${platform}
