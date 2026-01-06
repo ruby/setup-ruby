@@ -81,7 +81,8 @@ export async function install(platform, engine, version) {
 async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
+    return await tc.downloadTool(url, undefined, auth)
   })
 
   const extractPath = process.env.RUNNER_TEMP
@@ -113,7 +114,8 @@ export async function installJRubyTools() {
 async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
   const downloadPath = await common.measure('Downloading msys2 build tools', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
+    return await tc.downloadTool(url, undefined, auth)
   })
 
   const extractPath = path.join(process.env.RUNNER_TEMP, 'msys64')
@@ -160,7 +162,8 @@ async function installMSYS1(url) {
 
   const downloadPath = await common.measure('Downloading msys1 build tools', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
+    return await tc.downloadTool(url, undefined, auth)
   })
 
   const msys1Path = `${common.drive}:\\DevKit64`
@@ -196,7 +199,8 @@ async function installMSYS1(url) {
 async function installVCPKG(url) {
   const downloadPath = await common.measure('Downloading mswin vcpkg packages', async () => {
     console.log(url)
-    return await tc.downloadTool(url)
+    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
+    return await tc.downloadTool(url, undefined, auth)
   })
 
   const extractPath = process.env.VCPKG_INSTALLATION_ROOT

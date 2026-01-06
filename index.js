@@ -18,6 +18,7 @@ const inputDefaults = {
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
   'windows-toolchain': 'default',
+  'token': '',
 }
 
 // entry point when this action is run on its own
@@ -45,6 +46,7 @@ export async function setupRuby(options = {}) {
     }
   }
   common.inputs.selfHosted = inputs['self-hosted']
+  common.inputs.token = inputs['token']
 
   process.chdir(inputs['working-directory'])
 
