@@ -79,10 +79,6 @@ jobs:
         - { os: windows-2022, ruby: '1.9' }
         - { os: windows-2025, ruby: '1.9' }
         - { os: windows-11-arm, ruby: '1.9' }
-        # No preview builds on Windows
-        - { os: windows-2022, ruby: '4.0' }
-        - { os: windows-2025, ruby: '4.0' }
-        - { os: windows-11-arm, ruby: '4.0' }
         # TruffleRuby does not support Windows
         - { os: windows-2022, ruby: truffleruby }
         - { os: windows-2025, ruby: truffleruby }
