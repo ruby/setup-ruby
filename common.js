@@ -442,3 +442,8 @@ export function isExactCacheKeyMatch(key, cacheKey) {
       }) === 0
   );
 }
+
+export async function download(url) {
+  const auth = inputs.token ? `token ${inputs.token}` : undefined
+  return await tc.downloadTool(url, undefined, auth)
+}

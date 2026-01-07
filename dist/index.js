@@ -297,6 +297,7 @@ async function computeBaseKey(engine, version, lockFile, cacheVersion) {
 __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   createToolCacheCompleteFile: () => (/* binding */ createToolCacheCompleteFile),
+/* harmony export */   download: () => (/* binding */ download),
 /* harmony export */   drive: () => (/* binding */ drive),
 /* harmony export */   floatVersion: () => (/* binding */ floatVersion),
 /* harmony export */   getOSName: () => (/* binding */ getOSName),
@@ -773,6 +774,11 @@ function isExactCacheKeyMatch(key, cacheKey) {
           sensitivity: 'accent'
       }) === 0
   );
+}
+
+async function download(url) {
+  const auth = inputs.token ? `token ${inputs.token}` : undefined
+  return await tc.downloadTool(url, undefined, auth)
 }
 
 
@@ -71304,7 +71310,6 @@ const path = __nccwpck_require__(6928)
 const core = __nccwpck_require__(7484)
 const exec = __nccwpck_require__(5236)
 const io = __nccwpck_require__(4994)
-const tc = __nccwpck_require__(3472)
 const common = __nccwpck_require__(7211)
 const rubyBuilderVersions = __nccwpck_require__(1942)
 
@@ -71374,9 +71379,8 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     const url = getDownloadURL(platform, engine, version)
     console.log(url)
-    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
     try {
-      return await tc.downloadTool(url, undefined, auth)
+      return await common.download(url)
     } catch (error) {
       if (error.message.includes('404')) {
         throw new Error(`Unavailable version ${version} for ${engine} on ${platform}
@@ -71527,7 +71531,6 @@ const path = __nccwpck_require__(6928)
 const cp = __nccwpck_require__(5317)
 const core = __nccwpck_require__(7484)
 const exec = __nccwpck_require__(5236)
-const tc = __nccwpck_require__(3472)
 const common = __nccwpck_require__(7211)
 const rubyInstallerVersions = __nccwpck_require__(668)
 const toolchainVersions = __nccwpck_require__(4977)
@@ -71601,8 +71604,7 @@ async function install(platform, engine, version) {
 async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
   const downloadPath = await common.measure('Downloading Ruby', async () => {
     console.log(url)
-    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
-    return await tc.downloadTool(url, undefined, auth)
+    return await common.download(url)
   })
 
   const extractPath = process.env.RUNNER_TEMP
@@ -71634,8 +71636,7 @@ async function installJRubyTools() {
 async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
   const downloadPath = await common.measure('Downloading msys2 build tools', async () => {
     console.log(url)
-    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
-    return await tc.downloadTool(url, undefined, auth)
+    return await common.download(url)
   })
 
   const extractPath = path.join(process.env.RUNNER_TEMP, 'msys64')
@@ -71682,8 +71683,7 @@ async function installMSYS1(url) {
 
   const downloadPath = await common.measure('Downloading msys1 build tools', async () => {
     console.log(url)
-    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
-    return await tc.downloadTool(url, undefined, auth)
+    return await common.download(url)
   })
 
   const msys1Path = `${common.drive}:\\DevKit64`
@@ -71719,8 +71719,7 @@ async function installMSYS1(url) {
 async function installVCPKG(url) {
   const downloadPath = await common.measure('Downloading mswin vcpkg packages', async () => {
     console.log(url)
-    const auth = common.inputs.token ? `token ${common.inputs.token}` : undefined
-    return await tc.downloadTool(url, undefined, auth)
+    return await common.download(url)
   })
 
   const extractPath = process.env.VCPKG_INSTALLATION_ROOT
