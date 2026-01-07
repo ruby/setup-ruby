@@ -15,32 +15,25 @@ permissions:
 jobs:
   test-matrix:
     runs-on: ubuntu-latest
-
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
-
     steps:
     - uses: actions/checkout@v6
-
     - uses: ./
       with:
         ruby-version: ruby
-
     - id: matrix
       run: echo "matrix=$(ruby generate-test-matrix.rb)" | tee -a "$GITHUB_OUTPUT"
-
     - run: echo "$MATRIX" | yq -P
       env:
         MATRIX: ${{ steps.matrix.outputs.matrix }}
 
   test:
     needs: [test-matrix]
-
     strategy:
       fail-fast: false
       matrix:
         include: ${{ fromJSON(needs.test-matrix.outputs.matrix) }}
-
     name: ${{ matrix.os }} ${{ matrix.ruby }}
     runs-on: ${{ matrix.os }}
     steps:

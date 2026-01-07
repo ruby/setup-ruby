@@ -74,4 +74,4 @@ matrix -= ubuntu_arm64_runners.product(%w[1.9 2.0 2.1 2.2])
 # RubyInstaller windows-arm64 builds only exist for Ruby 3.4+
 matrix -= windows_arm64_runners.product(%w[2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 3.0 3.1 3.2 3.3])
 
-puts(JSON.generate(matrix.sort.collect { |os, ruby| { os: os, ruby: ruby } }))
+puts(JSON.generate(matrix.sort.map { |os, ruby| { os:, ruby: } }))
