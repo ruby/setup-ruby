@@ -3,6 +3,7 @@
 
 require "json"
 require "open3"
+require "uri"
 
 ALLOWED_FILES = [
   "README.md",
@@ -75,10 +76,23 @@ class AutomergeCheck
     urls = extract_urls(data)
 
     urls.each do |url|
-      unless allowed_prefixes.any? { |prefix| url.start_with?(prefix) }
+      begin
+        canonical_url = canonicalize_url(url)
+      rescue URI::InvalidURIError
+        @errors << "#{filename}: invalid URL #{url}"
+        next
+      end
+      unless allowed_prefixes.any? { |prefix| canonical_url.start_with?(prefix) }
         @errors << "#{filename}: invalid URL #{url}"
       end
     end
+  end
+
+  def canonicalize_url(url)
+    uri = URI.parse(url)
+    # Normalize path to resolve . and .. segments
+    uri.path = File.expand_path(uri.path) if uri.path
+    uri.to_s
   end
 
   def read_file_at_ref(filename)
@@ -90,16 +104,8 @@ class AutomergeCheck
     output
   end
 
-  def extract_urls(data, urls = [])
-    case data
-    when Hash
-      data.each_value { |v| extract_urls(v, urls) }
-    when Array
-      data.each { |v| extract_urls(v, urls) }
-    when String
-      urls << data if data.start_with?("http://", "https://")
-    end
-    urls
+  def extract_urls(data)
+    data.values.flat_map(&:values)
   end
 
   private
@@ -154,10 +160,14 @@ if __FILE__ == $0
         assert_equal 3, urls.length
       end
 
-      def test_url_extraction_ignores_non_urls
-        data = { "version" => "3.0.0", "url" => "https://example.com/a.7z" }
+      def test_url_extraction_extracts_all_values
+        data = {
+          "3.0.0" => { "x64" => "https://example.com/a.7z" },
+          "3.1.0" => { "x64" => "not a url" },
+        }
         urls = @checker.extract_urls(data)
-        assert_equal ["https://example.com/a.7z"], urls
+        assert_includes urls, "https://example.com/a.7z"
+        assert_includes urls, "not a url"
       end
 
       def test_valid_toolchain_urls
@@ -222,6 +232,35 @@ if __FILE__ == $0
         @checker.check_json_urls_from_content("test.json", content, WINDOWS_TOOLCHAIN_URL_PREFIXES)
         assert_equal 1, @checker.errors.length
         assert_match(/invalid URL/, @checker.errors.first)
+      end
+
+      def test_path_traversal_urls_are_rejected
+        # These URLs pass the prefix check but resolve to different locations after canonicalization
+        malicious_urls = [
+          "https://github.com/ruby/setup-msys2-gcc/releases/../../evil-repo/releases/download/malware.exe",
+          "https://github.com/ruby/setup-msys2-gcc/releases/./../../evil-repo/releases/download/malware.exe",
+        ]
+        malicious_urls.each do |url|
+          checker = AutomergeCheck.new("master")
+          content = JSON.generate({ "3.0.0" => { "x64" => url } })
+          checker.check_json_urls_from_content("test.json", content, WINDOWS_TOOLCHAIN_URL_PREFIXES)
+          assert_equal 1, checker.errors.length, "Expected path traversal URL to be rejected: #{url}"
+        end
+      end
+
+      def test_malformed_urls_are_rejected
+        malformed_urls = [
+          "https://evil.com/file\x00.exe",  # null byte causes URI::InvalidURIError
+          "not a url at all",               # not a valid URI
+          "https://github.com/ruby/setup-msys2-gcc/releases/\x00malware.exe",  # matches allowed prefix but malformed
+        ]
+        malformed_urls.each do |url|
+          checker = AutomergeCheck.new("master")
+          content = JSON.generate({ "3.0.0" => { "x64" => url } })
+          checker.check_json_urls_from_content("test.json", content, WINDOWS_TOOLCHAIN_URL_PREFIXES)
+          assert_equal 1, checker.errors.length, "Expected malformed URL to be rejected: #{url.inspect}"
+          assert_match(/invalid URL/, checker.errors.first)
+        end
       end
 
       def test_read_file_at_ref_returns_nil_for_missing_file
