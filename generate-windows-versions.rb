@@ -2,6 +2,31 @@ require 'open-uri'
 require 'yaml'
 require 'json'
 
+# General rules:
+# - All the static parts of the expected URL are checked literally.
+# - Don't forget to escape dot (`.`) and other special characters when used literally.
+# - Each path component must begin with [\w], or a more restrictive character set.
+# - Percent (`%`) shall not be allowed to avoid any percent encoding.
+WINDOWS_VERSIONS_URLS_REGEXPS = [
+  %r{^https://github\.com/oneclick/rubyinstaller2?/releases/download/\w[\w.-]*/\w[\w.-]*$},
+  %r{^https://github\.com/MSP-Greg/ruby-loco/releases/download/\w[\w.-]*/\w[\w.-]*$}
+].freeze
+
+WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS = [
+  %r{^https://github\.com/oneclick/rubyinstaller/releases/download/devkit-4\.7\.2/DevKit-mingw64-64-4\.7\.2-20130224-1432-sfx\.exe$},
+  %r{^https://github\.com/ruby/setup-msys2-gcc/releases/download/\w[\w.-]*/\w[\w@.-]*$},
+  %r{^https://github\.com/ruby/setup-msys2-gcc/releases/latest/download/\w[\w@.-]*$}
+].freeze
+
+# Validate all the URLs in the versions json
+def validate(versions, allowed_urls_regexps)
+  versions.values.flat_map(&:values).each do |url|
+    if allowed_urls_regexps.none? { |regexp| regexp =~ url }
+      raise SecurityError, "Unexpected URL: #{url}"
+    end
+  end
+end
+
 min_requirements = ['~> 2.0.0', '~> 2.1.9', '>= 2.2.6'].map { |req| Gem::Requirement.new(req) }
 
 url = 'https://raw.githubusercontent.com/oneclick/rubyinstaller.org-website/master/_data/downloads.yaml'
@@ -48,6 +73,7 @@ versions['ucrt'] = {
   'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-ucrt.7z'
 }
 
+validate(versions, WINDOWS_VERSIONS_URLS_REGEXPS)
 File.binwrite 'windows-versions.json', "#{JSON.pretty_generate(versions)}\n"
 
 base_url = 'https://github.com/ruby/setup-msys2-gcc/releases/latest/download/windows-toolchain.json'
@@ -90,4 +116,5 @@ versions.each do |raw_version, archs|
   end
 end
 
+validate(versions, WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS)
 File.binwrite 'windows-toolchain-versions.json', "#{JSON.pretty_generate(versions)}\n"
