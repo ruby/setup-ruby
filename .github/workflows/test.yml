@@ -369,6 +369,17 @@ jobs:
       - name: C:/msys64/mingw64/bin/gcc.exe not installed
         run: ruby -e "abort if File.exist?('C:/msys64/mingw64/bin/gcc.exe')"
 
+  validate-windows-versions:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: ./
+      with:
+        ruby-version: ruby
+    - run: ruby generate-windows-versions.rb
+    - name: Check generated files are up to date
+      run: git diff --exit-code
+
   lint:
     runs-on: ubuntu-22.04
     steps:
