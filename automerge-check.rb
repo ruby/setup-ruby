@@ -90,8 +90,10 @@ class AutomergeCheck
 
   def canonicalize_url(url)
     uri = URI.parse(url)
-    # Normalize path to resolve . and .. segments
-    uri.path = File.expand_path(uri.path) if uri.path
+    if uri.path
+      decoded_path = URI.decode_www_form_component(uri.path)
+      uri.path = File.expand_path(decoded_path)
+    end
     uri.to_s
   end
 
@@ -235,10 +237,10 @@ if __FILE__ == $0
       end
 
       def test_path_traversal_urls_are_rejected
-        # These URLs pass the prefix check but resolve to different locations after canonicalization
         malicious_urls = [
           "https://github.com/ruby/setup-msys2-gcc/releases/../../evil-repo/releases/download/malware.exe",
           "https://github.com/ruby/setup-msys2-gcc/releases/./../../evil-repo/releases/download/malware.exe",
+          "https://github.com/ruby/setup-msys2-gcc/releases/%2E%2E/%2E%2E/evil-repo/releases/download/malware.exe",
         ]
         malicious_urls.each do |url|
           checker = AutomergeCheck.new("master")
