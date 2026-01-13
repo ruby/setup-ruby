@@ -370,6 +370,7 @@ jobs:
         run: ruby -e "abort if File.exist?('C:/msys64/mingw64/bin/gcc.exe')"
 
   validate-windows-versions:
+    name: "Check windows*versions.json are up-to-date"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -380,7 +381,8 @@ jobs:
     - name: Check generated files are up to date
       run: git diff --exit-code
 
-  lint:
+  check-dist-index:
+    name: "Check dist/index.js is up-to-date"
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v6
