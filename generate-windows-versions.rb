@@ -4,18 +4,18 @@ require 'json'
 
 # General rules:
 # - All the static parts of the expected URL are checked literally.
-# - Don't forget to escape dot (`.`) and other special characters when used literally.
 # - Each path component must begin with [\w], or a more restrictive character set.
 # - Percent (`%`) shall not be allowed to avoid any percent encoding.
 WINDOWS_VERSIONS_URLS_REGEXPS = [
-  %r{\Ahttps://github\.com/oneclick/rubyinstaller2?/releases/download/\w[\w.-]*/\w[\w.-]*\z},
-  %r{\Ahttps://github\.com/MSP-Greg/ruby-loco/releases/download/\w[\w.-]*/\w[\w.-]*\z}
+  %r{\A#{Regexp.escape 'https://github.com/oneclick/rubyinstaller/releases/download'}/\w[\w.-]*/\w[\w.-]*\z},
+  %r{\A#{Regexp.escape 'https://github.com/oneclick/rubyinstaller2/releases/download'}/\w[\w.-]*/\w[\w.-]*\z},
+  %r{\A#{Regexp.escape 'https://github.com/MSP-Greg/ruby-loco/releases/download'}/\w[\w.-]*/\w[\w.-]*\z}
 ].freeze
 
 WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS = [
-  %r{\Ahttps://github\.com/oneclick/rubyinstaller/releases/download/devkit-4\.7\.2/DevKit-mingw64-64-4\.7\.2-20130224-1432-sfx\.exe\z},
-  %r{\Ahttps://github\.com/ruby/setup-msys2-gcc/releases/download/\w[\w.-]*/\w[\w@.-]*\z},
-  %r{\Ahttps://github\.com/ruby/setup-msys2-gcc/releases/latest/download/\w[\w@.-]*\z}
+  %r{\A#{Regexp.escape 'https://github.com/oneclick/rubyinstaller/releases/download/devkit-4.7.2/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'}\z},
+  %r{\A#{Regexp.escape 'https://github.com/ruby/setup-msys2-gcc/releases/download'}/\w[\w.-]*/\w[\w@.-]*\z},
+  %r{\A#{Regexp.escape 'https://github.com/ruby/setup-msys2-gcc/releases/latest/download'}/\w[\w@.-]*\z}
 ].freeze
 
 # Validate all the URLs in the versions json
