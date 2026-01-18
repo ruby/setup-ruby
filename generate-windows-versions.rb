@@ -21,7 +21,7 @@ WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS = [
 # Validate all the URLs in the versions json
 def validate(versions, allowed_urls_regexps)
   versions.values.flat_map(&:values).each do |url|
-    if allowed_urls_regexps.none? { |regexp| regexp.match? url }
+    if allowed_urls_regexps.none? { |regexp| regexp.match? url.to_s }
       raise SecurityError, "Unexpected URL: #{url}"
     end
   end
