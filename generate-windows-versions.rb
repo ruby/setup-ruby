@@ -21,7 +21,7 @@ WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS = [
 # Validate all the URLs in the versions json
 def validate(versions, allowed_urls_regexps)
   versions.values.flat_map(&:values).each do |url|
-    if allowed_urls_regexps.none? { |regexp| regexp.match? url.to_s }
+    if allowed_urls_regexps.none? { |regexp| regexp.match? url }
       raise SecurityError, "Unexpected URL: #{url}"
     end
   end
@@ -112,7 +112,7 @@ versions.each do |raw_version, archs|
       raise "#{toolchain.empty? ? 'no' : 'multiple'} toolchains found for #{raw_version} #{raw_arch}: #{toolchain}"
     end
 
-    archs[raw_arch] = URI.join(base_url, toolchain.first[:href])
+    archs[raw_arch] = URI.join(base_url, toolchain.first[:href]).to_s
   end
 end
 
