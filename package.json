@@ -28,6 +28,7 @@
     "@actions/io": "^2.0.0",
     "@actions/tool-cache": "^3.0.0",
     "linux-os-info": "^2.0.0",
+    "minimatch": "^3.0.4",
     "semver": "^7.7.3",
     "uuid": "^11.1.0"
   },
