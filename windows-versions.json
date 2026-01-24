@@ -206,6 +206,9 @@
   "3.2.9": {
     "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.9-1/rubyinstaller-3.2.9-1-x64.7z"
   },
+  "3.2.10": {
+    "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.10-1/rubyinstaller-3.2.10-1-x64.7z"
+  },
   "3.3.0": {
     "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.0-1/rubyinstaller-3.3.0-1-x64.7z"
   },
@@ -236,6 +239,9 @@
   "3.3.9": {
     "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.9-1/rubyinstaller-3.3.9-1-x64.7z"
   },
+  "3.3.10": {
+    "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.10-1/rubyinstaller-3.3.10-1-x64.7z"
+  },
   "3.4.1": {
     "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.1-2/rubyinstaller-3.4.1-2-arm.7z",
     "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.1-2/rubyinstaller-3.4.1-2-x64.7z"
@@ -263,6 +269,18 @@
   "3.4.7": {
     "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.7-1/rubyinstaller-3.4.7-1-arm.7z",
     "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.7-1/rubyinstaller-3.4.7-1-x64.7z"
+  },
+  "3.4.8": {
+    "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.8-1/rubyinstaller-3.4.8-1-arm.7z",
+    "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.8-1/rubyinstaller-3.4.8-1-x64.7z"
+  },
+  "4.0.0": {
+    "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-4.0.0-1/rubyinstaller-4.0.0-1-arm.7z",
+    "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-4.0.0-1/rubyinstaller-4.0.0-1-x64.7z"
+  },
+  "4.0.1": {
+    "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-4.0.1-1/rubyinstaller-4.0.1-1-arm.7z",
+    "x64": "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-4.0.1-1/rubyinstaller-4.0.1-1-x64.7z"
   },
   "head": {
     "arm64": "https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-arm.7z",

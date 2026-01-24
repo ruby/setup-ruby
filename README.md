@@ -15,10 +15,10 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 
 | Interpreter | Versions |
 | ----------- | -------- |
-| `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 3.5.0-preview1, head, debug, mingw, mswin, ucrt |
+| `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 4.0.1, head, debug, mingw, mswin, ucrt |
 | `jruby` | 9.1.17.0 - 10.0.2.0, head |
-| `truffleruby` | 19.3.0 - 25.0.0, head |
-| `truffleruby+graalvm` | 21.2.0 - 25.0.0, head |
+| `truffleruby` | 19.3.0 - 33.0.1, head |
+| `truffleruby+graalvm` | 21.2.0 - 33.0.1, head |
 
 `ruby-debug` is the same as `ruby-head` but with assertions enabled (`-DRUBY_DEBUG=1`).
 
@@ -26,7 +26,7 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 Native extensions are automatically compiled with AddressSanitizer when using `ruby-asan`.
 `ruby-asan` is currently only available on `ubuntu-24.04`.
 
-`ruby-3.4-asan` is similar to `ruby-asan` but built from the latest stable 3.4 release tag.
+`asan-release` is similar to `ruby-asan` but built from the latest stable release tag.
 Like `ruby-asan`, it's currently only available on `ubuntu-24.04`.
 
 Regarding Windows ruby master builds, `mingw` is a MSYS2/MinGW build, `head` & `ucrt` are MSYS2/UCRT64
@@ -50,7 +50,7 @@ The action works on these [GitHub-hosted runners](https://docs.github.com/en/act
 | Operating System | Supported |
 | ---------------- | --------- |
 | Ubuntu  | `ubuntu-22.04`, `ubuntu-24.04`, `ubuntu-22.04-arm`, `ubuntu-24.04-arm` |
-| macOS   | `macos-13` and newer versions |
+| macOS   | `macos-14` and newer versions |
 | Windows | `windows-2022`, `windows-2025`, `windows-11-arm` |
 
 Not all combinations of runner images and versions are supported.
@@ -229,6 +229,22 @@ if you have already used it before.)
 It is also possible to cache gems manually, but this is not recommended because it is verbose and *very difficult* to do correctly.
 There are many concerns which means using `actions/cache` is never enough for caching gems (e.g., incomplete cache key, cleaning old gems when restoring from another key, correctly hashing the lockfile if not checked in, OS versions, ABI compatibility for `ruby-head`, etc).
 So, please use `bundler-cache: true` instead and report any issue.
+
+### Authentication Token
+
+By default, this action uses `${{ github.token }}` to authenticate when downloading Ruby release assets from GitHub.
+This helps avoid rate limiting issues.
+
+If you're running this action on a GitHub Enterprise Server (GHES) instance, or if you're experiencing rate limiting,
+you can provide a custom token:
+
+```yaml
+    - uses: ruby/setup-ruby@v1
+      with:
+        token: ${{ secrets.MY_GITHUB_TOKEN }}
+```
+
+In most cases, you don't need to set this input as the default value is sufficient for use on github.com.
 
 ## Windows
 

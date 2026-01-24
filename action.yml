@@ -44,6 +44,12 @@ inputs:
       It also sets environment variables using 'ridk' or 'vcvars64.bat' based on the selected Ruby.
       At present, the only other setting than 'default' is 'none', which only adds Ruby to PATH.
       No build tools or packages are installed, nor are any ENV setting changed to activate them.
+  token:
+    description: |
+      Used to authenticate with GitHub when downloading Ruby release assets.
+      When running this action on github.com, the default value is sufficient.
+      When running on GHES, you can pass a personal access token for github.com if you are experiencing rate limiting.
+    default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
 
 outputs:
   ruby-prefix:
