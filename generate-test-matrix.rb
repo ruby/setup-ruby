@@ -18,16 +18,14 @@ end
 
 # Runners
 runners = %w[
-  macos-14
-  macos-15
-  macos-15-intel
-  ubuntu-22.04
-  ubuntu-24.04
+  warp-macos-14-arm64-6x
+  warp-macos-15-arm64-6x
+  warp-ubuntu-2204-x64-2x
+  warp-ubuntu-2404-x64-2x
   ubuntu-22.04-arm
-  ubuntu-24.04-arm
-  windows-2022
-  windows-2025
-  windows-11-arm
+  warp-ubuntu-2404-arm64-2x
+  warp-windows-2022-x64-4x
+  warp-windows-2025-x64-4x
 ].freeze
 
 macos_runners = runners.select { |runner| runner.start_with?('macos-') }
