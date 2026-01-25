@@ -28,13 +28,13 @@ runners = %w[
   warp-windows-2025-x64-4x
 ].freeze
 
-macos_runners = runners.select { |runner| runner.start_with?('macos-') }
-ubuntu_runners = runners.select { |runner| runner.start_with?('ubuntu-') }
-windows_runners, non_windows_runners = runners.partition { |runner| runner.start_with?('windows-') }
+macos_runners = runners.select { |runner| runner.include?('macos') }
+ubuntu_runners = runners.select { |runner| runner.include?('ubuntu') }
+windows_runners, non_windows_runners = runners.partition { |runner| runner.include?('windows') }
 
-macos_arm64_runners, _macos_x64_runners = macos_runners.partition { |runner| !runner.end_with?('-intel')}
-ubuntu_arm64_runners, ubuntu_x64_runners = ubuntu_runners.partition { |runner| runner.end_with?('-arm')}
-windows_arm64_runners, windows_x64_runners = windows_runners.partition { |runner| runner.end_with?('-arm') }
+macos_arm64_runners, _macos_x64_runners = macos_runners.partition { |runner| runner.include?('arm64') }
+ubuntu_arm64_runners, ubuntu_x64_runners = ubuntu_runners.partition { |runner| runner.include?('arm') }
+windows_arm64_runners, windows_x64_runners = windows_runners.partition { |runner| runner.include?('arm64') }
 
 # Versions
 ruby_builder_versions = JSON.load(File.read('ruby-builder-versions.json'))
@@ -62,7 +62,7 @@ asan_versions = %w[asan-release asan]
 matrix += ubuntu_x64_runners.sort.last(1).product(asan_versions)
 
 # https://github.com/ruby/setup-ruby/pull/596#discussion_r1606047680
-matrix -= (ubuntu_runners - %w[ubuntu-22.04]).product(%w[1.9])
+matrix -= (ubuntu_runners.reject { |r| r.include?('22.04') || r.include?('2204') }).product(%w[1.9])
 # https://github.com/ruby/setup-ruby/issues/496
 matrix -= ubuntu_runners.product(%w[2.2])
 # These old Rubies fail to compile on macOS arm64
