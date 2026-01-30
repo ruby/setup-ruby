@@ -130,7 +130,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
   } else if (rubyVersion === 'mise.toml') { // Read from mise.toml
     const toolVersions = fs.readFileSync('mise.toml', 'utf8').trim()
-    const regexp = /^ruby\s*=\s*['"](.+)['"]$/
+    const regexp = /^\s*ruby\s*=\s*['"]([^'"]+)['"]\s*(?:#.*)?$/
     const rubyLine = toolVersions.split(/\r?\n/).filter(e => regexp.test(e))[0]
     rubyVersion = rubyLine.match(regexp)[1]
     console.log(`Using ${rubyVersion} as input from file mise.toml`)
