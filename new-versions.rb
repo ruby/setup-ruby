@@ -6,11 +6,6 @@ versions.each do |engine_version|
   engine, version = engine_version.split('-', 2)
   p [engine, version]
 
-  if engine == 'windows'
-    require_relative 'generate-windows-versions'
-    exit
-  end
-
   match = case engine
   when 'ruby', 'jruby'
     /^\d+\.\d+\./
