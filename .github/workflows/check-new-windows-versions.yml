@@ -14,9 +14,6 @@ jobs:
 
     - run: ruby generate-windows-versions.rb
 
-    - name: TODO for testing
-      run: echo >> windows-versions.json
-
     - id: diff
       run: git diff --exit-code
       continue-on-error: true
@@ -35,7 +32,11 @@ jobs:
         committer: ruby-builder-bot <98265520+ruby-builder-bot@users.noreply.github.com>
         title: Update CRuby releases on Windows
         commit-message: Update CRuby releases on Windows
-        body: Automated PR (testing)
+        body: |
+          Automated PR from the check-new-windows-versions.yml workflow.
+
+          @eregon @larskanis Please merge this PR if the diff looks correct.
+          And then release setup-ruby by [running the release workflow](https://github.com/ruby/setup-ruby/actions/workflows/release.yml).
         branch: windows
         delete-branch: true
         token: ${{ secrets.PR_FROM_RUBY_BUILDER_TOKEN }}
