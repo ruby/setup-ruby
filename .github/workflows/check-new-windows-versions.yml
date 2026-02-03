@@ -35,7 +35,7 @@ jobs:
         body: |
           Automated PR from the check-new-windows-versions.yml workflow.
 
-          @eregon @larskanis Please merge this PR if the diff looks correct.
+          @eregon @larskanis Please merge this PR if the diff is correct.
           And then release setup-ruby by [running the release workflow](https://github.com/ruby/setup-ruby/actions/workflows/release.yml).
         branch: windows
         delete-branch: true
