@@ -92443,6 +92443,7 @@ const inputDefaults = {
   'rubygems': 'default',
   'bundler': 'Gemfile.lock',
   'bundler-cache': 'false',
+  'setup-script': '',
   'working-directory': '.',
   'cache-version': bundler.DEFAULT_CACHE_VERSION,
   'self-hosted': 'false',
@@ -92525,6 +92526,15 @@ async function setupRuby(options = {}) {
   if (inputs['bundler'] !== 'none') {
     bundlerVersion = await common.measure('Installing Bundler', async () =>
       bundler.installBundler(inputs['bundler'], rubygemsInputSet, lockFile, platform, rubyPrefix, engine, version))
+  }
+
+  if (inputs['setup-script'] !== '') {
+    await common.measure('Running setup script', async () => {
+      const lines = inputs['setup-script'].split(/\r?\n/)
+      for (const line of lines) {
+        await exec.exec(line)
+      }
+    })
   }
 
   if (inputs['bundler-cache'] === 'true') {
