@@ -300,6 +300,7 @@ Please [update](https://github.com/ruby/setup-ruby/releases/tag/v1.13.0) if you 
 
 ## Credits
 
-The current maintainer of this action is @eregon.
+The creator of this action is @eregon.
+The current maintainers are @eregon @MSP-Greg @ntkme.
 Most of the Windows logic is based on work by MSP-Greg.
 Many thanks to MSP-Greg and Lars Kanis for the help with Ruby Installer.
