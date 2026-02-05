@@ -13,9 +13,11 @@ const linuxOSInfo = require('linux-os-info')
 export const windows = (os.platform() === 'win32')
 // Extract to SSD on Windows, see https://github.com/ruby/setup-ruby/pull/14
 export const drive = (windows ? (process.env['RUNNER_TEMP'] || 'C')[0] : undefined)
+const PATH_ENV_VAR = windows ? 'Path' : 'PATH'
 
 export const inputs = {
-  selfHosted: undefined
+  selfHosted: undefined,
+  token: undefined
 }
 
 export function partition(string, separator) {
@@ -67,8 +69,8 @@ export async function time(name, block) {
 }
 
 export function isHeadVersion(rubyVersion) {
-  // 3.4-asan counts as "head" because the version cannot be selected -- you can only get whatever's latest
-  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan', '3.4-asan'].includes(rubyVersion)
+  // asan-release counts as "head" because the version cannot be selected -- you can only get whatever's latest
+  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan', 'asan-release'].includes(rubyVersion)
 }
 
 export function isStableVersion(engine, rubyVersion) {
@@ -80,7 +82,7 @@ export function isStableVersion(engine, rubyVersion) {
 }
 
 export function hasBundlerDefaultGem(engine, rubyVersion) {
-  return isBundler1Default(engine, rubyVersion) || isBundler2Default(engine, rubyVersion)
+  return isBundler1Default(engine, rubyVersion) || isBundler2PlusDefault(engine, rubyVersion)
 }
 
 export function isBundler1Default(engine, rubyVersion) {
@@ -95,7 +97,7 @@ export function isBundler1Default(engine, rubyVersion) {
   }
 }
 
-export function isBundler2Default(engine, rubyVersion) {
+export function isBundler2PlusDefault(engine, rubyVersion) {
   if (engine === 'ruby') {
     return floatVersion(rubyVersion) >= 2.7
   } else if (engine.startsWith('truffleruby')) {
@@ -107,7 +109,7 @@ export function isBundler2Default(engine, rubyVersion) {
   }
 }
 
-export function isBundler2dot2Default(engine, rubyVersion) {
+export function isBundler2dot2PlusDefault(engine, rubyVersion) {
   if (engine === 'ruby') {
     return floatVersion(rubyVersion) >= 3.0
   } else if (engine.startsWith('truffleruby')) {
@@ -117,6 +119,13 @@ export function isBundler2dot2Default(engine, rubyVersion) {
   } else {
     return false
   }
+}
+
+const UNKNOWN_TARGET_RUBY_VERSION = 9.9
+
+export function isBundler4PlusDefault(engine, rubyVersion) {
+  const version = targetRubyVersion(engine, rubyVersion)
+  return version != UNKNOWN_TARGET_RUBY_VERSION && version >= 4.0
 }
 
 export function targetRubyVersion(engine, rubyVersion) {
@@ -132,6 +141,8 @@ export function targetRubyVersion(engine, rubyVersion) {
       return 2.6
     } else if (version === 9.4) {
       return 3.1
+    } else if (version === 10.0) {
+      return 3.4
     }
   } else if (engine.startsWith('truffleruby')) {
     if (version < 21.0) {
@@ -147,11 +158,11 @@ export function targetRubyVersion(engine, rubyVersion) {
     }
   }
 
-  return 9.9 // unknown, assume recent
+  return UNKNOWN_TARGET_RUBY_VERSION // unknown, assume recent
 }
 
 export function floatVersion(rubyVersion) {
-  const match = rubyVersion.match(/^\d+\.\d+/)
+  const match = rubyVersion.match(/^\d+(\.\d+|$)/)
   if (match) {
     return parseFloat(match[0])
   } else if (isHeadVersion(rubyVersion)) {
@@ -356,23 +367,22 @@ export function win2nix(path) {
 }
 
 export function setupPath(newPathEntries) {
-  const envPath = windows ? 'Path' : 'PATH'
-  const originalPath = process.env[envPath].split(path.delimiter)
+  const originalPath = process.env[PATH_ENV_VAR].split(path.delimiter)
   let cleanPath = originalPath.filter(entry => !/\bruby\b/i.test(entry))
 
-  core.group(`Modifying ${envPath}`, async () => {
+  core.group(`Modifying ${PATH_ENV_VAR}`, async () => {
     // First remove the conflicting path entries
     if (cleanPath.length !== originalPath.length) {
-      console.log(`Entries removed from ${envPath} to avoid conflicts with default Ruby:`)
+      console.log(`Entries removed from ${PATH_ENV_VAR} to avoid conflicts with default Ruby:`)
       for (const entry of originalPath) {
         if (!cleanPath.includes(entry)) {
           console.log(`  ${entry}`)
         }
       }
-      core.exportVariable(envPath, cleanPath.join(path.delimiter))
+      core.exportVariable(PATH_ENV_VAR, cleanPath.join(path.delimiter))
     }
 
-    console.log(`Entries added to ${envPath} to use selected Ruby:`)
+    console.log(`Entries added to ${PATH_ENV_VAR} to use selected Ruby:`)
     for (const entry of newPathEntries) {
       console.log(`  ${entry}`)
     }
@@ -406,14 +416,17 @@ export async function setupJavaHome(rubyPrefix) {
       // JAVA_HOME_21_X64 - https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#java
       let newHomeVar = `JAVA_HOME_21_${arch}`
       let newHome = process.env[newHomeVar]
+      let bin = path.join(newHome, 'bin')
 
       if (newHome === "undefined") {
         throw new Error(`JAVA_HOME is not Java 21+ needed for JRuby and \$${newHomeVar} is not defined`)
       }
 
       console.log(`Setting JAVA_HOME to ${newHomeVar} path ${newHome}`)
-
       core.exportVariable("JAVA_HOME", newHome)
+
+      console.log(`Adding ${bin} to ${PATH_ENV_VAR}`)
+      core.addPath(bin)
     }
   })
 }
@@ -428,4 +441,9 @@ export function isExactCacheKeyMatch(key, cacheKey) {
           sensitivity: 'accent'
       }) === 0
   );
+}
+
+export async function download(url) {
+  const auth = inputs.token ? `token ${inputs.token}` : undefined
+  return await tc.downloadTool(url, undefined, auth)
 }

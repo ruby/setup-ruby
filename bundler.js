@@ -1,4 +1,5 @@
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 const core = require('@actions/core')
 const exec = require('@actions/exec')
@@ -66,17 +67,15 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
     }
   }
 
-  const floatVersion = common.floatVersion(rubyVersion)
-
   if (bundlerVersion === 'default') {
-    if (common.isBundler2dot2Default(engine, rubyVersion)) {
+    if (common.isBundler2dot2PlusDefault(engine, rubyVersion)) {
       if (common.windows && engine === 'ruby' && (common.isStableVersion(engine, rubyVersion) || rubyVersion === 'head')) {
         // https://github.com/ruby/setup-ruby/issues/371
         console.log(`Installing latest Bundler for ${engine}-${rubyVersion} on Windows because bin/bundle does not work in bash otherwise`)
         bundlerVersion = 'latest'
       } else {
-        console.log(`Using Bundler 2 shipped with ${engine}-${rubyVersion}`)
-        return '2'
+        console.log(`Using Bundler shipped with ${engine}-${rubyVersion}`)
+        return common.isBundler4PlusDefault(engine, rubyVersion) ? '4' : '2'
       }
     } else if (common.hasBundlerDefaultGem(engine, rubyVersion)) {
       // Those Rubies have a old Bundler default gem < 2.2 which does not work well for `gem 'foo', github: 'foo/foo'`:
@@ -89,8 +88,15 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
     }
   }
 
+  const targetRubyVersion = common.targetRubyVersion(engine, rubyVersion)
+
   if (bundlerVersion === 'latest') {
-    bundlerVersion = '2'
+    // Bundler 4 requires Ruby 3.2+
+    if (targetRubyVersion < 3.2) {
+      bundlerVersion = '2'
+    } else {
+      bundlerVersion = '4'
+    }
   }
 
   if (isValidBundlerVersion(bundlerVersion)) {
@@ -99,24 +105,29 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
     throw new Error(`Cannot parse bundler input: ${bundlerVersion}`)
   }
 
-  // Use Bundler 1 when we know Bundler 2 does not work
-  if (bundlerVersion.startsWith('2')) {
-    if (engine === 'ruby' && floatVersion <= 2.2) {
-      console.log('Bundler 2 requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2')
+  // Only use Bundler 4 on Ruby 3.2+
+  if (common.floatVersion(bundlerVersion) >= 4 && targetRubyVersion < 3.2) {
+    console.log('Bundler 4 requires Ruby 3.2+, using Bundler 2 instead on Ruby < 3.2')
+    bundlerVersion = '2'
+  }
+
+  // Use Bundler 1 when we know Bundler 2+ does not work
+  if (common.floatVersion(bundlerVersion) >= 2) {
+    if (engine === 'ruby' && targetRubyVersion <= 2.2) {
+      console.log(`Bundler 2+ requires Ruby 2.3+, using Bundler 1 on Ruby <= 2.2`)
       bundlerVersion = '1'
     } else if (engine === 'ruby' && /^2\.3\.[01]/.test(rubyVersion)) {
       console.log('Ruby 2.3.0 and 2.3.1 have shipped with an old rubygems that only works with Bundler 1')
       bundlerVersion = '1'
     } else if (engine === 'jruby' && rubyVersion.startsWith('9.1')) { // JRuby 9.1 targets Ruby 2.3, treat it the same
-      console.log('JRuby 9.1 has a bug with Bundler 2 (https://github.com/ruby/setup-ruby/issues/108), using Bundler 1 instead on JRuby 9.1')
+      console.log('JRuby 9.1 has a bug with Bundler 2+ (https://github.com/ruby/setup-ruby/issues/108), using Bundler 1 instead on JRuby 9.1')
       bundlerVersion = '1'
     }
   }
 
-  const targetRubyVersion = common.targetRubyVersion(engine, rubyVersion)
   // Use Bundler 2.3 when we use Ruby 2.3.2 - 2.5
   // Use Bundler 2.4 when we use Ruby 2.6-2.7
-  if (bundlerVersion == '2') {
+  if (bundlerVersion === '2') {
     if (targetRubyVersion <= 2.5) { // < 2.3.2 already handled above
       console.log('Ruby 2.3.2 - 2.5 only works with Bundler 2.3')
       bundlerVersion = '2.3'
@@ -136,6 +147,14 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   return bundlerVersion
 }
 
+function bundlerConfigSetArgs(bundlerVersion, key, value) {
+  if (bundlerVersion.startsWith('1')) {
+    return ['config', '--local', key, value]
+  } else {
+    return ['config', 'set', '--local', key, value]
+  }
+}
+
 export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion) {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
@@ -143,10 +162,10 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   }
 
   let envOptions = {}
-  if (bundlerVersion.startsWith('1') && common.isBundler2Default(engine, rubyVersion)) {
-    // If Bundler 1 is specified on Rubies which ship with Bundler 2,
-    // we need to specify which Bundler version to use explicitly until the lockfile exists.
-    console.log(`Setting BUNDLER_VERSION=${bundlerVersion} for "bundle config|lock" commands below to ensure Bundler 1 is used`)
+  if (bundlerVersion.match(/^\d+/)) {
+    // If a specific Bundler version is given or determined, we need to specify the version to use explicitly until the lockfile exists.
+    // Otherwise, a newer version of Bundler might be used.
+    console.log(`Setting BUNDLER_VERSION=${bundlerVersion} for "bundle config|lock" commands below to ensure Bundler ${bundlerVersion} is used`)
     envOptions = { env: { ...process.env, BUNDLER_VERSION: bundlerVersion } }
   }
 
@@ -155,10 +174,10 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   // An absolute path, so it is reliably under $PWD/vendor/bundle, and not relative to the gemfile's directory
   const bundleCachePath = path.join(process.cwd(), cachePath)
 
-  await exec.exec('bundle', ['config', '--local', 'path', bundleCachePath], envOptions)
+  await exec.exec('bundle', bundlerConfigSetArgs(bundlerVersion, 'path', bundleCachePath), envOptions)
 
   if (fs.existsSync(lockFile)) {
-    await exec.exec('bundle', ['config', '--local', 'deployment', 'true'], envOptions)
+    await exec.exec('bundle', bundlerConfigSetArgs(bundlerVersion, 'deployment', 'true'), envOptions)
   } else {
     // Generate the lockfile so we can use it to compute the cache key.
     // This will also automatically pick up the latest gem versions compatible with the Gemfile.
@@ -193,11 +212,14 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
     console.log(`Found cache for key: ${cachedKey}`)
   }
 
+  // Number of jobs should scale with runner, up to a point
+  const jobs = Math.min(os.availableParallelism(), 8)
   // Always run 'bundle install' to list the gems
-  await exec.exec('bundle', ['install', '--jobs', '4'])
+  await exec.exec('bundle', ['install', '--jobs', `${jobs}`])
 
   // @actions/cache only allows to save for non-existing keys
-  if (!common.isExactCacheKeyMatch(key, cachedKey)) {
+  // Also, skip saving cache for merge_group event
+  if (!common.isExactCacheKeyMatch(key, cachedKey) && process.env['GITHUB_EVENT_NAME'] !== 'merge_group') {
     if (cachedKey) { // existing cache but Gemfile.lock differs, clean old gems
       await exec.exec('bundle', ['clean'])
     }
