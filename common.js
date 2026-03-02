@@ -281,7 +281,7 @@ export function getOSNameVersionArch() {
 
 function findWindowsVersion() {
   const version = os.version()
-  const match = version.match(/^Windows(?: Server)? (\d+) (?:Datacenter|Enterprise)/)
+  const match = version.match(/^Windows(?: Server)? (\d+) (?:Standard|Datacenter|Enterprise)/)
   if (match) {
     return match[1]
   } else {
