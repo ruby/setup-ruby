@@ -92706,10 +92706,7 @@ function envPreInstall() {
   if (windows) {
     // puts normal Ruby temp folder on SSD
     core.exportVariable('TMPDIR', ENV['RUNNER_TEMP'])
-    // Use os.homedir() which calls the Windows API (SHGetFolderPath) directly.
-    // Env-based approaches (USERPROFILE, HOMEDRIVE+HOMEPATH) are unreliable on some
-    // runners (e.g. Blacksmith) where these vars are unset, causing NaN which
-    // JSON.stringify serializes to "null".
+    // bash - sets home to match native windows
     core.exportVariable('HOME', os.homedir())
     // bash - needed to maintain Path from Windows
     core.exportVariable('MSYS2_PATH_TYPE', 'inherit')
