@@ -1,0 +1,47 @@
+name: Check new RubyInstaller releases
+on:
+  schedule:
+  - cron: '0 7,19 * * *'
+  workflow_dispatch:
+
+jobs:
+  check_windows_versions:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - run: ruby generate-windows-versions.rb
+
+    - id: diff
+      run: git diff --exit-code
+      continue-on-error: true
+
+    - if: ${{ steps.diff.outcome == 'failure' }} # changed
+      run: ./pre-commit
+      shell: bash
+
+    # See https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#push-pull-request-branches-to-a-fork
+    - if: ${{ steps.diff.outcome == 'failure' }} # changed
+      uses: peter-evans/create-pull-request@v8
+      id: pr
+      with:
+        push-to-fork: ruby-builder-bot/setup-ruby
+        author: ruby-builder-bot <98265520+ruby-builder-bot@users.noreply.github.com>
+        committer: ruby-builder-bot <98265520+ruby-builder-bot@users.noreply.github.com>
+        title: Update CRuby releases on Windows
+        commit-message: Update CRuby releases on Windows
+        body: |
+          Automated PR from the check-new-windows-versions.yml workflow.
+
+          @eregon @larskanis Please merge this PR if the diff is correct.
+          And then release setup-ruby by [running the release workflow](https://github.com/ruby/setup-ruby/actions/workflows/release.yml).
+        branch: windows
+        delete-branch: true
+        token: ${{ secrets.PR_FROM_RUBY_BUILDER_TOKEN }}
+
+    - if: ${{ steps.diff.outcome == 'failure' }} # changed
+      name: PR URL
+      run: echo "${{ steps.pr.outputs.pull-request-url }}"
+      shell: bash

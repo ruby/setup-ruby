@@ -15,8 +15,8 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 
 | Interpreter | Versions |
 | ----------- | -------- |
-| `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 4.0.1, head, debug, mingw, mswin, ucrt |
-| `jruby` | 9.1.17.0 - 10.0.2.0, head |
+| `ruby` | 1.9.3, 2.0.0, 2.1.9, 2.2, all versions from 2.3.0 until 4.0.2, head, debug, mingw, mswin, ucrt |
+| `jruby` | 9.1.17.0 - 10.0.4.0, head |
 | `truffleruby` | 19.3.0 - 33.0.1, head |
 | `truffleruby+graalvm` | 21.2.0 - 33.0.1, head |
 
@@ -76,7 +76,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.4' # Not needed with a .ruby-version, .tool-versions or mise.toml
@@ -101,7 +101,7 @@ jobs:
         ruby: ['2.7', '3.0', '3.1', '3.2', '3.3', '3.4', head, jruby, jruby-head, truffleruby, truffleruby-head]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
@@ -124,7 +124,7 @@ jobs:
     env: # $BUNDLE_GEMFILE must be set at the job level, so it is set for all steps
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
@@ -257,8 +257,6 @@ It is recommended to first get your build working on Ubuntu and macOS before try
 * The `PATH` contains [multiple compiler toolchains](https://github.com/ruby/setup-ruby/issues/19). Use `where.exe` to debug which tool is used.
 * For Ruby ≥ 2.4, MSYS2 is prepended to the `Path`, similar to what RubyInstaller2 does.
 * For Ruby < 2.4, the DevKit MSYS tools are installed and prepended to the `Path`.
-* Use JRuby 9.2.20+ on Windows (older versions have [bugs](https://github.com/ruby/setup-ruby/issues/18#issuecomment-889072695)).
-* JRuby on Windows has multiple issues ([jruby/jruby#7106](https://github.com/jruby/jruby/issues/7106), [jruby/jruby#7182](https://github.com/jruby/jruby/issues/7182)).
 * When compiling extension code, note that the packages required to build Ruby are included when using Windows 2022. Additional packages can be installed with [setup-ruby-pkgs](https://github.com/ruby/setup-ruby-pkgs) or via MSYS2's `pacman`. These packages may be required when installing or updating Ruby stdlib extension gems.
 
 ## Versioning
@@ -300,6 +298,7 @@ Please [update](https://github.com/ruby/setup-ruby/releases/tag/v1.13.0) if you 
 
 ## Credits
 
-The current maintainer of this action is @eregon.
+The creator of this action is @eregon.
+The current maintainers are @eregon @MSP-Greg @ntkme.
 Most of the Windows logic is based on work by MSP-Greg.
 Many thanks to MSP-Greg and Lars Kanis for the help with Ruby Installer.

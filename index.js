@@ -130,7 +130,7 @@ function parseRubyEngineAndVersion(rubyVersion) {
     console.log(`Using ${rubyVersion} as input from file .tool-versions`)
   } else if (rubyVersion === 'mise.toml') { // Read from mise.toml
     const toolVersions = fs.readFileSync('mise.toml', 'utf8').trim()
-    const regexp = /^ruby\s*=\s*['"](.+)['"]$/
+    const regexp = /^\s*ruby\s*=\s*['"]([^'"]+)['"]\s*(?:#.*)?$/
     const rubyLine = toolVersions.split(/\r?\n/).filter(e => regexp.test(e))[0]
     rubyVersion = rubyLine.match(regexp)[1]
     console.log(`Using ${rubyVersion} as input from file mise.toml`)
@@ -219,8 +219,8 @@ function envPreInstall() {
   if (windows) {
     // puts normal Ruby temp folder on SSD
     core.exportVariable('TMPDIR', ENV['RUNNER_TEMP'])
-    // bash - sets home to match native windows, normally C:\Users\<user name>
-    core.exportVariable('HOME', ENV['HOMEDRIVE'] + ENV['HOMEPATH'])
+    // bash - sets home to match native windows
+    core.exportVariable('HOME', os.homedir())
     // bash - needed to maintain Path from Windows
     core.exportVariable('MSYS2_PATH_TYPE', 'inherit')
   }
