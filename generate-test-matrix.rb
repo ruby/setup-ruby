@@ -33,6 +33,7 @@ runners = %w[
 macos_runners = runners.select { |runner| runner.start_with?('macos-') }
 ubuntu_runners = runners.select { |runner| runner.start_with?('ubuntu-') }
 windows_runners, non_windows_runners = runners.partition { |runner| runner.start_with?('windows-') }
+macos_intel_runners = runners.grep(/macos.+intel/)
 
 macos_arm64_runners, _macos_x64_runners = macos_runners.partition { |runner| !runner.end_with?('-intel')}
 ubuntu_arm64_runners, ubuntu_x64_runners = ubuntu_runners.partition { |runner| runner.end_with?('-arm')}
@@ -73,5 +74,7 @@ matrix -= macos_arm64_runners.product(%w[1.9 2.0 2.1 2.2 2.3 2.4 2.5])
 matrix -= ubuntu_arm64_runners.product(%w[1.9 2.0 2.1 2.2])
 # RubyInstaller windows-arm64 builds only exist for Ruby 3.4+
 matrix -= windows_arm64_runners.product(%w[2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 3.0 3.1 3.2 3.3])
+# TruffleRuby 34+ does not support macOS Intel
+matrix -= macos_intel_runners.product(%w[truffleruby-head truffleruby+graalvm-head])
 
 puts(JSON.generate(matrix.sort.map { |os, ruby| { os:, ruby: } }))
