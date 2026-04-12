@@ -53,7 +53,7 @@ matrix += runners.product(jruby_versions)
 
 # truffleruby: latest release + head
 truffleruby_versions = %w[truffleruby truffleruby-head truffleruby+graalvm truffleruby+graalvm-head]
-matrix += non_windows_runners.product(truffleruby_versions)
+matrix += (macos_arm64_runners + ubuntu_runners).product(truffleruby_versions)
 
 # ruby-loco: head
 ruby_loco_versions = %w[mingw mswin ucrt]
@@ -73,7 +73,5 @@ matrix -= macos_arm64_runners.product(%w[1.9 2.0 2.1 2.2 2.3 2.4 2.5])
 matrix -= ubuntu_arm64_runners.product(%w[1.9 2.0 2.1 2.2])
 # RubyInstaller windows-arm64 builds only exist for Ruby 3.4+
 matrix -= windows_arm64_runners.product(%w[2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 3.0 3.1 3.2 3.3])
-# TruffleRuby 34+ does not support macOS Intel
-matrix -= macos_x64_runners.product(%w[truffleruby-head truffleruby+graalvm-head])
 
 puts(JSON.generate(matrix.sort.map { |os, ruby| { os:, ruby: } }))
