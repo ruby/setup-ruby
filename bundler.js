@@ -155,7 +155,7 @@ function bundlerConfigSetArgs(bundlerVersion, key, value) {
   }
 }
 
-export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion) {
+export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion, projectId) {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
@@ -189,7 +189,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
 
   // cache key
   const paths = [cachePath]
-  const baseKey = await computeBaseKey(engine, rubyVersion, lockFile, cacheVersion)
+  const baseKey = await computeBaseKey(engine, rubyVersion, lockFile, cacheVersion, projectId)
   const key = `${baseKey}-${await common.hashFile(lockFile)}`
   // If only Gemfile.lock changes we can reuse part of the cache, and clean old gem versions below
   const restoreKeys = [`${baseKey}-`]
@@ -242,12 +242,12 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
   return true
 }
 
-async function computeBaseKey(engine, version, lockFile, cacheVersion) {
-  const cwd = process.cwd()
+async function computeBaseKey(engine, version, lockFile, cacheVersion, specifiedProjectId) {
+  const projectId = specifiedProjectId || `wd-${process.cwd()}`
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
   const bundleOnly = process.env['BUNDLE_ONLY'] || ''
-  let key = `setup-ruby-bundler-cache-v6-${common.getOSNameVersionArch()}-${engine}-${version}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}-only-${bundleOnly}`
+  let key = `setup-ruby-bundler-cache-v6-${common.getOSNameVersionArch()}-${engine}-${version}-${projectId}-with-${bundleWith}-without-${bundleWithout}-only-${bundleOnly}`
 
   if (cacheVersion !== DEFAULT_CACHE_VERSION) {
     key += `-v-${cacheVersion}`
