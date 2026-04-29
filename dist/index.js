@@ -169,7 +169,7 @@ function bundlerConfigSetArgs(bundlerVersion, key, value) {
   }
 }
 
-async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion) {
+async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion, projectId) {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
     return false
@@ -203,7 +203,7 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
 
   // cache key
   const paths = [cachePath]
-  const baseKey = await computeBaseKey(engine, rubyVersion, lockFile, cacheVersion)
+  const baseKey = await computeBaseKey(engine, rubyVersion, lockFile, cacheVersion, projectId)
   const key = `${baseKey}-${await common.hashFile(lockFile)}`
   // If only Gemfile.lock changes we can reuse part of the cache, and clean old gem versions below
   const restoreKeys = [`${baseKey}-`]
@@ -256,12 +256,12 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
   return true
 }
 
-async function computeBaseKey(engine, version, lockFile, cacheVersion) {
-  const cwd = process.cwd()
+async function computeBaseKey(engine, version, lockFile, cacheVersion, specifiedProjectId) {
+  const projectId = specifiedProjectId || `wd-${process.cwd()}`
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
   const bundleOnly = process.env['BUNDLE_ONLY'] || ''
-  let key = `setup-ruby-bundler-cache-v6-${common.getOSNameVersionArch()}-${engine}-${version}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}-only-${bundleOnly}`
+  let key = `setup-ruby-bundler-cache-v6-${common.getOSNameVersionArch()}-${engine}-${version}-${projectId}-with-${bundleWith}-without-${bundleWithout}-only-${bundleOnly}`
 
   if (cacheVersion !== DEFAULT_CACHE_VERSION) {
     key += `-v-${cacheVersion}`
@@ -92506,6 +92506,7 @@ const inputDefaults = {
   'self-hosted': 'false',
   'windows-toolchain': 'default',
   'token': '',
+  'project-id': null,
 }
 
 // entry point when this action is run on its own
@@ -92587,7 +92588,7 @@ async function setupRuby(options = {}) {
 
   if (inputs['bundler-cache'] === 'true') {
     await common.time('bundle install', async () =>
-      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version'], inputs['project-id']))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)

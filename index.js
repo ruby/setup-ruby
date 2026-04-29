@@ -19,6 +19,7 @@ const inputDefaults = {
   'self-hosted': 'false',
   'windows-toolchain': 'default',
   'token': '',
+  'project-id': null,
 }
 
 // entry point when this action is run on its own
@@ -100,7 +101,7 @@ export async function setupRuby(options = {}) {
 
   if (inputs['bundler-cache'] === 'true') {
     await common.time('bundle install', async () =>
-      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version']))
+      bundler.bundleInstall(gemfile, lockFile, platform, engine, version, bundlerVersion, inputs['cache-version'], inputs['project-id']))
   }
 
   core.setOutput('ruby-prefix', rubyPrefix)

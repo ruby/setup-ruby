@@ -230,6 +230,19 @@ It is also possible to cache gems manually, but this is not recommended because 
 There are many concerns which means using `actions/cache` is never enough for caching gems (e.g., incomplete cache key, cleaning old gems when restoring from another key, correctly hashing the lockfile if not checked in, OS versions, ABI compatibility for `ruby-head`, etc).
 So, please use `bundler-cache: true` instead and report any issue.
 
+#### Caching with an ephemeral working directory
+
+A runner could be set up to use an ephemeral working directory per build, e.g. `/codebuild/output/src3500696690/src/actions-runner/_work/my-project`.
+By default, the cache key includes the full working directory path; but for an ephemeral working directory, it wouldn't produce the same key across runs, resulting in an inability to restore from the cache.
+To resolve this, set the `project-id` option to a name to identify your project. When provided, this is used instead of the working directory path in the cache key.
+
+```yaml
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+        project-id: my-project
+```
+
 ### Authentication Token
 
 By default, this action uses `${{ github.token }}` to authenticate when downloading Ruby release assets from GitHub.
