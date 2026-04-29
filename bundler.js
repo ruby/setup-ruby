@@ -243,7 +243,7 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
 }
 
 async function computeBaseKey(engine, version, lockFile, cacheVersion) {
-  const cwd = process.cwd()
+  const cwd = process.cwd().startsWith(process.env.GITHUB_WORKSPACE) ? path.relative(process.env.GITHUB_WORKSPACE, process.cwd()) : process.cwd()
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
   const bundleOnly = process.env['BUNDLE_ONLY'] || ''
