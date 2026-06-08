@@ -135,9 +135,6 @@ jobs:
     - name: bash test
       shell: bash
       run: echo ~ && bundle install
-    - name: Windows JRuby
-      if: runner.os == 'Windows' && startsWith(matrix.ruby, 'jruby')
-      run: gem install sassc
 
   testDotRubyVersion:
     name: "Test .ruby-version"
