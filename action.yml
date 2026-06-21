@@ -50,6 +50,10 @@ inputs:
       When running this action on github.com, the default value is sufficient.
       When running on GHES, you can pass a personal access token for github.com if you are experiencing rate limiting.
     default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+  project-id:
+    description: |
+      A name to identify your project, for inclusion in the Bundler cache key instead of the full working directory path.
+      Useful when your runner is set up to use an ephemeral working directory per build.
 
 outputs:
   ruby-prefix:
