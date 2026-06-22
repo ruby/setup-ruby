@@ -18,7 +18,7 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: ruby
@@ -37,7 +37,7 @@ jobs:
     name: ${{ matrix.os }} ${{ matrix.ruby }}
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - uses: ./
       with:
@@ -140,7 +140,7 @@ jobs:
     name: "Test .ruby-version"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: echo "ruby-3.4.0" > .ruby-version
       - uses: ./
       - run: ruby -v | grep -F "ruby 3.4.0"
@@ -149,7 +149,7 @@ jobs:
     name: "Test .tool-versions"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: echo -e "nodejs 16.0.0\nruby   3.4.0" > .tool-versions
       - uses: ./
       - run: ruby -v | grep -F "ruby 3.4.0"
@@ -158,7 +158,7 @@ jobs:
     name: "Test mise.toml"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: echo -e "[tools]\nnode = '18'\nruby = '3.4.0'" > mise.toml
       - uses: ./
       - run: ruby -v | grep -F "ruby 3.4.0"
@@ -167,7 +167,7 @@ jobs:
     name: "Test with no Gemfile"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: rm Gemfile
       - uses: ./
         with:
@@ -178,7 +178,7 @@ jobs:
     name: "Test with no Gemfile but with bundler-cache"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: rm Gemfile
       - uses: ./
         with:
@@ -201,7 +201,7 @@ jobs:
         - { ruby: '2.3', expected_rubygems_version: '3.3.27' }
         - { ruby: '2.0', expected_rubygems_version: '2.7.11' }
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: ${{ matrix.ruby }}
@@ -212,7 +212,7 @@ jobs:
     name: "Test rubygems: version upgrades RubyGems to that version if the default is older"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -223,7 +223,7 @@ jobs:
     name: "Test rubygems: version noops if the default is newer"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: '3.1.0'
@@ -234,7 +234,7 @@ jobs:
     name: "Test rubygems: version uses the Bundler installed by the rubygems update"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./
         with:
           ruby-version: '3.1.0'
@@ -246,7 +246,7 @@ jobs:
     name: "Test bundler: 1.x for old Ruby"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./
         with:
           ruby-version: '2.3'
@@ -257,7 +257,7 @@ jobs:
     name: "Test with a major Bundler version"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -268,7 +268,7 @@ jobs:
     name: "Test with a minor Bundler version"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -279,7 +279,7 @@ jobs:
     name: "Test with an exact Bundler version"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: '2.6'
@@ -291,7 +291,7 @@ jobs:
     name: "Test with an older Bundler version than the one of the default gem"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: '4.0'
@@ -303,7 +303,7 @@ jobs:
     name: "Test with a Bundler pre/rc version"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./
         with:
           ruby-version: '2.6'
@@ -316,7 +316,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler-dev.gemfile
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./
         with:
           ruby-version: ruby-head
@@ -328,7 +328,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler1.gemfile
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./
         with:
           ruby-version: '2.7'
@@ -346,7 +346,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./
         with:
           ruby-version: '3.2'
@@ -357,7 +357,7 @@ jobs:
     name: "Test windows-toolchain: none"
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./
         with:
           ruby-version: '2.7'
@@ -370,7 +370,7 @@ jobs:
     name: "Check windows*versions.json are up-to-date"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./
       with:
         ruby-version: ruby
@@ -382,7 +382,7 @@ jobs:
     name: "Check dist/index.js is up-to-date"
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - run: yarn install
     - run: yarn run package
     - name: Check generated files are up to date
