@@ -193,12 +193,41 @@ const GitHubHostedPlatforms = [
   'windows-11-arm64'
 ]
 
+// ruby-builder artifacts are Ubuntu-specific. Debian can run them when its glibc
+// is newer than the builder image and libssl is still SONAME 3.
+// Debian 12 (glibc 2.36) → Ubuntu 22.04 (glibc 2.35).
+// Debian 13 (glibc 2.41) → Ubuntu 24.04 (glibc 2.39).
+const DebianToUbuntuBuilder = {
+  '12': 'ubuntu-22.04',
+  '13': 'ubuntu-24.04',
+}
+
+function debianMajorVersion() {
+  return getOSVersion().split('.')[0]
+}
+
+// Platform string used in ruby-builder download URLs (ubuntu-XX.YY, not debian-N).
+export function getRubyBuilderPlatform() {
+  const name = getOSName()
+  if (name === 'debian') {
+    const mapped = DebianToUbuntuBuilder[debianMajorVersion()]
+    if (mapped) {
+      return mapped
+    }
+  }
+  return getOSNameVersion()
+}
+
 // Precisely: whether we have builds for that platform and there are GitHub-hosted runners to test it
 function isSupportedPlatform() {
   const platform = getOSName()
   switch (platform) {
     case 'ubuntu':
       return GitHubHostedPlatforms.includes(getOSNameVersionArch())
+    case 'debian': {
+      const mapped = DebianToUbuntuBuilder[debianMajorVersion()]
+      return mapped !== undefined && GitHubHostedPlatforms.includes(`${mapped}-${os.arch()}`)
+    }
     case 'macos':
       // See https://github.com/ruby/ruby-builder/blob/master/README.md#naming
       // 13 on arm64 because of old macos-arm-oss runners
@@ -318,6 +347,7 @@ function getDefaultToolCachePath() {
   const platform = getOSName()
   switch (platform) {
     case 'ubuntu':
+    case 'debian':
       return '/opt/hostedtoolcache'
     case 'macos':
       return '/Users/runner/hostedtoolcache'

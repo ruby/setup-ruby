@@ -16,6 +16,15 @@ export function getAvailableVersions(platform, engine) {
 }
 
 export async function install(platform, engine, version) {
+  const builderPlatform = common.getRubyBuilderPlatform()
+  if (builderPlatform !== platform) {
+    console.log(`Detected ${common.getOSNameVersionArch()}; using ${builderPlatform} prebuilt Ruby binaries`)
+  }
+
+  if (platform.startsWith('debian-')) {
+    await ensureDebianRuntimeLibs()
+  }
+
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
     inToolCache = common.toolCacheFind(engine, version)
@@ -106,8 +115,8 @@ function getDownloadURL(platform, engine, version) {
     builderPlatform = `windows-${os.arch()}`
   } else if (platform.startsWith('macos-')) {
     builderPlatform = `darwin-${os.arch()}`
-  } else if (platform.startsWith('ubuntu-')) {
-    builderPlatform = `${platform}-${os.arch()}`
+  } else if (platform.startsWith('ubuntu-') || platform.startsWith('debian-')) {
+    builderPlatform = `${common.getRubyBuilderPlatform()}-${os.arch()}`
   }
 
   if (builderPlatform === null || !['x64', 'arm64'].includes(os.arch())) {
@@ -119,6 +128,26 @@ function getDownloadURL(platform, engine, version) {
   } else {
     return `${releasesURL}/download/${engine}-${version}/${engine}-${version}-${builderPlatform}.tar.gz`
   }
+}
+
+const debianRuntimePackages = ['libssl3', 'libyaml-0-2', 'libgmp10', 'zlib1g', 'libcrypt1', 'libffi8']
+
+async function ensureDebianRuntimeLibs() {
+  const missing = []
+  for (const pkg of debianRuntimePackages) {
+    const status = await exec.exec('dpkg', ['-s', pkg], { ignoreReturnCode: true, silent: true })
+    if (status !== 0) {
+      missing.push(pkg)
+    }
+  }
+  if (missing.length === 0) {
+    return
+  }
+
+  await common.measure(`Installing Ruby runtime libraries (${missing.join(', ')})`, async () => {
+    await exec.exec('apt-get', ['update', '-qq'])
+    await exec.exec('apt-get', ['install', '-y', '-qq', ...missing])
+  })
 }
 
 function getLatestHeadBuildURL(platform, engine, version) {

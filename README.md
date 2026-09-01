@@ -50,8 +50,11 @@ The action works on these [GitHub-hosted runners](https://docs.github.com/en/act
 | Operating System | Supported |
 | ---------------- | --------- |
 | Ubuntu  | `ubuntu-22.04`, `ubuntu-24.04`, `ubuntu-26.04`, `ubuntu-22.04-arm`, `ubuntu-24.04-arm`, `ubuntu-26.04-arm` |
+| Debian  | `debian-12` (Ubuntu 22.04 builds), `debian-13` (Ubuntu 24.04 builds), x64 and arm64 |
 | macOS   | `macos-14` and newer versions |
 | Windows | `windows-2022`, `windows-2025`, `windows-11-arm` |
+
+Debian is included so this action can run on Forgejo `act_runner` job containers. There are no Debian-specific ruby-builder artifacts; the action downloads the Ubuntu builds listed above. That works because Debian 12/13 have a newer glibc than those Ubuntu images and still ship `libssl.so.3`. `/opt/hostedtoolcache` must be writable. Missing CRuby runtime packages (`libssl3`, `libyaml-0-2`, `libgmp10`, …) are installed with `apt-get` when the job is root.
 
 Not all combinations of runner images and versions are supported.
 The list of available Ruby versions can be seen in [ruby-builder-versions.json](ruby-builder-versions.json) for Ubuntu and macOS
@@ -273,7 +276,8 @@ This follows the [recommendations](https://github.com/actions/toolkit/blob/maste
 
 ## Using self-hosted runners
 
-This action might work with [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners)
+Debian 12 and 13 runners (including Forgejo) are supported directly; see [Supported Platforms](#supported-platforms).
+For other self-hosted Linux, this action might work with [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners)
 if the [Runner Image](https://github.com/actions/runner-images) is very similar to the ones used by GitHub runners. Notably:
 
 * Make sure to use the same operating system and version.

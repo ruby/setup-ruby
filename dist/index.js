@@ -306,6 +306,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */   getOSNameVersion: () => (/* binding */ getOSNameVersion),
 /* harmony export */   getOSNameVersionArch: () => (/* binding */ getOSNameVersionArch),
 /* harmony export */   getOSVersion: () => (/* binding */ getOSVersion),
+/* harmony export */   getRubyBuilderPlatform: () => (/* binding */ getRubyBuilderPlatform),
 /* harmony export */   getRunnerToolCache: () => (/* binding */ getRunnerToolCache),
 /* harmony export */   getToolCachePath: () => (/* binding */ getToolCachePath),
 /* harmony export */   getToolCacheRubyPrefix: () => (/* binding */ getToolCacheRubyPrefix),
@@ -528,12 +529,41 @@ const GitHubHostedPlatforms = [
   'windows-11-arm64'
 ]
 
+// ruby-builder artifacts are Ubuntu-specific. Debian can run them when its glibc
+// is newer than the builder image and libssl is still SONAME 3.
+// Debian 12 (glibc 2.36) → Ubuntu 22.04 (glibc 2.35).
+// Debian 13 (glibc 2.41) → Ubuntu 24.04 (glibc 2.39).
+const DebianToUbuntuBuilder = {
+  '12': 'ubuntu-22.04',
+  '13': 'ubuntu-24.04',
+}
+
+function debianMajorVersion() {
+  return getOSVersion().split('.')[0]
+}
+
+// Platform string used in ruby-builder download URLs (ubuntu-XX.YY, not debian-N).
+function getRubyBuilderPlatform() {
+  const name = getOSName()
+  if (name === 'debian') {
+    const mapped = DebianToUbuntuBuilder[debianMajorVersion()]
+    if (mapped) {
+      return mapped
+    }
+  }
+  return getOSNameVersion()
+}
+
 // Precisely: whether we have builds for that platform and there are GitHub-hosted runners to test it
 function isSupportedPlatform() {
   const platform = getOSName()
   switch (platform) {
     case 'ubuntu':
       return GitHubHostedPlatforms.includes(getOSNameVersionArch())
+    case 'debian': {
+      const mapped = DebianToUbuntuBuilder[debianMajorVersion()]
+      return mapped !== undefined && GitHubHostedPlatforms.includes(`${mapped}-${os.arch()}`)
+    }
     case 'macos':
       // See https://github.com/ruby/ruby-builder/blob/master/README.md#naming
       // 13 on arm64 because of old macos-arm-oss runners
@@ -653,6 +683,7 @@ function getDefaultToolCachePath() {
   const platform = getOSName()
   switch (platform) {
     case 'ubuntu':
+    case 'debian':
       return '/opt/hostedtoolcache'
     case 'macos':
       return '/Users/runner/hostedtoolcache'
@@ -50219,6 +50250,15 @@ function getAvailableVersions(platform, engine) {
 }
 
 async function install(platform, engine, version) {
+  const builderPlatform = common.getRubyBuilderPlatform()
+  if (builderPlatform !== platform) {
+    console.log(`Detected ${common.getOSNameVersionArch()}; using ${builderPlatform} prebuilt Ruby binaries`)
+  }
+
+  if (platform.startsWith('debian-')) {
+    await ensureDebianRuntimeLibs()
+  }
+
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
     inToolCache = common.toolCacheFind(engine, version)
@@ -50309,8 +50349,8 @@ function getDownloadURL(platform, engine, version) {
     builderPlatform = `windows-${os.arch()}`
   } else if (platform.startsWith('macos-')) {
     builderPlatform = `darwin-${os.arch()}`
-  } else if (platform.startsWith('ubuntu-')) {
-    builderPlatform = `${platform}-${os.arch()}`
+  } else if (platform.startsWith('ubuntu-') || platform.startsWith('debian-')) {
+    builderPlatform = `${common.getRubyBuilderPlatform()}-${os.arch()}`
   }
 
   if (builderPlatform === null || !['x64', 'arm64'].includes(os.arch())) {
@@ -50322,6 +50362,26 @@ function getDownloadURL(platform, engine, version) {
   } else {
     return `${releasesURL}/download/${engine}-${version}/${engine}-${version}-${builderPlatform}.tar.gz`
   }
+}
+
+const debianRuntimePackages = ['libssl3', 'libyaml-0-2', 'libgmp10', 'zlib1g', 'libcrypt1', 'libffi8']
+
+async function ensureDebianRuntimeLibs() {
+  const missing = []
+  for (const pkg of debianRuntimePackages) {
+    const status = await exec.exec('dpkg', ['-s', pkg], { ignoreReturnCode: true, silent: true })
+    if (status !== 0) {
+      missing.push(pkg)
+    }
+  }
+  if (missing.length === 0) {
+    return
+  }
+
+  await common.measure(`Installing Ruby runtime libraries (${missing.join(', ')})`, async () => {
+    await exec.exec('apt-get', ['update', '-qq'])
+    await exec.exec('apt-get', ['install', '-y', '-qq', ...missing])
+  })
 }
 
 function getLatestHeadBuildURL(platform, engine, version) {
