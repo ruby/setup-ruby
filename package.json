@@ -27,8 +27,7 @@
     "@actions/exec": "^2.0.0",
     "@actions/io": "^2.0.0",
     "@actions/tool-cache": "^3.0.0",
-    "linux-os-info": "^2.0.0",
-    "semver": "^7.7.3"
+    "linux-os-info": "^2.0.0"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.3"
