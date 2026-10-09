@@ -50571,6 +50571,7 @@ async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
 
 async function installMSYS1(url) {
   const certFile = [
+    'C:\\Program Files\\Git\\ucrt64\\etc\\ssl\\cert.pem',
     'C:\\Program Files\\Git\\mingw64\\etc\\ssl\\cert.pem',
     'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem',
   ].find(file => fs.existsSync(file))
