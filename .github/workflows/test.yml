@@ -230,6 +230,28 @@ jobs:
         rubygems: 3.2.3
     - run: gem --version | grep -F "3.3.3"
 
+  testFixedRubygemsBetaVersionUpgrades:
+    name: "Test rubygems: beta version upgrades RubyGems to that version if the default is older"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - uses: ./
+      with:
+        ruby-version: '4.0.7'
+        rubygems: 4.1.0.beta2
+    - run: gem --version | grep -F "4.1.0.beta2"
+
+  testFixedRubygemsBetaVersionNoop:
+    name: "Test rubygems: beta version noops if the default is newer"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - uses: ./
+      with:
+        ruby-version: '4.0.7'
+        rubygems: 4.0.0.beta2
+    - run: gem --version | grep -F "4.0.20"
+
   testUseBundlerFromRubyGemsUpdate:
     name: "Test rubygems: version uses the Bundler installed by the rubygems update"
     runs-on: ubuntu-latest
