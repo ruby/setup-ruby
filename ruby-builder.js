@@ -78,7 +78,7 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
     } catch (error) {
       if (error.message.includes('404')) {
         throw new Error(`Unavailable version ${version} for ${engine} on ${platform}
-          You can request it at https://github.com/ruby/setup-ruby/issues
+          ${await unavailableVersionHint(platform, engine, version)}
           Cause: ${error.message}`)
       } else {
         throw error
@@ -98,6 +98,42 @@ async function downloadAndExtract(platform, engine, version, rubyPrefix) {
   if (common.shouldUseToolCache(engine, version)) {
     common.createToolCacheCompleteFile(rubyPrefix)
   }
+}
+
+// Newer runner images usually only have builds of the latest patch release of each series,
+// so point to that release if it is available, or explain that the series is not available.
+async function unavailableVersionHint(platform, engine, version) {
+  const request = 'You can request it at https://github.com/ruby/setup-ruby/issues'
+  const series = version.split('.').slice(0, 2).join('.')
+  const latest = getAvailableVersions(platform, engine)
+    .filter(v => v.startsWith(`${series}.`) && common.isStableVersion(engine, v))
+    .pop()
+  if (common.isHeadVersion(version) || latest === undefined) {
+    return request
+  }
+
+  const input = v => engine === 'ruby' ? v : `${engine}-${v}`
+  if (latest !== version) {
+    let response
+    try {
+      response = await fetch(getDownloadURL(platform, engine, latest), { method: 'HEAD', signal: AbortSignal.timeout(10000) })
+    } catch {
+      return request
+    }
+    if (response.ok) {
+      return `Only the latest patch release of each series is built for newer runner images.
+          ${engine}-${latest} is available on ${platform}: use ruby-version: '${input(latest)}', or '${input(series)}' to always use the latest ${series}.x release.`
+    } else if (response.status !== 404) {
+      return request
+    }
+  }
+
+  const latestUnavailable = latest === version
+    ? `${engine}-${version} is the latest ${series}.x release.`
+    : `${engine}-${latest}, the latest ${series}.x release, is not available on ${platform} either.`
+  return `${latestUnavailable}
+          Use a newer ${engine} version on ${platform}, or an older runner image for ${engine} ${series}.
+          Note that ubuntu-latest and macos-latest move to newer runner images over time.`
 }
 
 function getDownloadURL(platform, engine, version) {
