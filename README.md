@@ -54,11 +54,10 @@ The action works on these [GitHub-hosted runners](https://docs.github.com/en/act
 | Windows | `windows-2022`, `windows-2025`, `windows-11-arm` |
 
 Not all combinations of runner images and versions are supported.
-The list of available Ruby versions can be seen in [ruby-builder-versions.json](ruby-builder-versions.json) for Ubuntu and macOS
-(although some combinations are not available, see [the full list](https://github.com/ruby/ruby-builder/releases/tag/toolcache))
+The full list of available Ruby versions can be seen in [here for Ubuntu and macOS](https://github.com/ruby/ruby-builder/releases)
 and in [windows-versions.json](windows-versions.json) for Windows.
-Newer runner images usually only have builds of the latest patch release of each series,
-so prefer a short version like `'3.4'` over an exact one like `'3.4.2'` in `ruby-version` or `.ruby-version`.
+Newer runner images only have builds of the latest patch release of each series,
+so prefer a short version like `'3.4'` over an exact one like `'3.4.2'`, or pin to a specific runner version (e.g. `ubuntu-24.04`).
 For example, `ubuntu-26.04` (which `ubuntu-latest` moves to, see [this announcement](https://github.com/actions/runner-images/issues/14748))
 only has builds of CRuby 3.2 and newer, as older CRuby versions do not compile on it.
 
