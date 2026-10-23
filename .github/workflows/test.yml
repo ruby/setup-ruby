@@ -358,6 +358,30 @@ jobs:
           bundler-cache: true
       - run: bundle --version | grep -F "Bundler version 1."
 
+  # https://github.com/ruby/setup-ruby/issues/444
+  testTwiceInSameJob:
+    name: "Test using setup-ruby twice in the same job"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./
+        env:
+          BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler1.gemfile
+        with:
+          ruby-version: '2.7'
+          bundler: 1
+          bundler-cache: true
+      - run: bundle --version | grep -F "Bundler version 1."
+        env:
+          BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler1.gemfile
+      # The Bundler version used by the first setup-ruby step must not leak into the second one
+      - uses: ./
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+      - run: bundle --version | grep -P "Bundler version 2\.4\.\d+"
+      - run: bundle exec rake --version
+
   testGemfileMatrix:
     strategy:
       fail-fast: false
