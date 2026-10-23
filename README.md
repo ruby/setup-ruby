@@ -204,6 +204,9 @@ They should be set in the `env` at the job level as shown in the [example](#matr
 To find the correct the environment variable name, see the [Bundler docs](https://bundler.io/man/bundle-config.1.html) or look at `.bundle/config` after running `bundle config --local KEY VALUE` locally.
 You might need to `"`-quote the environment variable name in YAML if it has unusual characters like `/`.
 
+By default, `bundle install` is run with `--jobs` set to the number of available processors (up to 8).
+This can be changed by setting `BUNDLE_JOBS`.
+
 To perform caching, this action will use `bundle config --local path $PWD/vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
 
