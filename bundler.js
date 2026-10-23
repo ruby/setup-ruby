@@ -214,10 +214,15 @@ export async function bundleInstall(gemfile, lockFile, platform, engine, rubyVer
     console.log(`Found cache for key: ${cachedKey}`)
   }
 
-  // Number of jobs should scale with runner, up to a point
-  const jobs = Math.min(os.availableParallelism(), 8)
+  const installArgs = ['install']
+  // Honor $BUNDLE_JOBS if set, as passing --jobs would override it
+  if (!process.env['BUNDLE_JOBS']) {
+    // Number of jobs should scale with runner, up to a point
+    const jobs = Math.min(os.availableParallelism(), 8)
+    installArgs.push('--jobs', `${jobs}`)
+  }
   // Always run 'bundle install' to list the gems
-  await exec.exec('bundle', ['install', '--jobs', `${jobs}`])
+  await exec.exec('bundle', installArgs)
 
   // @actions/cache only allows to save for non-existing keys
   // Also, skip saving cache for merge_group event
