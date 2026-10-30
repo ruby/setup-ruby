@@ -24,10 +24,9 @@ This action currently supports these versions of MRI, JRuby and TruffleRuby:
 
 `ruby-asan` is the same as `ruby-head` but with AddressSanitizer (ASan) enabled, helpful for finding memory issues in native extensions.
 Native extensions are automatically compiled with AddressSanitizer when using `ruby-asan`.
-`ruby-asan` is currently only available on `ubuntu-24.04`.
-
 `asan-release` is similar to `ruby-asan` but built from the latest stable release tag.
-Like `ruby-asan`, it's currently only available on `ubuntu-24.04`.
+
+`ruby-asan` and `asan-release` are currently only available on `ubuntu-24.04` and `ubuntu-26.04`.
 
 Regarding Windows ruby master builds, `mingw` is a MSYS2/MinGW build, `head` & `ucrt` are MSYS2/UCRT64
 builds, and `mswin` is a MSVC/VS 2022 build.
