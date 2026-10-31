@@ -76,7 +76,7 @@ matrix -= macos_arm64_runners.product(%w[1.9 2.0 2.1 2.2 2.3 2.4 2.5])
 # These old Rubies fail to compile or segfault on Linux arm64
 matrix -= ubuntu_arm64_runners.product(%w[1.9 2.0 2.1 2.2])
 # These old Rubies fail to compile on ubuntu-26.04
-matrix -= ubuntu2604_runners.product(%w[1.9 2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 3.0 3.1])
+matrix -= ubuntu2604_runners.product(%w[1.9 2.0 2.1 2.2 2.3])
 # RubyInstaller windows-arm64 builds only exist for Ruby 3.4+
 matrix -= windows_arm64_runners.product(%w[2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 3.0 3.1 3.2 3.3])
 
