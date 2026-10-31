@@ -178,8 +178,6 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   if (engine === 'ruby' && platform.startsWith('macos') && os.arch() === 'arm64' && common.floatVersion(version) < 2.6) {
     throw new Error(`CRuby < 2.6 does not support macos-arm64.
         Either use a newer Ruby version or use a macOS image running on amd64, e.g., macos-15-intel.
-        Note that GitHub changed the meaning of macos-latest from macos-12 (amd64) to macos-14 (arm64):
-        https://github.blog/changelog/2024-04-01-macos-14-sonoma-is-generally-available-and-the-latest-macos-runner-image/
 
         If you are using a matrix of Ruby versions, a good solution is to run only < 2.6 on amd64, like so:
         matrix:

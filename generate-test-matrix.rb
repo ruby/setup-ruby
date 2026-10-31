@@ -18,7 +18,6 @@ end
 
 # Runners
 runners = %w[
-  macos-14
   macos-15
   macos-15-intel
   ubuntu-22.04
