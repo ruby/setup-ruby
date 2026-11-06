@@ -1,4 +1,4 @@
-name: Test this action
+name: CI
 on:
   pull_request:
   push:
@@ -409,3 +409,37 @@ jobs:
     - run: yarn run package
     - name: Check generated files are up to date
       run: git diff --exit-code
+
+  result:
+    if: ${{ always() }}
+    name: Result
+    runs-on: ubuntu-latest
+    needs:
+      - test-matrix
+      - test
+      - testDotRubyVersion
+      - testToolVersions
+      - testMise
+      - testNoGemfile
+      - testNoGemfileWithBundlerCache
+      - testLatestRubygemsVersion
+      - testFixedRubygemsVersionUpgrades
+      - testFixedRubygemsVersionNoop
+      - testFixedRubygemsBetaVersionUpgrades
+      - testFixedRubygemsBetaVersionNoop
+      - testUseBundlerFromRubyGemsUpdate
+      - testFixedBundlerVersionForOldRuby
+      - testMajorBundlerVersion
+      - testMinorBundlerVersion
+      - testExactBundlerVersion
+      - testOlderBundlerVersion
+      - testBundlerPre
+      - testBundlerDev
+      - testDependencyOnBundler1
+      - testGemfileMatrix
+      - testWindowsToolchain
+      - validate-windows-versions
+      - check-dist-index
+    steps:
+      - run: exit 1
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
