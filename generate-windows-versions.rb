@@ -63,9 +63,6 @@ versions['head'] = {
   'arm64' => 'https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-arm.7z',
   'x64' => 'https://github.com/oneclick/rubyinstaller2/releases/download/rubyinstaller-head/rubyinstaller-head-x64.7z'
 }
-versions['mingw'] = {
-  'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mingw.7z'
-}
 versions['mswin'] = {
   'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mswin.7z'
 }
@@ -89,8 +86,6 @@ versions.each do |raw_version, archs|
       case raw_version
       when 'head', 'ucrt'
         "#{arch}-mingw-ucrt"
-      when 'mingw'
-        "#{arch}-mingw32"
       when 'mswin'
         "#{arch}-mswin64"
       else

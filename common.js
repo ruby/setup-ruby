@@ -70,7 +70,7 @@ export async function time(name, block) {
 
 export function isHeadVersion(rubyVersion) {
   // asan-release counts as "head" because the version cannot be selected -- you can only get whatever's latest
-  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan', 'asan-release'].includes(rubyVersion)
+  return ['head', 'debug', 'mswin', 'ucrt', 'asan', 'asan-release'].includes(rubyVersion)
 }
 
 export function isStableVersion(engine, rubyVersion) {
