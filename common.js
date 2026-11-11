@@ -451,6 +451,7 @@ export function isExactCacheKeyMatch(key, cacheKey) {
 }
 
 export async function download(url) {
-  const auth = inputs.token ? `token ${inputs.token}` : undefined
+  // The token is for github.com, so it must not reach other hosts such as cache.ruby-lang.org
+  const auth = inputs.token && new URL(url).hostname === 'github.com' ? `token ${inputs.token}` : undefined
   return await tc.downloadTool(url, undefined, auth)
 }
