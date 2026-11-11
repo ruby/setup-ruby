@@ -81,12 +81,18 @@ File.binwrite 'windows-versions.json', "#{JSON.pretty_generate(versions)}\n"
 base_url = 'https://github.com/ruby/setup-msys2-gcc/releases/latest/download/windows-toolchain.json'
 windows_toolchain = JSON.parse(URI.open(base_url, &:read), symbolize_names: true)
 
-find_toolchains = -> platform, version {
-  windows_toolchain.select do |pkg|
+find_toolchain = -> platform, version {
+  toolchain = windows_toolchain.select do |pkg|
     pkg[:platform] == platform && pkg[:required_ruby_version].any? do |requirement|
       Gem::Requirement.new(requirement).satisfied_by?(version)
     end
   end
+
+  unless toolchain.one?
+    raise "#{toolchain.empty? ? 'no' : 'multiple'} toolchains found for #{platform} #{version}: #{toolchain}"
+  end
+
+  toolchain.first
 }
 
 versions.each do |raw_version, archs|
@@ -109,13 +115,9 @@ versions.each do |raw_version, archs|
         end
       end
 
-    toolchain = find_toolchains.(platform, version)
+    toolchain = find_toolchain.(platform, version)
 
-    unless toolchain.one?
-      raise "#{toolchain.empty? ? 'no' : 'multiple'} toolchains found for #{raw_version} #{raw_arch}: #{toolchain}"
-    end
-
-    archs[raw_arch] = URI.join(base_url, toolchain.first[:href]).to_s
+    archs[raw_arch] = URI.join(base_url, toolchain[:href]).to_s
   end
 end
 
@@ -148,17 +150,11 @@ mswin_toolchain_versions = mswin_versions.to_h do |raw_version, archs|
   version = raw_version == 'head' ? head_version : Gem::Version.new(raw_version)
 
   toolchains = archs.map do |arch, _|
-    toolchain = find_toolchains.("#{arch}-mswin64", version)
+    toolchain = find_toolchain.("#{arch}-mswin64", version)
 
-    raise "multiple toolchains found for mswin-#{raw_version} #{arch}: #{toolchain}" if toolchain.size > 1
-
-    [arch, URI.join(base_url, toolchain.first[:href]).to_s]
+    [arch, URI.join(base_url, toolchain[:href]).to_s]
   end
   [raw_version, toolchains.to_h]
-end
-
-mswin_versions.each do |raw_version, archs|
-  archs.select! { |raw_arch, _| mswin_toolchain_versions[raw_version].key?(raw_arch) }
 end
 
 validate(mswin_versions, MSWIN_VERSIONS_URLS_REGEXPS)
