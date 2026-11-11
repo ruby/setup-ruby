@@ -46114,7 +46114,7 @@ const mswinVersions = __nccwpck_require__(22158)
 const mswinToolchainVersions = __nccwpck_require__(82768)
 
 function getAvailableVersions(_platform, engine) {
-  const versions = { ruby: rubyInstallerVersions, mswin: mswinVersions }[engine]
+  const versions = engine === 'mswin' ? mswinVersions : rubyInstallerVersions
   if (versions) {
     return Object.keys(versions).filter(version => os.arch() in versions[version])
   } else {

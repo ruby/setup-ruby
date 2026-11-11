@@ -14,7 +14,7 @@ const mswinVersions = require('./windows-mswin-versions.json')
 const mswinToolchainVersions = require('./windows-mswin-toolchain-versions.json')
 
 export function getAvailableVersions(_platform, engine) {
-  const versions = { ruby: rubyInstallerVersions, mswin: mswinVersions }[engine]
+  const versions = engine === 'mswin' ? mswinVersions : rubyInstallerVersions
   if (versions) {
     return Object.keys(versions).filter(version => os.arch() in versions[version])
   } else {
