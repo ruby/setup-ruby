@@ -81,6 +81,20 @@ File.binwrite 'windows-versions.json', "#{JSON.pretty_generate(versions)}\n"
 base_url = 'https://github.com/ruby/setup-msys2-gcc/releases/latest/download/windows-toolchain.json'
 windows_toolchain = JSON.parse(URI.open(base_url, &:read), symbolize_names: true)
 
+find_toolchain = -> platform, version {
+  toolchain = windows_toolchain.select do |pkg|
+    pkg[:platform] == platform && pkg[:required_ruby_version].any? do |requirement|
+      Gem::Requirement.new(requirement).satisfied_by?(version)
+    end
+  end
+
+  unless toolchain.one?
+    raise "#{toolchain.empty? ? 'no' : 'multiple'} toolchains found for #{platform} #{version}: #{toolchain}"
+  end
+
+  toolchain.first
+}
+
 versions.each do |raw_version, archs|
   version = Gem::Version.correct?(raw_version) ? Gem::Version.new(raw_version) : head_version
 
@@ -103,18 +117,9 @@ versions.each do |raw_version, archs|
         end
       end
 
-    toolchain =
-      windows_toolchain.select do |pkg|
-        pkg[:platform] == platform && pkg[:required_ruby_version].any? do |requirement|
-          Gem::Requirement.new(requirement).satisfied_by?(version)
-        end
-      end
+    toolchain = find_toolchain.(platform, version)
 
-    unless toolchain.one?
-      raise "#{toolchain.empty? ? 'no' : 'multiple'} toolchains found for #{raw_version} #{raw_arch}: #{toolchain}"
-    end
-
-    archs[raw_arch] = URI.join(base_url, toolchain.first[:href]).to_s
+    archs[raw_arch] = URI.join(base_url, toolchain[:href]).to_s
   end
 end
 
