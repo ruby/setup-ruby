@@ -1,0 +1,22 @@
+{
+  "3.4.11": {
+    "x64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-3.4.11-x64-mswin64_140.zip"
+  },
+  "3.4.12": {
+    "x64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-3.4.12-x64-mswin64_140.zip"
+  },
+  "4.0.7": {
+    "x64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-4.0.7-x64-mswin64_140.zip"
+  },
+  "4.0.8": {
+    "x64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-4.0.8-x64-mswin64_140.zip"
+  },
+  "4.0.9": {
+    "arm64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-4.0.9-arm64-mswin64_140.zip",
+    "x64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-4.0.9-x64-mswin64_140.zip"
+  },
+  "head": {
+    "arm64": "https://cache.ruby-lang.org/pub/ruby/binaries/index.json",
+    "x64": "https://cache.ruby-lang.org/pub/ruby/binaries/index.json"
+  }
+}

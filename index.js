@@ -54,7 +54,7 @@ export async function setupRuby(options = {}) {
   const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
 
   let installer
-  if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
+  if (platform.startsWith('windows-') && common.isCRuby(engine) && !common.isSelfHostedRunner()) {
     installer = require('./windows')
   } else {
     installer = require('./ruby-builder')
@@ -140,6 +140,9 @@ function parseRubyEngineAndVersion(rubyVersion) {
   if (/^(\d+)/.test(rubyVersion) || common.isHeadVersion(rubyVersion)) { // X.Y.Z => ruby-X.Y.Z
     engine = 'ruby'
     version = rubyVersion
+  } else if (rubyVersion === 'mswin') { // mswin has always been the master build
+    engine = 'mswin'
+    version = 'head'
   } else if (!rubyVersion.includes('-')) { // myruby -> myruby-stableVersion
     engine = rubyVersion
     version = '' // Let the logic in validateRubyEngineAndVersion() find the version

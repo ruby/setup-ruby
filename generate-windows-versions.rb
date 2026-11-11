@@ -12,6 +12,11 @@ WINDOWS_VERSIONS_URLS_REGEXPS = [
   %r{\A#{Regexp.escape 'https://github.com/MSP-Greg/ruby-loco/releases/download'}/\w[\w.-]*/\w[\w.-]*\z}
 ].freeze
 
+MSWIN_VERSIONS_URLS_REGEXPS = [
+  %r{\A#{Regexp.escape 'https://cache.ruby-lang.org/pub/ruby/binaries/mswin64'}/\w[\w.-]*\.zip\z},
+  %r{\A#{Regexp.escape 'https://cache.ruby-lang.org/pub/ruby/binaries/index.json'}\z}
+].freeze
+
 WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS = [
   %r{\A#{Regexp.escape 'https://github.com/oneclick/rubyinstaller/releases/download/devkit-4.7.2/DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe'}\z},
   %r{\A#{Regexp.escape 'https://github.com/ruby/setup-msys2-gcc/releases/download'}/\w[\w.-]*/\w[\w@.-]*\z},
@@ -66,9 +71,6 @@ versions['head'] = {
 versions['mingw'] = {
   'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mingw.7z'
 }
-versions['mswin'] = {
-  'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mswin.7z'
-}
 versions['ucrt'] = {
   'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-ucrt.7z'
 }
@@ -78,6 +80,14 @@ File.binwrite 'windows-versions.json', "#{JSON.pretty_generate(versions)}\n"
 
 base_url = 'https://github.com/ruby/setup-msys2-gcc/releases/latest/download/windows-toolchain.json'
 windows_toolchain = JSON.parse(URI.open(base_url, &:read), symbolize_names: true)
+
+find_toolchains = -> platform, version {
+  windows_toolchain.select do |pkg|
+    pkg[:platform] == platform && pkg[:required_ruby_version].any? do |requirement|
+      Gem::Requirement.new(requirement).satisfied_by?(version)
+    end
+  end
+}
 
 versions.each do |raw_version, archs|
   version = Gem::Version.correct?(raw_version) ? Gem::Version.new(raw_version) : head_version
@@ -91,8 +101,6 @@ versions.each do |raw_version, archs|
         "#{arch}-mingw-ucrt"
       when 'mingw'
         "#{arch}-mingw32"
-      when 'mswin'
-        "#{arch}-mswin64"
       else
         if version >= Gem::Version.new('3.1.0.dev')
           "#{arch}-mingw-ucrt"
@@ -101,12 +109,7 @@ versions.each do |raw_version, archs|
         end
       end
 
-    toolchain =
-      windows_toolchain.select do |pkg|
-        pkg[:platform] == platform && pkg[:required_ruby_version].any? do |requirement|
-          Gem::Requirement.new(requirement).satisfied_by?(version)
-        end
-      end
+    toolchain = find_toolchains.(platform, version)
 
     unless toolchain.one?
       raise "#{toolchain.empty? ? 'no' : 'multiple'} toolchains found for #{raw_version} #{raw_arch}: #{toolchain}"
@@ -118,3 +121,50 @@ end
 
 validate(versions, WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS)
 File.binwrite 'windows-toolchain-versions.json', "#{JSON.pretty_generate(versions)}\n"
+
+mswin_index_url = 'https://cache.ruby-lang.org/pub/ruby/binaries/index.json'
+mswin_builds = JSON.parse(URI.open(mswin_index_url, &:read), symbolize_names: true)[:builds].select { |build|
+  build[:platform].end_with?('-mswin64_140')
+}
+mswin_arch = -> build { build[:platform].delete_suffix('-mswin64_140') }
+
+release_builds = mswin_builds.select { |build|
+  build[:channel] == 'release' && Gem::Version.new(build[:version]) >= Gem::Version.new('3.4')
+}
+dev_builds = mswin_builds.select { |build| build[:channel] == 'dev' }
+
+mswin_versions = release_builds.group_by { |build|
+  build[:version]
+}.sort_by { |version, _|
+  Gem::Version.new(version)
+}.to_h { |version, builds|
+  [version, builds.sort_by(&mswin_arch).to_h { |build| [mswin_arch.(build), build[:url]] }]
+}
+
+# The latest master build is picked from the index at runtime, see getLatestMswinHeadURL in windows.js
+mswin_versions['head'] = dev_builds.map(&mswin_arch).uniq.sort.to_h { |arch| [arch, mswin_index_url] }
+
+mswin_toolchain_versions = mswin_versions.to_h do |raw_version, archs|
+  version = raw_version == 'head' ? head_version : Gem::Version.new(raw_version)
+
+  toolchains = archs.filter_map do |raw_arch, _|
+    arch = raw_arch == 'arm64' ? 'aarch64' : raw_arch
+    toolchain = find_toolchains.("#{arch}-mswin64", version)
+
+    raise "multiple toolchains found for mswin-#{raw_version} #{raw_arch}: #{toolchain}" if toolchain.size > 1
+
+    # vcpkg packages for arm64 only exist for newer Rubies, skip builds that cannot get a toolchain
+    [raw_arch, URI.join(base_url, toolchain.first[:href]).to_s] if toolchain.one?
+  end
+  [raw_version, toolchains.to_h]
+end
+
+mswin_versions.each do |raw_version, archs|
+  archs.select! { |raw_arch, _| mswin_toolchain_versions[raw_version].key?(raw_arch) }
+end
+
+validate(mswin_versions, MSWIN_VERSIONS_URLS_REGEXPS)
+File.binwrite 'windows-mswin-versions.json', "#{JSON.pretty_generate(mswin_versions)}\n"
+
+validate(mswin_toolchain_versions, WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS)
+File.binwrite 'windows-mswin-toolchain-versions.json', "#{JSON.pretty_generate(mswin_toolchain_versions)}\n"
