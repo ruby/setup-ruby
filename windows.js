@@ -10,22 +10,29 @@ const exec = require('@actions/exec')
 const common = require('./common')
 const rubyInstallerVersions = require('./windows-versions.json')
 const toolchainVersions = require('./windows-toolchain-versions.json')
+const mswinVersions = require('./windows-mswin-versions.json')
+const mswinToolchainVersions = require('./windows-mswin-toolchain-versions.json')
 
 export function getAvailableVersions(_platform, engine) {
-  if (engine === 'ruby') {
-    return Object.keys(rubyInstallerVersions).filter(version => os.arch() in rubyInstallerVersions[version])
+  const versions = engine === 'mswin' ? mswinVersions : rubyInstallerVersions
+  if (versions) {
+    return Object.keys(versions).filter(version => os.arch() in versions[version])
   } else {
     return undefined
   }
 }
 
 export async function install(platform, engine, version) {
-  const url = rubyInstallerVersions[version][os.arch()]
-
-  if (!url.endsWith('.7z')) {
-    throw new Error(`URL should end in .7z: ${url}`)
+  let url = (engine === 'mswin' ? mswinVersions : rubyInstallerVersions)[version][os.arch()]
+  if (engine === 'mswin' && version === 'head') {
+    url = await getLatestMswinHeadURL(url)
   }
-  const base = path.posix.basename(url, '.7z')
+
+  const ext = path.posix.extname(url)
+  if (ext !== '.7z' && ext !== '.zip') {
+    throw new Error(`URL should end in .7z or .zip: ${url}`)
+  }
+  const base = path.posix.basename(url, ext)
 
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
@@ -43,6 +50,10 @@ export async function install(platform, engine, version) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
+  if (engine === 'mswin') {
+    exportEnv({ SSL_CERT_FILE: findGitCertFile() })
+  }
+
   const paths = [`${rubyPrefix}\\bin`]
   const windowsToolchain = core.getInput('windows-toolchain')
   if (windowsToolchain === 'none') {
@@ -50,7 +61,7 @@ export async function install(platform, engine, version) {
     return rubyPrefix
   }
 
-  const toolchainUrl = toolchainVersions[version][os.arch()]
+  const toolchainUrl = (engine === 'mswin' ? mswinToolchainVersions : toolchainVersions)[version][os.arch()]
 
   // Examples:
   // - DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe
@@ -75,6 +86,33 @@ export async function install(platform, engine, version) {
 
   common.setupPath(paths)
   return rubyPrefix
+}
+
+// mswin master builds are published daily under dated names, so pick the latest one from the index
+async function getLatestMswinHeadURL(indexURL) {
+  // Retry like tc.downloadTool does for the archive, so a transient failure of the index does not fail the job
+  let response
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      response = await fetch(indexURL, { signal: AbortSignal.timeout(30000) })
+      if (response.ok) break
+    } catch (error) {
+      if (attempt === 3) throw error
+    }
+    if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 5000))
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${indexURL}: ${response.status} ${response.statusText}`)
+  }
+
+  const platform = `${os.arch()}-mswin64_140`
+  const builds = (await response.json()).builds.filter(build => build.channel === 'dev' && build.platform === platform)
+  if (builds.length === 0) {
+    throw new Error(`No mswin head build for ${platform} in ${indexURL}`)
+  }
+
+  // The index is sorted by name, and the date in the name can differ from the date it was published
+  return builds.reduce((latest, build) => build.published_at > latest.published_at ? build : latest).url
 }
 
 async function downloadAndExtract(engine, version, url, base, rubyPrefix) {
@@ -148,15 +186,22 @@ async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
   return [`${msys2Path}\\${msys2Type}\\bin`, `${msys2Path}\\usr\\bin`]
 }
 
-async function installMSYS1(url) {
+// DevKit and mswin Rubies have no usable CA certificates on runners, so they use the bundle of Git for Windows
+function findGitCertFile() {
   const certFile = [
     'C:\\Program Files\\Git\\ucrt64\\etc\\ssl\\cert.pem',
     'C:\\Program Files\\Git\\mingw64\\etc\\ssl\\cert.pem',
     'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem',
+    'C:\\Program Files\\Git\\clangarm64\\etc\\ssl\\cert.pem',
   ].find(file => fs.existsSync(file))
   if (certFile === undefined) {
     throw new Error("Cannot find Git's cert file")
   }
+  return certFile
+}
+
+async function installMSYS1(url) {
+  const certFile = findGitCertFile()
 
   const downloadPath = await common.measure('Downloading msys1 build tools', async () => {
     console.log(url)

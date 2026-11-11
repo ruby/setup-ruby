@@ -70,7 +70,12 @@ export async function time(name, block) {
 
 export function isHeadVersion(rubyVersion) {
   // asan-release counts as "head" because the version cannot be selected -- you can only get whatever's latest
-  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan', 'asan-release'].includes(rubyVersion)
+  return ['head', 'debug',  'mingw', 'ucrt', 'asan', 'asan-release'].includes(rubyVersion)
+}
+
+// mswin is CRuby built with MSVC, so it follows the same version-dependent defaults
+export function isCRuby(engine) {
+  return engine === 'ruby' || engine === 'mswin'
 }
 
 export function isStableVersion(engine, rubyVersion) {
@@ -86,7 +91,7 @@ export function hasBundlerDefaultGem(engine, rubyVersion) {
 }
 
 export function isBundler1Default(engine, rubyVersion) {
-  if (engine === 'ruby') {
+  if (isCRuby(engine)) {
     return floatVersion(rubyVersion) >= 2.6 && floatVersion(rubyVersion) < 2.7
   } else if (engine.startsWith('truffleruby')) {
     return floatVersion(rubyVersion) < 21.0
@@ -98,7 +103,7 @@ export function isBundler1Default(engine, rubyVersion) {
 }
 
 export function isBundler2PlusDefault(engine, rubyVersion) {
-  if (engine === 'ruby') {
+  if (isCRuby(engine)) {
     return floatVersion(rubyVersion) >= 2.7
   } else if (engine.startsWith('truffleruby')) {
     return floatVersion(rubyVersion) >= 21.0
@@ -110,7 +115,7 @@ export function isBundler2PlusDefault(engine, rubyVersion) {
 }
 
 export function isBundler2dot2PlusDefault(engine, rubyVersion) {
-  if (engine === 'ruby') {
+  if (isCRuby(engine)) {
     return floatVersion(rubyVersion) >= 3.0
   } else if (engine.startsWith('truffleruby')) {
     return floatVersion(rubyVersion) >= 22.0
@@ -130,7 +135,7 @@ export function isBundler4PlusDefault(engine, rubyVersion) {
 
 export function targetRubyVersion(engine, rubyVersion) {
   const version = floatVersion(rubyVersion)
-  if (engine === 'ruby') {
+  if (isCRuby(engine)) {
     return version
   } else if (engine === 'jruby') {
     if (version === 9.1) {
@@ -446,6 +451,7 @@ export function isExactCacheKeyMatch(key, cacheKey) {
 }
 
 export async function download(url) {
-  const auth = inputs.token ? `token ${inputs.token}` : undefined
+  // The token is for github.com, so it must not reach other hosts such as cache.ruby-lang.org
+  const auth = inputs.token && new URL(url).hostname === 'github.com' ? `token ${inputs.token}` : undefined
   return await tc.downloadTool(url, undefined, auth)
 }

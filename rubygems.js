@@ -36,7 +36,7 @@ async function compareGemVersion(a, b, rubyPrefix) {
 // rubygems-update.  See https://github.com/ruby/setup-ruby/pull/551 and
 // https://github.com/rubygems/rubygems/issues/7329
 async function rubygemsLatest(gem, platform, engine, rubyVersion) {
-  if (engine === 'ruby') {
+  if (common.isCRuby(engine)) {
     const floatVersion = common.floatVersion(rubyVersion)
     if (common.isHeadVersion(rubyVersion)) {
       console.log('Ruby master builds use included RubyGems')

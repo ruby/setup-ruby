@@ -1,0 +1,23 @@
+{
+  "3.4.11": {
+    "x64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-x64-windows.7z"
+  },
+  "3.4.12": {
+    "arm64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-arm64-windows.7z",
+    "x64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-x64-windows.7z"
+  },
+  "4.0.7": {
+    "x64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-x64-windows.7z"
+  },
+  "4.0.8": {
+    "x64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-x64-windows.7z"
+  },
+  "4.0.9": {
+    "arm64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-arm64-windows.7z",
+    "x64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-x64-windows.7z"
+  },
+  "head": {
+    "arm64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-arm64-windows.7z",
+    "x64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-x64-windows.7z"
+  }
+}

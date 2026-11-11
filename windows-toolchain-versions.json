@@ -345,9 +345,6 @@
   "mingw": {
     "x64": "https://github.com/ruby/setup-msys2-gcc/releases/download/v20261024.010459/msys2-mingw64.7z"
   },
-  "mswin": {
-    "x64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/vcpkg-x64-windows.7z"
-  },
   "ucrt": {
     "x64": "https://github.com/ruby/setup-msys2-gcc/releases/latest/download/msys2-ucrt64.7z"
   }

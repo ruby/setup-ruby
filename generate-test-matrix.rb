@@ -45,6 +45,7 @@ ubuntu2604_runners = ubuntu_runners.grep(/ubuntu-26\.04/)
 # Versions
 ruby_builder_versions = JSON.load(File.read('ruby-builder-versions.json'))
 windows_versions = JSON.load(File.read('windows-versions.json'))
+windows_mswin_versions = JSON.load(File.read('windows-mswin-versions.json'))
 
 # ruby: each minor release + head
 ruby_versions = unique_versions(ruby_builder_versions['ruby'], 2, 'head')
@@ -59,8 +60,12 @@ matrix += runners.product(jruby_versions)
 truffleruby_versions = %w[truffleruby truffleruby-head truffleruby+graalvm truffleruby+graalvm-head]
 matrix += (macos_arm64_runners + ubuntu_runners).product(truffleruby_versions)
 
+# mswin: each minor release + head
+windows_ruby_mswin_versions = unique_versions(windows_mswin_versions.keys, 2, 'head')
+matrix += windows_runners.product(windows_ruby_mswin_versions.map { |version| "mswin-#{version}"})
+
 # ruby-loco: head
-ruby_loco_versions = %w[mingw mswin ucrt]
+ruby_loco_versions = %w[mingw ucrt]
 matrix += windows_x64_runners.product(ruby_loco_versions)
 
 # asan: latest release + head

@@ -345,9 +345,6 @@
   "mingw": {
     "x64": "https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mingw.7z"
   },
-  "mswin": {
-    "x64": "https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mswin.7z"
-  },
   "ucrt": {
     "x64": "https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-ucrt.7z"
   }
