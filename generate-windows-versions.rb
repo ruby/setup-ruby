@@ -147,13 +147,12 @@ mswin_versions['head'] = dev_builds.map(&mswin_arch).uniq.sort.to_h { |arch| [ar
 mswin_toolchain_versions = mswin_versions.to_h do |raw_version, archs|
   version = raw_version == 'head' ? head_version : Gem::Version.new(raw_version)
 
-  toolchains = archs.map do |raw_arch, _|
-    arch = raw_arch == 'arm64' ? 'aarch64' : raw_arch
+  toolchains = archs.map do |arch, _|
     toolchain = find_toolchains.("#{arch}-mswin64", version)
 
-    raise "multiple toolchains found for mswin-#{raw_version} #{raw_arch}: #{toolchain}" if toolchain.size > 1
+    raise "multiple toolchains found for mswin-#{raw_version} #{arch}: #{toolchain}" if toolchain.size > 1
 
-    [raw_arch, URI.join(base_url, toolchain.first[:href]).to_s]
+    [arch, URI.join(base_url, toolchain.first[:href]).to_s]
   end
   [raw_version, toolchains.to_h]
 end
