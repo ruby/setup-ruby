@@ -50,6 +50,16 @@ export async function install(platform, engine, version) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
+  // The OpenSSL in mswin builds looks for CA certificates in an OPENSSLDIR that does not exist on runners
+  if (engine === 'mswin' && !process.env['SSL_CERT_FILE'] && !process.env['SSL_CERT_DIR']) {
+    const certFile = findGitCertFile()
+    if (certFile) {
+      exportEnv({ SSL_CERT_FILE: certFile })
+    } else {
+      core.warning("Cannot find Git's cert file, set SSL_CERT_FILE to verify TLS certificates with mswin")
+    }
+  }
+
   const paths = [`${rubyPrefix}\\bin`]
   const windowsToolchain = core.getInput('windows-toolchain')
   if (windowsToolchain === 'none') {
@@ -182,12 +192,17 @@ async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
   return [`${msys2Path}\\${msys2Type}\\bin`, `${msys2Path}\\usr\\bin`]
 }
 
-async function installMSYS1(url) {
-  const certFile = [
+function findGitCertFile() {
+  return [
     'C:\\Program Files\\Git\\ucrt64\\etc\\ssl\\cert.pem',
     'C:\\Program Files\\Git\\mingw64\\etc\\ssl\\cert.pem',
     'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem',
+    'C:\\Program Files\\Git\\clangarm64\\etc\\ssl\\cert.pem',
   ].find(file => fs.existsSync(file))
+}
+
+async function installMSYS1(url) {
+  const certFile = findGitCertFile()
   if (certFile === undefined) {
     throw new Error("Cannot find Git's cert file")
   }
