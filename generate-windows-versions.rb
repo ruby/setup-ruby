@@ -147,14 +147,13 @@ mswin_versions['head'] = dev_builds.map(&mswin_arch).uniq.sort.to_h { |arch| [ar
 mswin_toolchain_versions = mswin_versions.to_h do |raw_version, archs|
   version = raw_version == 'head' ? head_version : Gem::Version.new(raw_version)
 
-  toolchains = archs.filter_map do |raw_arch, _|
+  toolchains = archs.map do |raw_arch, _|
     arch = raw_arch == 'arm64' ? 'aarch64' : raw_arch
     toolchain = find_toolchains.("#{arch}-mswin64", version)
 
     raise "multiple toolchains found for mswin-#{raw_version} #{raw_arch}: #{toolchain}" if toolchain.size > 1
 
-    # vcpkg packages for arm64 only exist for newer Rubies, skip builds that cannot get a toolchain
-    [raw_arch, URI.join(base_url, toolchain.first[:href]).to_s] if toolchain.one?
+    [raw_arch, URI.join(base_url, toolchain.first[:href]).to_s]
   end
   [raw_version, toolchains.to_h]
 end

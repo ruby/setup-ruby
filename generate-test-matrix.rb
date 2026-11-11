@@ -60,12 +60,9 @@ matrix += runners.product(jruby_versions)
 truffleruby_versions = %w[truffleruby truffleruby-head truffleruby+graalvm truffleruby+graalvm-head]
 matrix += (macos_arm64_runners + ubuntu_runners).product(truffleruby_versions)
 
-# mswin: each minor release + head, for each arch that has builds
-{ 'x64' => windows_x64_runners, 'arm64' => windows_arm64_runners }.each do |arch, arch_runners|
-  mswin_versions = windows_mswin_versions.select { |_, archs| archs.key?(arch) }.keys
-  matrix += arch_runners.product(unique_versions(mswin_versions, 2, 'head').map { |version| "mswin-#{version}" })
-end
-matrix += windows_x64_runners.product(%w[mswin])
+# mswin: each minor release + head
+windows_ruby_mswin_versions = unique_versions(windows_mswin_versions.keys, 2, 'head')
+matrix += windows_runners.product(windows_ruby_mswin_versions.map { |version| "mswin-#{version}"})
 
 # ruby-loco: head
 ruby_loco_versions = %w[mingw ucrt]

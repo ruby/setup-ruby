@@ -3,6 +3,7 @@
     "x64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-3.4.11-x64-mswin64_140.zip"
   },
   "3.4.12": {
+    "arm64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-3.4.12-arm64-mswin64_140.zip",
     "x64": "https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/ruby-3.4.12-x64-mswin64_140.zip"
   },
   "4.0.7": {
