@@ -60,8 +60,11 @@ truffleruby_versions = %w[truffleruby truffleruby-head truffleruby+graalvm truff
 matrix += (macos_arm64_runners + ubuntu_runners).product(truffleruby_versions)
 
 # ruby-loco: head
-ruby_loco_versions = %w[mingw mswin ucrt]
+ruby_loco_versions = %w[mingw ucrt]
 matrix += windows_x64_runners.product(ruby_loco_versions)
+
+# mswin: head
+matrix += windows_runners.product(%w[mswin])
 
 # asan: latest release + head
 asan_versions = %w[asan-release asan]

@@ -22,10 +22,11 @@ export function getAvailableVersions(_platform, engine) {
 export async function install(platform, engine, version) {
   const url = rubyInstallerVersions[version][os.arch()]
 
-  if (!url.endsWith('.7z')) {
-    throw new Error(`URL should end in .7z: ${url}`)
+  const ext = path.posix.extname(url)
+  if (ext !== '.7z' && ext !== '.zip') {
+    throw new Error(`URL should end in .7z or .zip: ${url}`)
   }
-  const base = path.posix.basename(url, '.7z')
+  const base = path.posix.basename(url, ext)
 
   let rubyPrefix, inToolCache
   if (common.shouldUseToolCache(engine, version)) {
@@ -41,6 +42,10 @@ export async function install(platform, engine, version) {
 
   if (!inToolCache) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
+  }
+
+  if (version === 'mswin') {
+    exportEnv({ SSL_CERT_FILE: findGitCertFile() })
   }
 
   const paths = [`${rubyPrefix}\\bin`]
@@ -148,15 +153,22 @@ async function installMSYS2(url, rubyPrefix = process.env.RUNNER_TEMP) {
   return [`${msys2Path}\\${msys2Type}\\bin`, `${msys2Path}\\usr\\bin`]
 }
 
-async function installMSYS1(url) {
+// DevKit and mswin Rubies have no usable CA certificates on runners, so they use the bundle of Git for Windows
+function findGitCertFile() {
   const certFile = [
     'C:\\Program Files\\Git\\ucrt64\\etc\\ssl\\cert.pem',
     'C:\\Program Files\\Git\\mingw64\\etc\\ssl\\cert.pem',
     'C:\\Program Files\\Git\\mingw64\\ssl\\cert.pem',
+    'C:\\Program Files\\Git\\clangarm64\\etc\\ssl\\cert.pem',
   ].find(file => fs.existsSync(file))
   if (certFile === undefined) {
     throw new Error("Cannot find Git's cert file")
   }
+  return certFile
+}
+
+async function installMSYS1(url) {
+  const certFile = findGitCertFile()
 
   const downloadPath = await common.measure('Downloading msys1 build tools', async () => {
     console.log(url)
