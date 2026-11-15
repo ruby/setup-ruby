@@ -9,7 +9,8 @@ require 'json'
 WINDOWS_VERSIONS_URLS_REGEXPS = [
   %r{\A#{Regexp.escape 'https://github.com/oneclick/rubyinstaller/releases/download'}/\w[\w.-]*/\w[\w.-]*\z},
   %r{\A#{Regexp.escape 'https://github.com/oneclick/rubyinstaller2/releases/download'}/\w[\w.-]*/\w[\w.-]*\z},
-  %r{\A#{Regexp.escape 'https://github.com/MSP-Greg/ruby-loco/releases/download'}/\w[\w.-]*/\w[\w.-]*\z}
+  %r{\A#{Regexp.escape 'https://github.com/MSP-Greg/ruby-loco/releases/download'}/\w[\w.-]*/\w[\w.-]*\z},
+  %r{\A#{Regexp.escape 'https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/dev'}/\w[\w.-]*\z}
 ].freeze
 
 WINDOWS_TOOLCHAIN_VERSIONS_URLS_REGEXPS = [
@@ -67,7 +68,8 @@ versions['mingw'] = {
   'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mingw.7z'
 }
 versions['mswin'] = {
-  'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-mswin.7z'
+  'arm64' => 'https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/dev/ruby-head-arm64-mswin64_140.zip',
+  'x64' => 'https://cache.ruby-lang.org/pub/ruby/binaries/mswin64/dev/ruby-head-x64-mswin64_140.zip'
 }
 versions['ucrt'] = {
   'x64' => 'https://github.com/MSP-Greg/ruby-loco/releases/download/ruby-master/ruby-ucrt.7z'
@@ -92,7 +94,7 @@ versions.each do |raw_version, archs|
       when 'mingw'
         "#{arch}-mingw32"
       when 'mswin'
-        "#{arch}-mswin64"
+        "#{raw_arch}-mswin64"
       else
         if version >= Gem::Version.new('3.1.0.dev')
           "#{arch}-mingw-ucrt"
