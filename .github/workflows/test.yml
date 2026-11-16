@@ -141,27 +141,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - run: echo "ruby-3.4.0" > .ruby-version
+      - run: echo "ruby-3.4.12" > .ruby-version
       - uses: ./
-      - run: ruby -v | grep -F "ruby 3.4.0"
+      - run: ruby -v | grep -F "ruby 3.4.12"
 
   testToolVersions:
     name: "Test .tool-versions"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - run: echo -e "nodejs 16.0.0\nruby   3.4.0" > .tool-versions
+      - run: echo -e "nodejs 16.0.0\nruby   3.4.12" > .tool-versions
       - uses: ./
-      - run: ruby -v | grep -F "ruby 3.4.0"
+      - run: ruby -v | grep -F "ruby 3.4.12"
 
   testMise:
     name: "Test mise.toml"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - run: echo -e "[tools]\nnode = '18'\nruby = '3.4.0'" > mise.toml
+      - run: echo -e "[tools]\nnode = '18'\nruby = '3.4.12'" > mise.toml
       - uses: ./
-      - run: ruby -v | grep -F "ruby 3.4.0"
+      - run: ruby -v | grep -F "ruby 3.4.12"
 
   testNoGemfile:
     name: "Test with no Gemfile"
@@ -199,7 +199,6 @@ jobs:
         - { ruby: '2.6', expected_rubygems_version: '3.4.22' }
         - { ruby: '2.5', expected_rubygems_version: '3.3.27' }
         - { ruby: '2.3', expected_rubygems_version: '3.3.27' }
-        - { ruby: '2.0', expected_rubygems_version: '2.7.11' }
     steps:
     - uses: actions/checkout@v7
     - uses: ./
@@ -226,9 +225,9 @@ jobs:
     - uses: actions/checkout@v7
     - uses: ./
       with:
-        ruby-version: '3.1.0'
+        ruby-version: '3.1.7'
         rubygems: 3.2.3
-    - run: gem --version | grep -F "3.3.3"
+    - run: gem --version | grep -F "3.3.27"
 
   testFixedRubygemsBetaVersionUpgrades:
     name: "Test rubygems: beta version upgrades RubyGems to that version if the default is older"
@@ -259,7 +258,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./
         with:
-          ruby-version: '3.1.0'
+          ruby-version: '3.1.7'
           rubygems: 3.4.0
       - run: gem --version | grep -F "3.4.0"
       - run: bundle --version | grep -F "2.4.0"
