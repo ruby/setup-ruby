@@ -46138,7 +46138,15 @@ async function install(platform, engine, version) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
-  if (version === 'mswin') {
+  const toolchainUrl = toolchainVersions[version][os.arch()]
+
+  // Examples:
+  // - DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe
+  // - msys2-clangarm64.7z
+  // - vcpkg-x64-windows.7z
+  const toolchainName = path.posix.basename(toolchainUrl).split('-')[0].toLowerCase()
+
+  if (toolchainName === 'devkit' || version === 'mswin') {
     exportEnv({ SSL_CERT_FILE: findGitCertFile() })
   }
 
@@ -46148,14 +46156,6 @@ async function install(platform, engine, version) {
     common.setupPath(paths)
     return rubyPrefix
   }
-
-  const toolchainUrl = toolchainVersions[version][os.arch()]
-
-  // Examples:
-  // - DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe
-  // - msys2-clangarm64.7z
-  // - vcpkg-x64-windows.7z
-  const toolchainName = path.posix.basename(toolchainUrl).split('-')[0].toLowerCase()
 
   if (toolchainName === 'msys2') {
     paths.push(...await installMSYS2(toolchainUrl, rubyPrefix))
@@ -46262,8 +46262,6 @@ function findGitCertFile() {
 }
 
 async function installMSYS1(url) {
-  const certFile = findGitCertFile()
-
   const downloadPath = await common.measure('Downloading msys1 build tools', async () => {
     console.log(url)
     return await common.download(url)
@@ -46288,8 +46286,7 @@ async function installMSYS1(url) {
       CPP: 'cpp',
       CXX: 'g++',
       MAKE: 'make',
-      RI_DEVKIT: msys1Path,
-      SSL_CERT_FILE: certFile
+      RI_DEVKIT: msys1Path
     })
   })
 
