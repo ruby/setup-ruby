@@ -370,15 +370,17 @@ jobs:
           ruby-version: '2.7'
           bundler: 1
           bundler-cache: true
+      - run: ruby --version | grep -F "ruby 2.7."
       - run: bundle --version | grep -F "Bundler version 1."
         env:
           BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/bundler1.gemfile
-      # The Bundler version used by the first setup-ruby step must not leak into the second one
+      # The Ruby and Bundler versions used by the first setup-ruby step must not leak into the second one
       - uses: ./
         with:
-          ruby-version: '2.7'
+          ruby-version: '3.4'
           bundler-cache: true
-      - run: bundle --version | grep -P "Bundler version 2\.4\.\d+"
+      - run: ruby --version | grep -F "ruby 3.4."
+      - run: bundle --version | grep -P "Bundler version 2\.6\.\d+"
       - run: bundle exec rake --version
 
   testGemfileMatrix:
