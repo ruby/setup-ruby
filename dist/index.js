@@ -46314,7 +46314,7 @@ async function installVCPKG(url) {
   await common.measure('Extracting  mswin vcpkg packages', async () =>
     exec.exec('7z', ['x', downloadPath, '-aoa', '-bd', `-o${extractPath}`], { silent: true }))
 
-  return await common.measure('Setting up MSVC environment', async () => {
+  const paths = await common.measure('Setting up MSVC environment', async () => {
     const cmd = 'vswhere -latest -property installationPath'
     const vcVarsBat = os.arch() === 'arm64' ? 'vcvarsarm64.bat' : 'vcvars64.bat'
     const vcVars = `${cp.execSync(cmd).toString().trim()}\\VC\\Auxiliary\\Build\\${vcVarsBat}`
@@ -46325,6 +46325,23 @@ async function installVCPKG(url) {
 
     return exportCommandEnv(`set "MAKE=nmake" && "${vcVars}"`)
   })
+
+  await core.group('Setting up vcpkg', async () => {
+    // mswin Rubies do not record the vcpkg location in configure_args, so the compiler and linker find it through INCLUDE and LIB
+    const vcpkgDir = `${extractPath}\\installed\\${os.arch()}-windows`
+    exportEnv({
+      INCLUDE: `${vcpkgDir}\\include;${process.env.INCLUDE}`,
+      LIB: `${vcpkgDir}\\lib;${process.env.LIB}`
+    })
+
+    // Without these, mkmf runs the MSYS2 pkg-config on PATH, whose MinGW flags break MSVC builds, and pkgconf only searches the missing tools\lib\pkgconfig
+    exportEnv({
+      PKG_CONFIG: `${vcpkgDir}\\tools\\pkgconf\\pkgconf.exe`,
+      PKG_CONFIG_PATH: `${vcpkgDir}\\lib\\pkgconfig`
+    })
+  })
+
+  return paths
 }
 
 // Run a cmd command, export its environment, and return new paths
