@@ -85,6 +85,9 @@ jobs:
     - run: gem env
     - name: C extension test
       run: gem install json -v 2.2.0
+    - name: C extension test with vcpkg libraries (mswin)
+      run: gem install fiddle -v 1.1.8
+      if: matrix.ruby == 'mswin'
     - run: bundle --version
     # This step is redundant with `bundler-cache: true` but is there to check a redundant `bundle install` still works
     - run: bundle install
