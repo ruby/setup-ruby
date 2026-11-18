@@ -30,11 +30,9 @@ Native extensions are automatically compiled with AddressSanitizer when using `r
 
 Regarding Windows ruby master builds, `mingw` is a MSYS2/MinGW build, and `head` & `ucrt` are MSYS2/UCRT64 builds.
 
-`mswin` is CRuby built with MSVC, available on Windows only.
+`mswin` is CRuby built with MSVC, available on Windows for 3.4.11 and newer releases, e.g. `mswin-4.0`, and for master as `mswin-head`.
 Use it to test that native extensions build and work with MSVC. The default Windows versions stay on RubyInstaller, which most precompiled gems target.
-`mswin-4.0` installs the latest 4.0.x release and `mswin-head` the master build.
 `mswin` alone also installs the master build for now but will install the latest release in the future, so use `mswin-head` to keep testing master.
-The available versions are listed in [windows-mswin-versions.json](windows-mswin-versions.json).
 
 Preview and RC versions of Ruby might be available too on Ubuntu and macOS (not on Windows).
 However, it is recommended to test against `ruby-head` rather than previews,
