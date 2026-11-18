@@ -46326,9 +46326,9 @@ async function installVCPKG(url) {
     return exportCommandEnv(`set "MAKE=nmake" && "${vcVars}"`)
   })
 
+  const vcpkgDir = `${extractPath}\\installed\\${os.arch()}-windows`
   await core.group('Setting up vcpkg', async () => {
     // mswin Rubies do not record the vcpkg location in configure_args, so the compiler and linker find it through INCLUDE and LIB
-    const vcpkgDir = `${extractPath}\\installed\\${os.arch()}-windows`
     exportEnv({
       INCLUDE: `${vcpkgDir}\\include;${process.env.INCLUDE}`,
       LIB: `${vcpkgDir}\\lib;${process.env.LIB}`
@@ -46341,7 +46341,7 @@ async function installVCPKG(url) {
     })
   })
 
-  return paths
+  return [...paths, `${vcpkgDir}\\bin`]
 }
 
 // Run a cmd command, export its environment, and return new paths
