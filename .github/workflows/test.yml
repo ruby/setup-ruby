@@ -86,7 +86,10 @@ jobs:
     - name: C extension test
       run: gem install json -v 2.2.0
     - name: C extension test with vcpkg libraries (mswin)
-      run: gem install fiddle -v 1.1.8
+      run: gem install fiddle:1.1.8 zlib:3.2.4
+      if: matrix.ruby == 'mswin'
+    - name: Load C extensions linked to vcpkg libraries (mswin)
+      run: ruby -rfiddle -e 'gem %q(zlib), %q(3.2.4); require %q(zlib); p Zlib.crc32(%q(a))'
       if: matrix.ruby == 'mswin'
     - run: bundle --version
     # This step is redundant with `bundler-cache: true` but is there to check a redundant `bundle install` still works
