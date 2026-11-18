@@ -45,6 +45,7 @@ ubuntu2604_runners = ubuntu_runners.grep(/ubuntu-26\.04/)
 # Versions
 ruby_builder_versions = JSON.load(File.read('ruby-builder-versions.json'))
 windows_versions = JSON.load(File.read('windows-versions.json'))
+windows_mswin_versions = JSON.load(File.read('windows-mswin-versions.json'))
 
 # ruby: each minor release + head
 ruby_versions = unique_versions(ruby_builder_versions['ruby'], 2, 'head')
@@ -63,8 +64,11 @@ matrix += (macos_arm64_runners + ubuntu_runners).product(truffleruby_versions)
 ruby_loco_versions = %w[mingw ucrt]
 matrix += windows_x64_runners.product(ruby_loco_versions)
 
-# mswin: head
-matrix += windows_runners.product(%w[mswin])
+# mswin: each minor release + head, on the runners of each arch that has a build of it
+{ 'x64' => windows_x64_runners, 'arm64' => windows_arm64_runners }.each do |arch, arch_runners|
+  mswin_versions = windows_mswin_versions.select { |_, builds| builds.key?(arch) }.keys
+  matrix += arch_runners.product(unique_versions(mswin_versions, 2, 'head').map { |version| "mswin-#{version}" })
+end
 
 # asan: latest release + head
 asan_versions = %w[asan-release asan]
