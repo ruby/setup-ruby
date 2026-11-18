@@ -10,17 +10,21 @@ const exec = require('@actions/exec')
 const common = require('./common')
 const rubyInstallerVersions = require('./windows-versions.json')
 const toolchainVersions = require('./windows-toolchain-versions.json')
+const mswinVersions = require('./windows-mswin-versions.json')
+const mswinToolchainVersions = require('./windows-mswin-toolchain-versions.json')
 
 export function getAvailableVersions(_platform, engine) {
   if (engine === 'ruby') {
-    return Object.keys(rubyInstallerVersions).filter(version => os.arch() in rubyInstallerVersions[version])
+    const versions = common.inputs.mswin ? mswinVersions : rubyInstallerVersions
+    return Object.keys(versions).filter(version => os.arch() in versions[version])
   } else {
     return undefined
   }
 }
 
 export async function install(platform, engine, version) {
-  const url = rubyInstallerVersions[version][os.arch()]
+  const mswin = common.inputs.mswin
+  const url = (mswin ? mswinVersions : rubyInstallerVersions)[version][os.arch()]
 
   const ext = path.posix.extname(url)
   if (ext !== '.7z' && ext !== '.zip') {
@@ -44,7 +48,7 @@ export async function install(platform, engine, version) {
     await downloadAndExtract(engine, version, url, base, rubyPrefix);
   }
 
-  const toolchainUrl = toolchainVersions[version][os.arch()]
+  const toolchainUrl = (mswin ? mswinToolchainVersions : toolchainVersions)[version][os.arch()]
 
   // Examples:
   // - DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe
@@ -52,7 +56,7 @@ export async function install(platform, engine, version) {
   // - vcpkg-x64-windows.7z
   const toolchainName = path.posix.basename(toolchainUrl).split('-')[0].toLowerCase()
 
-  if (toolchainName === 'devkit' || version === 'mswin') {
+  if (toolchainName === 'devkit' || mswin) {
     await setupSslCertFile()
   }
 

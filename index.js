@@ -51,11 +51,14 @@ export async function setupRuby(options = {}) {
   process.chdir(inputs['working-directory'])
 
   const platform = common.getOSNameVersion()
-  const [engine, parsedVersion] = parseRubyEngineAndVersion(inputs['ruby-version'])
+  const [engine, parsedVersion, mswin] = parseRubyEngineAndVersion(inputs['ruby-version'])
+  common.inputs.mswin = mswin
 
   let installer
   if (platform.startsWith('windows-') && engine === 'ruby' && !common.isSelfHostedRunner()) {
     installer = require('./windows')
+  } else if (mswin) {
+    throw new Error('mswin is only available on GitHub-hosted Windows runners')
   } else {
     installer = require('./ruby-builder')
   }
@@ -147,13 +150,24 @@ function parseRubyEngineAndVersion(rubyVersion) {
     [engine, version] = common.partition(rubyVersion, '-')
   }
 
-  return [engine, version]
+  // mswin is CRuby built with MSVC, so it stays the ruby engine and only selects other builds
+  const mswin = engine === 'mswin' || rubyVersion === 'ruby-mswin'
+  if (mswin) {
+    engine = 'ruby'
+    // mswin and ruby-mswin keep installing the master build until their known users move to mswin-head
+    if (version === '' || version === 'mswin') {
+      version = 'head'
+    }
+  }
+
+  return [engine, version, mswin]
 }
 
 function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVersion) {
   if (!engineVersions) {
     throw new Error(`Unknown engine ${engine} on ${platform}`)
   }
+  const name = common.inputs.mswin ? 'mswin' : engine
 
   let version = parsedVersion
   if (!engineVersions.includes(parsedVersion)) {
@@ -168,8 +182,8 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
     if (found) {
       version = found
     } else {
-      throw new Error(`Unknown version ${parsedVersion} for ${engine} on ${platform}
-        Available versions for ${engine} on ${platform}: ${engineVersions.join(', ')}
+      throw new Error(`Unknown version ${parsedVersion} for ${name} on ${platform}
+        Available versions for ${name} on ${platform}: ${engineVersions.join(', ')}
         Make sure you use the latest version of the action with - uses: ruby/setup-ruby@v1`)
     }
   }
