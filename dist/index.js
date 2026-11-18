@@ -46334,9 +46334,9 @@ async function installVCPKG(url) {
       LIB: `${vcpkgDir}\\lib;${process.env.LIB}`
     })
 
-    // Without these, mkmf runs the MSYS2 pkg-config on PATH, whose MinGW flags break MSVC builds, and pkgconf only searches the missing tools\lib\pkgconfig
+    // Otherwise mkmf runs the MSYS2 pkg-config, whose MinGW flags break MSVC builds. mkmf accepts an absolute PKG_CONFIG only with forward slashes, and pkgconf alone searches just the missing tools\lib\pkgconfig
     exportEnv({
-      PKG_CONFIG: `${vcpkgDir}\\tools\\pkgconf\\pkgconf.exe`,
+      PKG_CONFIG: `${vcpkgDir}\\tools\\pkgconf\\pkgconf.exe`.replaceAll('\\', '/'),
       PKG_CONFIG_PATH: `${vcpkgDir}\\lib\\pkgconfig`
     })
   })
