@@ -17,7 +17,8 @@ const PATH_ENV_VAR = windows ? 'Path' : 'PATH'
 
 export const inputs = {
   selfHosted: undefined,
-  token: undefined
+  token: undefined,
+  mswin: undefined
 }
 
 export function partition(string, separator) {
@@ -70,7 +71,7 @@ export async function time(name, block) {
 
 export function isHeadVersion(rubyVersion) {
   // asan-release counts as "head" because the version cannot be selected -- you can only get whatever's latest
-  return ['head', 'debug',  'mingw', 'mswin', 'ucrt', 'asan', 'asan-release'].includes(rubyVersion)
+  return ['head', 'debug',  'mingw', 'ucrt', 'asan', 'asan-release'].includes(rubyVersion)
 }
 
 export function isStableVersion(engine, rubyVersion) {
@@ -292,7 +293,8 @@ function findWindowsVersion() {
 }
 
 export function shouldUseToolCache(engine, version) {
-  return (engine === 'ruby' && !isHeadVersion(version)) || isSelfHostedRunner()
+  // The tool cache of runners holds RubyInstaller builds under the same Ruby/<version> names as mswin
+  return (engine === 'ruby' && !isHeadVersion(version) && !inputs.mswin) || isSelfHostedRunner()
 }
 
 export function getToolCachePath() {

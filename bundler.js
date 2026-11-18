@@ -254,7 +254,9 @@ async function computeBaseKey(engine, version, lockFile, cacheVersion) {
   const bundleWith = process.env['BUNDLE_WITH'] || ''
   const bundleWithout = process.env['BUNDLE_WITHOUT'] || ''
   const bundleOnly = process.env['BUNDLE_ONLY'] || ''
-  let key = `setup-ruby-bundler-cache-v6-${common.getOSNameVersionArch()}-${engine}-${version}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}-only-${bundleOnly}`
+  // Gems built for mswin cannot load in the RubyInstaller build of the same version
+  const ruby = common.inputs.mswin ? `${engine}-${version}-mswin` : `${engine}-${version}`
+  let key = `setup-ruby-bundler-cache-v6-${common.getOSNameVersionArch()}-${ruby}-wd-${cwd}-with-${bundleWith}-without-${bundleWithout}-only-${bundleOnly}`
 
   if (cacheVersion !== DEFAULT_CACHE_VERSION) {
     key += `-v-${cacheVersion}`
