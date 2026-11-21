@@ -207,6 +207,9 @@ You might need to `"`-quote the environment variable name in YAML if it has unus
 By default, `bundle install` is run with `--jobs` set to the number of available processors (up to 8).
 This can be changed by setting `BUNDLE_JOBS`.
 
+With Bundler 4.1 or later, this action defaults to `BUNDLE_PRUNE=cache` when saving a new cache
+to omit downloaded `.gem` files. Set `BUNDLE_PRUNE=false` to keep them.
+
 To perform caching, this action will use `bundle config --local path $PWD/vendor/bundle`.  
 Therefore, the Bundler `path` should not be changed in your workflow for the cache to work (no `bundle config path`).
 
