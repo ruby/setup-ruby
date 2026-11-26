@@ -74,6 +74,10 @@ jobs:
 
     - name: Subprocess test
       run: ruby test_subprocess.rb
+    # https://github.com/ruby/setup-ruby/issues/985
+    - name: String#crypt supports $6$ (SHA-512) salts
+      if: runner.os == 'Linux'
+      run: ruby -e 'h = %q(password).crypt(%q($6$saltsalt$)); puts h; abort %q(String#crypt ignored the $6$ salt (libcrypt not linked?)) unless h.start_with?(%q($6$saltsalt$))'
     - name: OpenSSL compiled version
       run: ruby -ropenssl -e 'puts OpenSSL::OPENSSL_VERSION'
     - name: OpenSSL loaded version
