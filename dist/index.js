@@ -635,7 +635,6 @@ function findWindowsVersion() {
 }
 
 function shouldUseToolCache(engine, version) {
-  // The tool cache of runners holds RubyInstaller builds under the same Ruby/<version> names as mswin
   return (engine === 'ruby' && !isHeadVersion(version) && !inputs.mswin) || isSelfHostedRunner()
 }
 
