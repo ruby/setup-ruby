@@ -156,9 +156,10 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
   const gem = path.join(rubyPrefix, 'bin', 'gem')
 
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
-  const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
+  // Use --conservative to avoid reinstalling the exact same version if already installed.
+  const options = versionParts >= 3 ? ['-v', bundlerVersion, '--conservative'] : ['-v', `~> ${bundlerVersion}.0`]
 
-  await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint])
+  await exec.exec(gem, ['install', 'bundler', ...options])
 
   return bundlerVersion
 }
