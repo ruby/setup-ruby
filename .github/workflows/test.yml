@@ -326,6 +326,18 @@ jobs:
         bundler-cache: true
     - run: bundle --version | grep -F "Bundler version 2.7.2"
 
+  testBundlerCachePrune:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - uses: ./
+      with:
+        ruby-version: '4.0'
+        bundler: 4.1.0
+        bundler-cache: true
+        cache-version: prune-${{ hashFiles('bundler.js') }}
+    - run: ruby -e 'abort "Found cached .gem files" unless Dir["vendor/bundle/*/*/cache/*.gem"].empty?'
+
   testBundlerPre:
     name: "Test with a Bundler pre/rc version"
     runs-on: ubuntu-latest
@@ -464,6 +476,7 @@ jobs:
       - testMinorBundlerVersion
       - testExactBundlerVersion
       - testOlderBundlerVersion
+      - testBundlerCachePrune
       - testBundlerPre
       - testBundlerDev
       - testDependencyOnBundler1

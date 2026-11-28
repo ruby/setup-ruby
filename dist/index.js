@@ -54,7 +54,6 @@ function readBundledWithFromGemfileLock(lockFile) {
       if (nextLine) {
         const bundlerVersion = nextLine.trim()
         if (isValidBundlerVersion(bundlerVersion)) {
-          console.log(`Using Bundler ${bundlerVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
           return bundlerVersion
         } else {
           console.log(`Could not parse BUNDLED WITH version as a valid Bundler release, ignoring it: ${bundlerVersion}`)
@@ -78,6 +77,7 @@ async function installBundler(bundlerVersionInput, rubygemsInputSet, lockFile, p
 
     if (bundlerVersionFromGemfileLock) {
       bundlerVersion = bundlerVersionFromGemfileLock
+      console.log(`Using Bundler ${bundlerVersion} from ${lockFile} BUNDLED WITH ${bundlerVersion}`)
     } else {
       bundlerVersion = 'default'
     }
@@ -171,6 +171,27 @@ function bundlerConfigSetArgs(bundlerVersion, key, value) {
   }
 }
 
+async function bundlePruneOptions(lockFile) {
+  if (process.env.BUNDLE_PRUNE !== undefined) {
+    return {}
+  }
+
+  // Older Bundler versions do not support pruning the download cache.
+  const version = process.env.BUNDLER_VERSION || readBundledWithFromGemfileLock(lockFile)
+  if (parseFloat(version) < 4.1) {
+    return {}
+  }
+
+  // Keep any local or global Bundler setting, including an explicitly empty value.
+  const { stdout, exitCode } = await exec.getExecOutput('ruby',
+    ['-rbundler', '-e', 'print Bundler.settings.all.include?("prune")'],
+    { silent: true, ignoreReturnCode: true })
+  if (exitCode === 0 && stdout === 'false') {
+    return { env: { ...process.env, BUNDLE_PRUNE: 'cache' } }
+  }
+  return {}
+}
+
 async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, bundlerVersion, cacheVersion) {
   if (gemfile === null) {
     console.log('Could not determine gemfile path, skipping "bundle install" and caching')
@@ -235,12 +256,13 @@ async function bundleInstall(gemfile, lockFile, platform, engine, rubyVersion, b
     const jobs = Math.min(os.availableParallelism(), 8)
     installArgs.push('--jobs', `${jobs}`)
   }
-  // Always run 'bundle install' to list the gems
-  await exec.exec('bundle', installArgs)
+  // @actions/cache only allows saving an unused key, and merge_group events should not save caches.
+  const saveCache = !common.isExactCacheKeyMatch(key, cachedKey) && process.env['GITHUB_EVENT_NAME'] !== 'merge_group'
 
-  // @actions/cache only allows to save for non-existing keys
-  // Also, skip saving cache for merge_group event
-  if (!common.isExactCacheKeyMatch(key, cachedKey) && process.env['GITHUB_EVENT_NAME'] !== 'merge_group') {
+  // Always run 'bundle install' to list the gems
+  await exec.exec('bundle', installArgs, saveCache ? await bundlePruneOptions(lockFile) : {})
+
+  if (saveCache) {
     if (cachedKey) { // existing cache but Gemfile.lock differs, clean old gems
       await exec.exec('bundle', ['clean'])
     }
