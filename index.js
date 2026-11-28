@@ -172,8 +172,8 @@ function validateRubyEngineAndVersion(platform, engineVersions, engine, parsedVe
   let version = parsedVersion
   if (!engineVersions.includes(parsedVersion)) {
     const latestToFirstVersion = engineVersions.slice().reverse()
-    // A prefix must end between version components, so 3.4.1 does not match 3.4.13
-    const matches = v => v.startsWith(parsedVersion) && !(/\d$/.test(parsedVersion) && /^\d/.test(v.slice(parsedVersion.length)))
+    // A partial version must match whole components, so 3.4.1 does not match 3.4.13
+    const matches = v => parsedVersion === '' || v.startsWith(`${parsedVersion}.`) || v.startsWith(`${parsedVersion}-`)
     // Try to match stable versions first, so an empty version (engine-only) matches the latest stable version
     let found = latestToFirstVersion.find(v => common.isStableVersion(engine, v) && matches(v))
     if (!found) {
