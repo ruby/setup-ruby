@@ -144,7 +144,15 @@ export async function installBundler(bundlerVersionInput, rubygemsInputSet, lock
   const versionParts = [...bundlerVersion.matchAll(/\d+/g)].length
   const bundlerVersionConstraint = versionParts >= 3 ? bundlerVersion : `~> ${bundlerVersion}.0`
 
-  await exec.exec(gem, ['install', 'bundler', '-v', bundlerVersionConstraint])
+  const args = ['install', 'bundler', '-v', bundlerVersionConstraint]
+  // Reinstalling an exact version that is already there changes nothing, and `gem install`
+  // removes the gem directory before extracting it again, which breaks the other jobs
+  // sharing a tool cache on self-hosted runners (#191). A `~>` constraint still gets the
+  // latest matching release rather than whatever Bundler the Ruby shipped with.
+  if (versionParts >= 3) {
+    args.push('--conservative')
+  }
+  await exec.exec(gem, args)
 
   return bundlerVersion
 }
